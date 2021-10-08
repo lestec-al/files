@@ -1,10 +1,10 @@
 # Files
 A simple python file explorer with PySimpleGUI interface.
-
-Functions:
-- copy, paste and delete to trash
-- sorts by name and size
+Features:
+- copy, paste and delete to trash (files, catalogs)
+- sorts by name (files, catalogs) and size (files)
 - shows hidden files
+- resizability
 
 For linux debian (xubuntu tested) users there is a fully functional version in file "files app", which is enough to download and run.
 
