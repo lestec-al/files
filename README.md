@@ -19,5 +19,7 @@ For others:
 
 ![Image 2](https://github.com/lestec-al/files/raw/main/images/files_pic_1.png)
 ![Image 2](https://github.com/lestec-al/files/raw/main/images/files_pic_2.png)
+
 Standard menu items with keyboard short-cuts
+
 ![Image 2](https://github.com/lestec-al/files/raw/main/images/files_pic_3.png)
