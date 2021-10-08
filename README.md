@@ -22,5 +22,5 @@ For others:
 
 Standard menu items with keyboard short-cuts
 
-![Image 2](https://github.com/lestec-al/files/raw/main/images/files_pic_3.png)
 <img src="https://github.com/lestec-al/files/raw/main/images/files_pic_3.png" width="812" height="549" />
+<img src="https://github.com/lestec-al/files/raw/main/images/files_pic_3.png" width="541" height="366" />
