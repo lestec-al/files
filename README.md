@@ -20,6 +20,6 @@ For others:
 <img src="https://github.com/lestec-al/files/raw/main/images/files_pic_1.png" width="541" height="366" />
 <img src="https://github.com/lestec-al/files/raw/main/images/files_pic_2.png" width="541" height="366" />
 
-Standard menu items with
+Standard menu items
 
 <img src="https://github.com/lestec-al/files/raw/main/images/files_pic_3.png" width="541" height="366" />
