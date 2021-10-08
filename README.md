@@ -17,10 +17,9 @@ For others:
 - launch via command line "python files.py" in the project folder
 - optional, you can make executable file for different OS, if use "pyinstaller" (https://pyinstaller.readthedocs.io/en/stable/installation.html)
 
-![Image 2](https://github.com/lestec-al/files/raw/main/images/files_pic_1.png)
-![Image 2](https://github.com/lestec-al/files/raw/main/images/files_pic_2.png)
+<img src="https://github.com/lestec-al/files/raw/main/images/files_pic_1.png" width="541" height="366" />
+<img src="https://github.com/lestec-al/files/raw/main/images/files_pic_2.png" width="541" height="366" />
 
 Standard menu items with keyboard short-cuts
 
-<img src="https://github.com/lestec-al/files/raw/main/images/files_pic_3.png" width="812" height="549" />
 <img src="https://github.com/lestec-al/files/raw/main/images/files_pic_3.png" width="541" height="366" />
