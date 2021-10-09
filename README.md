@@ -1,6 +1,5 @@
 # Files
-A simple python file explorer with PySimpleGUI interface.
-Features:
+A simple python file explorer with PySimpleGUI interface. Features:
 - copy, paste and delete to trash (files, catalogs)
 - sorts by name (files, catalogs) and size (files)
 - shows hidden files
