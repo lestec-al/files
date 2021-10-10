@@ -5,10 +5,10 @@ A simple python file explorer with PySimpleGUI interface. Features:
 - shows hidden files
 - resizability
 
+Warning: there may be bugs in the program.
+
 For linux debian (xubuntu tested) users there is a fully functional version in file "files app", which is enough to download and run.
-
 For others:
-
 - install Python (version 3.9 or higher)
 - install PySimpleGUI (https://pysimplegui.readthedocs.io/en/latest/#installing-pysimplegui)
 - install Send2Trash (https://pypi.org/project/Send2Trash/)
