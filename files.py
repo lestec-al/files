@@ -38,7 +38,7 @@ delete = d2
 r1 = "✎ Rename"
 r2 = "!✎ Rename"
 rename = r2
-# Def for sort
+# For sort
 def takeFirst(elem):
     return elem[0]
 # Convert size
