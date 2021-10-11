@@ -13,9 +13,9 @@ For linux debian (xubuntu tested) users there is a fully functional version. You
 - launch via command line "python files.py" in the project folder
 - optional, you can make executable file for different OS, if use "pyinstaller" (https://pyinstaller.readthedocs.io/en/stable/installation.html)
 
-<img src="https://github.com/lestec-al/files/raw/main/images/files_pic_5.png" width="541" height="366" />
-<img src="https://github.com/lestec-al/files/raw/main/images/files_pic_6.png" width="541" height="366" />
+<img src="https://github.com/lestec-al/files/raw/main/images/pic_1.png" width="541" height="366" />
+<img src="https://github.com/lestec-al/files/raw/main/images/pic_2.png" width="541" height="366" />
 
 Standard menu items
 
-<img src="https://github.com/lestec-al/files/raw/main/images/files_pic_7.png" width="541" height="366" />
+<img src="https://github.com/lestec-al/files/raw/main/images/pic_3.png" width="541" height="366" />
