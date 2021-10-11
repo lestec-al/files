@@ -5,8 +5,6 @@ A simple python file explorer with PySimpleGUI interface. Features:
 - shows hidden files
 - resizability
 
-Warning: there may be bugs in the program.
-
 For linux debian (xubuntu tested) users there is a fully functional version. You need to download this project, extract and run "files app". For others:
 - install Python (version 3.9 or higher)
 - install PySimpleGUI (https://pysimplegui.readthedocs.io/en/latest/#installing-pysimplegui)
