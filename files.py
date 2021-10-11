@@ -134,7 +134,7 @@ path_original = main_path
 menu_def = ["≡", [hidd, "---", revers, sort, "---", copy, paste, delete, "---", rename, "---", "✇ Settings", "★ About..."]]
 layout = [  [sg.ButtonMenu("", menu_def, background_color="white", key="-MENU-", image_size=(24,24), image_filename=menu_icon), sg.Button(image_size=(24,24), key="↑", image_filename=up_icon), sg.Button(image_size=(24,24), key="⌂", image_filename=home_icon), sg.Input(default_text=main_path, key="-OUT1-", expand_x=True, size=(50,1))],
             [sg.Tree(data=treedata, font=("Helvetica",15), headings=["size"], auto_size_columns=False, col_widths=[10], num_rows=None, col0_width=40, max_col_width=10, row_height=30, key="-TREE-", enable_events=True)],
-            [sg.Text(text=str(count) + " objects", key="-OUT111-", justification="center", size=(20,1)), sg.Input(default_text=main_path, readonly=True, key="-OUT11-", size=(40,1), expand_x=True, visible=True)] ]
+            [sg.Text(text=str(count) + " objects", key="-OUT111-", justification="center", size=(20,1)), sg.Input(default_text=main_path, readonly=True, key="-OUT11-", size=(40,1), expand_x=True, visible=False)] ]
 # Window params
 window = sg.Window("Files", layout, return_keyboard_events=True, element_justification="left", debugger_enabled=False, resizable=True, margins=(0,0), finalize=True, font=("Helvetica",15), icon=icon)
 window.set_min_size((800,500))
