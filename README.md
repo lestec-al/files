@@ -18,4 +18,4 @@ For linux debian (xubuntu tested) users there is a fully functional version. You
 
 Standard menu items
 
-<img src="https://github.com/lestec-al/files/raw/main/images/pic_3.png" width="541" height="366" />
+<img src="https://github.com/lestec-al/files/raw/main/images/pic_31.png" width="541" height="366" />
