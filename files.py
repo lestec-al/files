@@ -13,12 +13,12 @@ if main_path == "":
     main_path = eval(main_path)
 # Variables
 sg.theme("SystemDefault1")
-icon = "/images/files.png"
-folder_icon = "/images/files_c.png"
-file_icon = "/images/files_f.png"
-home_icon = "/images/files_h.png"
-up_icon = "/images/files_up.png"
-menu_icon = "/images/files_m.png"
+icon = "images/files.png"
+folder_icon = "images/files_c.png"
+file_icon = "images/files_f.png"
+home_icon = "images/files_h.png"
+up_icon = "images/files_up.png"
+menu_icon = "images/files_m.png"
 treedata = sg.TreeData()
 hidden = False
 reverse = False
