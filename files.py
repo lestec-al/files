@@ -3,14 +3,22 @@ import PySimpleGUI as sg
 import shutil
 from pathlib import Path
 from send2trash import send2trash
+import configparser
+# Config files.ini
+config = configparser.ConfigParser()
+config.read('files.ini')
+main_path = config['USER']['main_path']
+if main_path == "":
+    main_path = config['DEFAULT']['main_path']
+    main_path = eval(main_path)
 # Variables
 sg.theme("SystemDefault1")
-icon = "images/files.png"
-folder_icon = "images/files_c.png"
-file_icon = "images/files_f.png"
-home_icon = "images/files_h.png"
-up_icon = "images/files_up.png"
-main_path = str(Path.home())
+icon = "/images/files.png"
+folder_icon = "/images/files_c.png"
+file_icon = "/images/files_f.png"
+home_icon = "/images/files_h.png"
+up_icon = "/images/files_up.png"
+menu_icon = "/images/files_m.png"
 treedata = sg.TreeData()
 hidden = False
 reverse = False
@@ -26,8 +34,8 @@ revers = ba
 nsort = "⇵ Sort by name"
 ssort = "⇵ Sort by size"
 sort = ssort
-pa = "!▣ Paste"
 pd = "▣ Paste"
+pa = "!▣ Paste"
 paste = pa
 c1 = "❐ Copy"
 c2 = "!❐ Copy"
@@ -123,12 +131,12 @@ def add_files_in_folder(parent, dirname):
 add_files_in_folder("", main_path)
 path_original = main_path
 # Stuff inside app
-menu_def = ["≡", [hidd, "---", revers, sort, "---", copy, paste, delete, "---", rename, "---", "★ About..."]]
-layout = [  [sg.ButtonMenu("≡", menu_def, size=(3,1), background_color="white", key="-MENU-"), sg.Button("↑", image_size=(16,16), image_filename=up_icon), sg.Button("⌂", image_size=(16,16), image_filename=home_icon), sg.Input(default_text=main_path, key="-OUT1-", expand_x=True, size=(50,1))],
-            [sg.Tree(data=treedata, font=("Helvetica",15), headings=[""], auto_size_columns=False, col_widths=[10], num_rows=None, col0_width=40, max_col_width=10, row_height=30, key="-TREE-", enable_events=True)],
-            [sg.Text(text=str(count) + " objects", key="-OUT111-", justification="center", size=(20,1)), sg.Input(default_text=main_path, readonly=True, key="-OUT11-", size=(40,1), expand_x=True, visible=False)] ]
+menu_def = ["≡", [hidd, "---", revers, sort, "---", copy, paste, delete, "---", rename, "---", "✇ Settings", "★ About..."]]
+layout = [  [sg.ButtonMenu("", menu_def, background_color="white", key="-MENU-", image_size=(24,24), image_filename=menu_icon), sg.Button(image_size=(24,24), key="↑", image_filename=up_icon), sg.Button(image_size=(24,24), key="⌂", image_filename=home_icon), sg.Input(default_text=main_path, key="-OUT1-", expand_x=True, size=(50,1))],
+            [sg.Tree(data=treedata, font=("Helvetica",15), headings=["size"], auto_size_columns=False, col_widths=[10], num_rows=None, col0_width=40, max_col_width=10, row_height=30, key="-TREE-", enable_events=True)],
+            [sg.Text(text=str(count) + " objects", key="-OUT111-", justification="center", size=(20,1)), sg.Input(default_text=main_path, readonly=True, key="-OUT11-", size=(40,1), expand_x=True, visible=True)] ]
 # Window params
-window = sg.Window("Files", layout, return_keyboard_events=True, element_justification="left", debugger_enabled=False, resizable=True, margins=(0,0), finalize=True, auto_size_buttons=True, font=("Helvetica",15), icon=icon)
+window = sg.Window("Files", layout, return_keyboard_events=True, element_justification="left", debugger_enabled=False, resizable=True, margins=(0,0), finalize=True, font=("Helvetica",15), icon=icon)
 window.set_min_size((800,500))
 window["-TREE-"].expand(True, True)
 # Main loop
@@ -146,68 +154,91 @@ while True:
     if event == "☐ Show hidden files":
         hidden = True
         hidd = h
-        menu_def = ["≡", [hidd, "---", revers, sort, "---", copy, paste, delete, "---", rename, "---", "★ About..."]]
+        menu_def = ["≡", [hidd, "---", revers, sort, "---", copy, paste, delete, "---", rename, "---", "✇ Settings", "★ About..."]]
         window["-MENU-"].update(menu_definition=menu_def)
+        event = "-TREE-double"
     if event == "☑ Show hidden files":
         hidden = False
         hidd = s
-        menu_def = ["≡", [hidd, "---", revers, sort, "---", copy, paste, delete, "---", rename, "---", "★ About..."]]
+        menu_def = ["≡", [hidd, "---", revers, sort, "---", copy, paste, delete, "---", rename, "---", "✇ Settings", "★ About..."]]
         window["-MENU-"].update(menu_definition=menu_def)
+        event = "-TREE-double"
     if event == "▲ Reverse sort":
         reverse = True
         revers = ab
-        menu_def = ["≡", [hidd, "---", revers, sort, "---", copy, paste, delete, "---", rename, "---", "★ About..."]]
+        menu_def = ["≡", [hidd, "---", revers, sort, "---", copy, paste, delete, "---", rename, "---", "✇ Settings", "★ About..."]]
         window["-MENU-"].update(menu_definition=menu_def)
+        event = "-TREE-double"
     if event == "▼ Reverse sort":
         reverse = False
         revers = ba
-        menu_def = ["≡", [hidd, "---", revers, sort, "---", copy, paste, delete, "---", rename, "---", "★ About..."]]
+        menu_def = ["≡", [hidd, "---", revers, sort, "---", copy, paste, delete, "---", rename, "---", "✇ Settings", "★ About..."]]
         window["-MENU-"].update(menu_definition=menu_def)
+        event = "-TREE-double"
     if event == "⇵ Sort by size":
         sort_size = True
         sort = nsort
-        menu_def = ["≡", [hidd, "---", revers, sort, "---", copy, paste, delete, "---", rename, "---", "★ About..."]]
+        menu_def = ["≡", [hidd, "---", revers, sort, "---", copy, paste, delete, "---", rename, "---", "✇ Settings", "★ About..."]]
         window["-MENU-"].update(menu_definition=menu_def)
+        event = "-TREE-double"
     if event == "⇵ Sort by name":
         sort_size = False
         sort = ssort
-        menu_def = ["≡", [hidd, "---", revers, sort, "---", copy, paste, delete, "---", rename, "---", "★ About..."]]
+        menu_def = ["≡", [hidd, "---", revers, sort, "---", copy, paste, delete, "---", rename, "---", "✇ Settings", "★ About..."]]
         window["-MENU-"].update(menu_definition=menu_def)
+        event = "-TREE-double"
     if event == "★ About...":
         sg.popup("Files", "0.5", "A simple file explorer", font=("Helvetica",13), icon=icon)
+    if event == "✇ Settings":
+        layout_set = [  [sg.Text("Home directory", size=(15,1)), sg.Input(default_text=main_path, key="-OUT2-", size=(60,1)), sg.Button("Save")],
+                        [sg.Text(justification="right", key="-OUT22-", size=(60,1))] ]
+        window_set = sg.Window("Settings", layout_set, return_keyboard_events=True, element_justification="left", debugger_enabled=False, modal=True, font=("Helvetica",15), icon=icon)
+        while True:
+            event, values = window_set.read()
+            if event == sg.WIN_CLOSED:
+                break
+            set_home_str = values["-OUT2-"]
+            if event == "Save":
+                config['USER']['main_path'] = set_home_str
+                with open('files.ini', 'w') as configfile:
+                    config.write(configfile)
+                main_path = set_home_str
+                window_set["-OUT22-"].update("settings saved")
+        window_set.close()
     # File operations
     if event == "❐ Copy":
-        source = str(down_string)
+        source = down_string
         source_edit = source.rsplit("/", 1)
         paste = pd
-        menu_def = ["≡", [hidd, "---", revers, sort, "---", copy, paste, delete, "---", rename, "---", "★ About..."]]
+        menu_def = ["≡", [hidd, "---", revers, sort, "---", copy, paste, delete, "---", rename, "---", "✇ Settings", "★ About..."]]
         window["-MENU-"].update(menu_definition=menu_def)
     if event == "▣ Paste":
         if source != "":
             source_1 = os.path.join(source_edit[0], source_edit[1])
             if os.path.isdir(source_1):
                 if source_edit[0] == path_original:
-                    destination = str(path_original) + "/" + source_edit[1] + " (copy)"
+                    destination = path_original + "/" + source_edit[1] + " (copy)"
                 else:
-                    destination = str(path_original) + "/" + source_edit[1]
+                    destination = path_original + "/" + source_edit[1]
                 shutil.copytree(source, destination)
                 source = ""
                 source_edit = ""
                 destination = ""
             else:
                 if source_edit[0] == path_original:
-                    destination = str(path_original) + "/" + source_edit[1] + " (copy)"
+                    destination = path_original + "/" + source_edit[1] + " (copy)"
                 else:
-                    destination = str(path_original) + "/"
+                    destination = path_original + "/"
                 shutil.copy2(source, destination)
                 source = ""
                 source_edit = ""
                 destination = ""                
             paste = pa
-            menu_def = ["≡", [hidd, "---", revers, sort, "---", copy, paste, delete, "---", rename, "---", "★ About..."]]
+            menu_def = ["≡", [hidd, "---", revers, sort, "---", copy, paste, delete, "---", rename, "---", "✇ Settings", "★ About..."]]
             window["-MENU-"].update(menu_definition=menu_def)
+            event = "-TREE-double"
     if event == "✘ Delete in trash":
-        del_path = str(down_string)
+        del_path = down_string
         del_edit = del_path.rsplit("/", 1)
         answer = sg.popup_yes_no(f"Delete '{del_edit[1]}' in trash?", font=("Helvetica",13), no_titlebar=True)
         if answer == "Yes":
@@ -217,25 +248,26 @@ while True:
                 down_string = path_original
                 window["-OUT1-"].update(up_string)
                 window["-OUT11-"].update(down_string)
+                event = "-TREE-double"
     if event == "✎ Rename":
-        r_path = str(down_string)
+        r_path = down_string
         r_edit = r_path.rsplit("/", 1)
         if os.path.exists(r_path):
             save = "not"
             layout_r = [    [sg.Input(default_text=r_edit[1], key="-OUT3-", size=(30,1))],
                             [sg.Button("Save"), sg.Button("Cancel")] ]
-            windows_r = sg.Window("Rename", layout_r, return_keyboard_events=True, element_justification="center", modal=True, font=("Helvetica",15), no_titlebar=True)
+            window_r = sg.Window("Rename", layout_r, return_keyboard_events=True, element_justification="center", debugger_enabled=False, modal=True, font=("Helvetica",15), no_titlebar=True)
             while True:
-                event, values = windows_r.read()
+                event, values = window_r.read()
                 if event == sg.WIN_CLOSED:
                     break
                 rename_str = values["-OUT3-"]
                 if event == "Save":
                     save = "ok"
                     rename_str_f = r_edit[0] + "/" + rename_str
-                    windows_r.close()
+                    window_r.close()
                 if event == "Cancel":
-                    windows_r.close()
+                    window_r.close()
             if save == "ok":
                 os.rename(r_path, rename_str_f)
             event = "-TREE-double"
@@ -264,30 +296,18 @@ while True:
     if event == "⌂":
         up_string = main_path
         down_string = main_path
+        event = "-TREE-double"
     if event == "↑":
-        up_string = up_string.rsplit("/", 1)
-        up_string = up_string[0]
+        string_1 = path_original.rsplit("/", 1)
+        up_string = string_1[0]
         down_string = up_string
-    # Strigs and menus validations
-    if up_string == "":
-        up_string = up_string + "/"
-    if up_string[-1] == "/" and up_string != "" and up_string != "/":
-        up_string = up_string[:-1]
-    if down_string == "" or down_string == "/" or str(down_string) == str(path_original):
-        copy = c2
-        delete = d2
-        rename = r2
-        menu_def = ["≡", [hidd, "---", revers, sort, "---", copy, paste, delete, "---", rename, "---", "★ About..."]]
-        window["-MENU-"].update(menu_definition=menu_def)
-    else:
-        copy = c1
-        delete = d1
-        rename = r1
-        menu_def = ["≡", [hidd, "---", revers, sort, "---", copy, paste, delete, "---", rename, "---", "★ About..."]]
-        window["-MENU-"].update(menu_definition=menu_def)
+        if up_string == "":
+            up_string = up_string + "/"
+            down_string = up_string
+        event = "-TREE-double"
     # Refresh layout
     try:
-        if event == "✘ Delete in trash" or event == "▣ Paste" or event == "-TREE-double" or event == "KP_Enter:104" or event == "Return:36" or event == "↑" or event == "⌂" or event == "☐ Show hidden files" or event == "☑ Show hidden files" or event == "▲ Reverse sort" or event == "▼ Reverse sort" or event == "⇵ Sort by size" or event == "⇵ Sort by name":
+        if event == "-TREE-double" or event == "KP_Enter:104" or event == "Return:36":
             count = 0
             add_files_in_folder("", up_string)
             path_original = up_string
@@ -298,4 +318,26 @@ while True:
     except PermissionError:
         sg.popup("No Access", font=("Helvetica",13), no_titlebar=True)
     except FileNotFoundError:
-        sg.popup("No such directory", font=("Helvetica",13), no_titlebar=True)
+        None
+    # Strings, menus valid
+    try:
+        if up_string[-1] == "/" and up_string != "" and up_string != "/":
+            up_string = up_string[:-1]
+        if down_string[-1] == "/" and down_string != "" and down_string != "/":
+            down_string = down_string[:-1]
+        if path_original[-1] == "/" and path_original != "" and path_original != "/":
+            path_original = path_original[:-1]
+    except:
+        None
+    if down_string == "/" or down_string == path_original:
+        copy = c2
+        delete = d2
+        rename = r2
+        menu_def = ["≡", [hidd, "---", revers, sort, "---", copy, paste, delete, "---", rename, "---", "✇ Settings", "★ About..."]]
+        window["-MENU-"].update(menu_definition=menu_def)
+    elif down_string != "/" or down_string != path_original:
+        copy = c1
+        delete = d1
+        rename = r1
+        menu_def = ["≡", [hidd, "---", revers, sort, "---", copy, paste, delete, "---", rename, "---", "✇ Settings", "★ About..."]]
+        window["-MENU-"].update(menu_definition=menu_def)
