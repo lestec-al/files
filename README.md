@@ -7,8 +7,7 @@ A simple python file explorer with PySimpleGUI interface. Features:
 
 Warning: there may be bugs in the program.
 
-For linux debian (xubuntu tested) users there is a fully functional version in file "files linux app", which is enough to download and run.
-For others:
+For linux debian (xubuntu tested) users there is a fully functional version. You need to download this project, extract and run "files app". For others:
 - install Python (version 3.9 or higher)
 - install PySimpleGUI (https://pysimplegui.readthedocs.io/en/latest/#installing-pysimplegui)
 - install Send2Trash (https://pypi.org/project/Send2Trash/)
@@ -21,4 +20,4 @@ For others:
 
 Standard menu items
 
-<img src="https://github.com/lestec-al/files/raw/main/images/files_pic_3.png" width="541" height="366" />
+<img src="https://github.com/lestec-al/files/raw/main/images/files_pic_4.png" width="541" height="366" />
