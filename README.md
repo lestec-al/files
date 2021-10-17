@@ -13,7 +13,7 @@ Standard menu items
 <img src="https://github.com/lestec-al/files/raw/main/images/pic_31.png" width="541" height="366" />
 
 For linux debian (xubuntu tested) users there is a fully functional version. You need to download this project, extract and run "files app". For others:
-- install Python (version 3.9 or higher)
+- install Python (v3.9 or higher)
 - install PySimpleGUI (https://pysimplegui.readthedocs.io/en/latest/#installing-pysimplegui)
 - install Send2Trash (https://pypi.org/project/Send2Trash/)
 - download this project and extract
