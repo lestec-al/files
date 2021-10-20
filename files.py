@@ -55,13 +55,13 @@ def add_size(name):
     if s < 1000:
         size = str(s) + " B"
     if s >= 1000:
-        size = str(s/1000) + " KB"
+        size = str(round(s/1000, 2)) + " KB"
     if s >= 1000000:
-        size = str(s/1000000) + " MB"
+        size = str(round(s/1000000, 2)) + " MB"
     if s >= 1000000000:
-        size = str(s/1000000000) + " GB"
+        size = str(round(s/1000000000, 2)) + " GB"
     if s >= 1000000000000:
-        size = str(s/1000000000000) + " TB"
+        size = str(round(s/1000000000000, 2)) + " TB"
     return [size, s]
 # Updating files and folders
 def add_files_in_folder(parent, dirname):
@@ -284,7 +284,7 @@ while True:
     if event == "-TREE-":
         for row in values[event]:
             down_string = str(row)
-        window["-OUT11-"].update(down_string)
+            window["-OUT11-"].update(down_string)
         for row in values[event]:
             up_string = str(row)
             path_string_e = up_string.rsplit("/", 1)
