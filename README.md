@@ -13,7 +13,7 @@ PySimpleGUI version (files.py):
 Tkinter version (files_tk.py):
 
 <img src="https://github.com/lestec-al/files/raw/main/images/pic_files_tk_1.png" width="541" height="366" />
-<img src="https://github.com/lestec-al/files/raw/main/images/pic_files_tk_1.png" width="541" height="366" />
+<img src="https://github.com/lestec-al/files/raw/main/images/pic_files_tk_2.png" width="541" height="366" />
 
 For linux debian (xubuntu tested) users there is a fully functional versions in files "files app" and "files tk app"(Tkinter), which is enough to download and run. For others:
 - install Python (v3.9 or higher)
