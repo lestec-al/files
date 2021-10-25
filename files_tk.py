@@ -1,5 +1,5 @@
 import tkinter as tk
-import os
+import os, sys, subprocess
 import shutil
 from pathlib import Path
 from send2trash import send2trash
@@ -7,7 +7,7 @@ import configparser
 from tkinter import ttk
 from tkinter.messagebox import askyesno
 from tkinter import simpledialog
-# ini config main path + hidden files
+# ini config main path, hidden files + variables
 config = configparser.ConfigParser()
 config.read('files.ini')
 main_path = config['USER']['main_path']
@@ -18,8 +18,10 @@ hidden = config['USER']['hidden']
 if hidden == "":
     hidden = config['DEFAULT']['hidden']
 hidden = eval(hidden)
+select_path = None
 reverse = False
 sort_size = False
+source = None
 def name_f(): # sort by name + reverse
     global reverse
     global sort_size
@@ -50,7 +52,7 @@ def to_up(): # button ↑
         add_files_and_folders("", "/")
     else:
         add_files_and_folders("", up_path[0])
-# window
+# window settings
 window = tk.Tk()
 window.resizable(True, True)
 window.title("Files")
@@ -71,7 +73,7 @@ entry = tk.Entry(frame, font="size= 14", justify="left", highlightcolor="white",
 entry.pack(side="right",fill="both", expand=1)
 label = tk.Label(window, font="size= 14", anchor="w")
 label.pack(side='bottom',fill="both")
-# the tree inside window
+# the tree settings (inside window)
 tree_frame = tk.Frame(window)
 tree_frame.pack(expand=1, fill="both")
 tree = ttk.Treeview(tree_frame, columns=('#1'), selectmode="browse", show='tree headings')
@@ -87,11 +89,10 @@ scrollbar = ttk.Scrollbar(tree_frame, orient='vertical', command=tree.yview)
 tree.configure(yscroll=scrollbar.set)
 scrollbar.pack(side="right",fill="y")
 # file operations
-source = ""
 def copy():
     global source
     try:
-        source = item['values'][1]
+        source = select_path
         m.entryconfig("▣ Paste", state="normal")
     except:None
 def paste():
@@ -115,7 +116,7 @@ def paste():
         add_files_and_folders("", entry.get())
 def delete():
     try:
-        del_path = item['values'][1]
+        del_path = select_path
         del_edit = del_path.rsplit("/", 1)
         answer = askyesno(title='confirmation', message=f"Delete '{del_edit[1]}' in trash?")
         if answer:
@@ -124,7 +125,7 @@ def delete():
                 add_files_and_folders("", entry.get())
     except:None
 def rename():
-    r_path = item['values'][1]
+    r_path = select_path
     r_edit = r_path.rsplit("/", 1)
     if os.path.exists(r_path):
         answer_str = simpledialog.askstring(f"Rename '{r_edit[1]}'", "Enter new name:", parent=tree_frame, initialvalue=r_edit[1])
@@ -133,13 +134,13 @@ def rename():
             os.rename(r_path, rename_str)
             add_files_and_folders("", entry.get())
         else:None
-# checking hidden files
+# on/off for checkbutton when start app
 h = tk.IntVar()
 if hidden == False:
     h.set(0)
 if hidden == True:
     h.set(1)
-def hidden_f():
+def hidden_f(): # show/hide files
     global hidden
     if h.get() == 1:
         hidden = True
@@ -148,6 +149,8 @@ def hidden_f():
     add_files_and_folders("", entry.get())
 # right click menu
 m = tk.Menu(tree_frame, tearoff=0, font=("Helvetica", 14))
+m.add_command(label="➲ Open", command=None, state="disabled")
+m.add_separator()
 m.add_command(label="❐ Copy", command=copy, state="disabled")
 m.add_command(label="▣ Paste", command=paste, state="disabled")
 m.add_command(label="✎ Rename", command=rename, state="disabled")
@@ -182,14 +185,10 @@ def takeFirst(elem): # for sort in updating files
     return elem[0]
 # updating files + sort
 def add_files_and_folders(parent, dirname):
+    global select_path
     size_list = []
     count = 0
-    # path - folder or file
-    if os.path.isdir(dirname):
-        files = os.listdir(dirname)
-    else:
-        dirname = entry.get()
-        files = os.listdir(dirname)
+    files = os.listdir(dirname)
     # clean old
     for item in tree.get_children():
         tree.delete(item)
@@ -256,31 +255,41 @@ def add_files_and_folders(parent, dirname):
         size_list.clear()
     entry.insert("end", dirname)
     label["text"]=str(count) + " objects"
-    # menu to default
+    # clean selection + menu to default
+    select_path = None
+    m.entryconfig("➲ Open", command=None, state="disabled")
     m.entryconfig("❐ Copy", state="disabled")
     m.entryconfig("✎ Rename", state="disabled")
     m.entryconfig("✘ Delete in trash", state="disabled")
 add_files_and_folders("", main_path)
-# select & click tree item
-item = None
+# select, click tree item + open files
 def item_selected(event):    
-    global item
+    global select_path
     for selected_item in tree.selection():
         item = tree.item(selected_item)
+        select_path = item['values'][1]
         # change menu when select item
+        m.entryconfig("➲ Open", command=lambda:item_clicked(event), state="normal")
         m.entryconfig("❐ Copy", state="normal")
         m.entryconfig("✎ Rename", state="normal")
         m.entryconfig("✘ Delete in trash", state="normal")
-        if "<ButtonPress" in str(event): # click on empty - remove selection, change menu
+        if "<ButtonPress" in str(event): # click on empty - remove selection + change menu
             tree.selection_remove(tree.focus())
-            item = None
+            select_path = None
+            m.entryconfig("➲ Open", command=None, state="disabled")
             m.entryconfig("❐ Copy", state="disabled")
             m.entryconfig("✎ Rename", state="disabled")
             m.entryconfig("✘ Delete in trash", state="disabled")
 def item_clicked(event):
-    try:
-        add_files_and_folders("", item['values'][1])
-    except:None
+    if select_path is not None:
+        if os.path.isdir(select_path): # open catalog
+            add_files_and_folders("", select_path)
+        else: # open file
+            if sys.platform == "win32":
+                os.startfile(select_path)
+            else:
+                opener = "open" if sys.platform == "darwin" else "xdg-open"
+                subprocess.call([opener, select_path])
 tree.bind('<<TreeviewSelect>>', item_selected)
 tree.bind('<Double-Button-1>', item_clicked)
 tree.bind('<Button-1>', item_selected)
