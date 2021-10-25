@@ -4,6 +4,7 @@ A simple python file explorer with PySimpleGUI and Tkinter interfaces. Features:
 - sorts by name (files, catalogs) and size (files)
 - shows hidden files
 - resizability
+- open files by default program (only Tkinter version)
 
 PySimpleGUI version (files.py):
 
