@@ -55,7 +55,6 @@ def to_up(): # button ↑
 # window settings
 window = tk.Tk()
 window.resizable(True, True)
-window.title("Files")
 window.iconphoto(False, tk.PhotoImage(file="images/files.png"))
 window.minsize(width=800, height=500)
 frame = tk.Frame(window)
@@ -255,6 +254,9 @@ def add_files_and_folders(parent, dirname):
         size_list.clear()
     entry.insert("end", dirname)
     label["text"]=str(count) + " objects"
+    # set title = catalog name
+    dirname_edit = dirname.rsplit("/", 1)
+    window.title(dirname_edit[1] + " - Files")
     # clean selection + menu to default
     select_path = None
     m.entryconfig("➲ Open", command=None, state="disabled")
