@@ -180,8 +180,6 @@ def add_size(name):
     if s >= 1000000000000:
         size = str(round(s/1000000000000, 2)) + " TB"
     return [size, s]
-def takeFirst(elem): # for sort in updating files
-    return elem[0]
 # updating files + sort
 def add_files_and_folders(parent, dirname):
     global select_path
@@ -245,9 +243,9 @@ def add_files_and_folders(parent, dirname):
                 count += 1
     if sort_size == True:
         if reverse == False:
-            size_list.sort(key=takeFirst, reverse=True)
+            size_list.sort(key=lambda size_list: size_list[0], reverse=True)
         if reverse == True:
-            size_list.sort(key=takeFirst)
+            size_list.sort(key=lambda size_list: size_list[0])
         for s in size_list:
             tree.insert(parent, tk.END, text=s[2], values=[s[3], s[1]], open=False, image=file_icon)
             count += 1
