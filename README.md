@@ -8,13 +8,13 @@ A simple python file explorer with PySimpleGUI and Tkinter interfaces. Features:
 
 PySimpleGUI version (files.py):
 
-<img src="https://github.com/lestec-al/files/raw/main/images/pic_1.png" width="541" height="366" />
-<img src="https://github.com/lestec-al/files/raw/main/images/pic_31.png" width="541" height="366" />
+<img src="https://github.com/lestec-al/files/raw/main/data/pic_1.png" width="541" height="366" />
+<img src="https://github.com/lestec-al/files/raw/main/data/pic_31.png" width="541" height="366" />
 
 Tkinter version (files_tk.py):
 
-<img src="https://github.com/lestec-al/files/raw/main/images/pic_files_tk_1.png" width="541" height="366" />
-<img src="https://github.com/lestec-al/files/raw/main/images/pic_files_tk_3.png" width="541" height="366" />
+<img src="https://github.com/lestec-al/files/raw/main/data/pic_files_tk_1.png" width="541" height="366" />
+<img src="https://github.com/lestec-al/files/raw/main/data/pic_files_tk_3.png" width="541" height="366" />
 
 For linux debian (xubuntu tested) users there is a fully functional versions in files "files app" and "files tk app"(Tkinter), which is enough to download and run. For others:
 - install Python (v3.9 or higher)

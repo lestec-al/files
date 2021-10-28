@@ -9,7 +9,7 @@ from tkinter.messagebox import askyesno
 from tkinter import simpledialog
 # ini config main path, hidden files + variables
 config = configparser.ConfigParser()
-config.read('files.ini')
+config.read('data/files.ini')
 main_path = config['USER']['main_path']
 if main_path == "":
     main_path = config['DEFAULT']['main_path']
@@ -55,12 +55,12 @@ def to_up(): # button ↑
 # window settings
 window = tk.Tk()
 window.resizable(True, True)
-window.iconphoto(False, tk.PhotoImage(file="images/files.png"))
+window.iconphoto(False, tk.PhotoImage(file="data/files.png"))
 window.minsize(width=800, height=500)
 frame = tk.Frame(window)
 frame.pack(fill="x", side='top')
-folder_icon = tk.PhotoImage(file="images/files_c_24.png")
-file_icon = tk.PhotoImage(file="images/files_f_24.png")
+folder_icon = tk.PhotoImage(file="data/files_c_24.png")
+file_icon = tk.PhotoImage(file="data/files_f_24.png")
 # the staff inside window
 frame_b = tk.Frame(frame)
 frame_b.pack(side="left")
