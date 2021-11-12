@@ -46,7 +46,7 @@ delete = d2
 r1 = "✎ Rename"
 r2 = "!✎ Rename"
 rename = r2
-# convert size
+# Convert size
 def add_size(name):
     s = os.stat(name).st_size
     if s < 1000:
@@ -60,7 +60,7 @@ def add_size(name):
     if s >= 1000000000000:
         size = str(round(s/1000000000000, 2)) + " TB"
     return [size, s]
-# updating files and folders
+# Updating files and folders
 def add_files_in_folder(parent, dirname):
     files = os.listdir(dirname)
     if reverse == False:
@@ -127,16 +127,16 @@ def add_files_in_folder(parent, dirname):
         size_list.clear()
 add_files_in_folder("", main_path)
 path_original = main_path
-# stuff inside app
+# The stuff inside app
 menu_def = ["≡", [hidd, "---", revers, sort, "---", copy, paste, delete, "---", rename, "---", "✇ Settings", "★ About..."]]
 layout = [  [sg.ButtonMenu("", menu_def, background_color="white", key="-MENU-", image_size=(24,24), image_filename=menu_icon), sg.Button(image_size=(24,24), key="↑", image_filename=up_icon), sg.Button(image_size=(24,24), key="⌂", image_filename=home_icon), sg.Input(default_text=main_path, key="-OUT1-", expand_x=True, size=(50,1))],
             [sg.Tree(data=treedata, font=("Helvetica",15), headings=["size"], auto_size_columns=False, col_widths=[10], num_rows=None, col0_width=40, max_col_width=10, row_height=30, key="-TREE-", enable_events=True)],
             [sg.Text(text=str(count) + " objects", key="-OUT111-", justification="center", size=(20,1)), sg.Input(default_text=main_path, readonly=True, key="-OUT11-", size=(40,1), expand_x=True, visible=False)] ]
-# window params
+# Window params
 window = sg.Window("Files", layout, return_keyboard_events=True, element_justification="left", debugger_enabled=False, resizable=True, margins=(0,0), finalize=True, font=("Helvetica",15), icon=icon)
 window.set_min_size((800,500))
 window["-TREE-"].expand(True, True)
-# main loop
+# Main loop
 while True:
     event, values = window.read()
     if event == sg.WIN_CLOSED:
@@ -145,7 +145,7 @@ while True:
     down_string = values["-OUT11-"]
     window["-TREE-"].bind("<Double-Button-1>", "double")
     window["-TREE-"].bind("<Button-1>", "click")
-    # menus events
+    # Menus events
     if event == "-MENU-":
         event = values["-MENU-"]
     if event == "☐ Show hidden files":
@@ -202,7 +202,7 @@ while True:
                 main_path = set_home_str
                 window_set["-OUT22-"].update("settings saved")
         window_set.close()
-    # file operations
+    # File operations
     if event == "❐ Copy":
         source = down_string
         source_edit = source.rsplit("/", 1)
@@ -272,7 +272,7 @@ while True:
             down_string = path_original
             window["-OUT1-"].update(up_string)
             window["-OUT11-"].update(down_string)
-    # screen with files and catalogs events
+    # Screen with files and catalogs events
     if event == "-TREE-click":
         up_string = path_original
         down_string = path_original
@@ -289,7 +289,7 @@ while True:
             if os.path.isfile(path_string_e1):
                 up_string = path_original
             window["-OUT1-"].update(up_string)
-    # buttons events
+    # Buttons events
     if event == "⌂":
         up_string = main_path
         down_string = main_path
@@ -302,7 +302,7 @@ while True:
             up_string = up_string + "/"
             down_string = up_string
         event = "-TREE-double"
-    # refresh layout
+    # Refresh layout
     try:
         if event == "-TREE-double" or event == "KP_Enter:104" or event == "Return:36":
             count = 0
@@ -316,7 +316,7 @@ while True:
         sg.popup("No Access", font=("Helvetica",13), no_titlebar=True)
     except FileNotFoundError:
         None
-    # strings, menus valid
+    # Strings, menus valid
     try:
         if up_string[-1] == "/" and up_string != "" and up_string != "/":
             up_string = up_string[:-1]

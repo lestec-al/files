@@ -7,7 +7,7 @@ import configparser
 from tkinter import ttk
 from tkinter.messagebox import askyesno
 from tkinter import simpledialog
-# ini config main path, hidden files + variables
+# Ini config main path, hidden files + variables
 config = configparser.ConfigParser()
 config.read('data/files.ini')
 main_path = config['USER']['main_path']
@@ -22,7 +22,7 @@ select_path = None
 reverse = False
 sort_size = False
 source = None
-def name_f(): # sort by name + reverse
+def name_f(): # Sort by name + reverse
     global reverse
     global sort_size
     if sort_size == True:
@@ -33,7 +33,7 @@ def name_f(): # sort by name + reverse
         elif reverse == True:
             reverse = False
     add_files_and_folders("", entry.get())
-def size_f(): # sort by size + reverse
+def size_f(): # Sort by size + reverse
     global reverse
     global sort_size
     if sort_size == False:
@@ -44,15 +44,15 @@ def size_f(): # sort by size + reverse
         elif reverse == True:
             reverse = False
     add_files_and_folders("", entry.get())
-def to_home(): # button 🏠
+def to_home(): # Button 🏠
     add_files_and_folders("", main_path)
-def to_up(): # button ↑
+def to_up(): # Button ↑
     up_path = entry.get().rsplit("/", 1)
     if up_path[0] == "":
         add_files_and_folders("", "/")
     else:
         add_files_and_folders("", up_path[0])
-# window settings
+# Window settings
 window = tk.Tk()
 window.resizable(True, True)
 window.iconphoto(False, tk.PhotoImage(file="data/files.png"))
@@ -61,7 +61,7 @@ frame = tk.Frame(window)
 frame.pack(fill="x", side='top')
 folder_icon = tk.PhotoImage(file="data/files_c_24.png")
 file_icon = tk.PhotoImage(file="data/files_f_24.png")
-# the staff inside window
+# The staff inside window
 frame_b = tk.Frame(frame)
 frame_b.pack(side="left")
 button = tk.Button(frame_b, text="↑", height=1, width=3, font=("Helvetica", 14), command=to_up)
@@ -72,7 +72,7 @@ entry = tk.Entry(frame, font="size= 14", justify="left", highlightcolor="white",
 entry.pack(side="right",fill="both", expand=1)
 label = tk.Label(window, font="size= 14", anchor="w")
 label.pack(side='bottom',fill="both")
-# the tree settings (inside window)
+# The tree settings (inside window)
 tree_frame = tk.Frame(window)
 tree_frame.pack(expand=1, fill="both")
 tree = ttk.Treeview(tree_frame, columns=('#1'), selectmode="browse", show='tree headings')
@@ -87,7 +87,7 @@ style.configure("Treeview.Heading", font=("Helvetica", 14,'bold')) # headings fo
 scrollbar = ttk.Scrollbar(tree_frame, orient='vertical', command=tree.yview)
 tree.configure(yscroll=scrollbar.set)
 scrollbar.pack(side="right",fill="y")
-# file operations
+# File operations
 def copy():
     global source
     try:
@@ -133,20 +133,20 @@ def rename():
             os.rename(r_path, rename_str)
             add_files_and_folders("", entry.get())
         else:None
-# on/off for checkbutton when start app
+# On/off for checkbutton when start app
 h = tk.IntVar()
 if hidden == False:
     h.set(0)
 if hidden == True:
     h.set(1)
-def hidden_f(): # show/hide files
+def hidden_f(): # Show/hide files
     global hidden
     if h.get() == 1:
         hidden = True
     elif h.get() == 0:
         hidden = False
     add_files_and_folders("", entry.get())
-# right click menu
+# Right click menu
 m = tk.Menu(tree_frame, tearoff=0, font=("Helvetica", 14))
 m.add_command(label="➲ Open", command=None, state="disabled")
 m.add_separator()
@@ -162,11 +162,11 @@ def do_popup(event):
     finally:
         m.grab_release()
 tree.bind("<Button-3>", do_popup)
-# click elsewhere - close menu
+# Click elsewhere - close menu
 def popupFocusOut(event=None):
         m.unpost()
 m.bind("<FocusOut>",popupFocusOut)
-# convert size in updating files
+# Convert size in updating files
 def add_size(name):
     s = os.stat(name).st_size
     if s < 1000:
@@ -180,13 +180,13 @@ def add_size(name):
     if s >= 1000000000000:
         size = str(round(s/1000000000000, 2)) + " TB"
     return [size, s]
-# updating files + sort
+# Updating files + sort
 def add_files_and_folders(parent, dirname):
     global select_path
     size_list = []
     count = 0
     files = os.listdir(dirname)
-    # clean old
+    # Clean old
     for item in tree.get_children():
         tree.delete(item)
     entry.delete(0, "end")
@@ -252,28 +252,28 @@ def add_files_and_folders(parent, dirname):
         size_list.clear()
     entry.insert("end", dirname)
     label["text"]=str(count) + " objects"
-    # set title = catalog name
+    # Set title = catalog name
     dirname_edit = dirname.rsplit("/", 1)
     window.title(dirname_edit[1] + " - Files")
-    # clean selection + menu to default
+    # Clean selection + menu to default
     select_path = None
     m.entryconfig("➲ Open", command=None, state="disabled")
     m.entryconfig("❐ Copy", state="disabled")
     m.entryconfig("✎ Rename", state="disabled")
     m.entryconfig("✘ Delete in trash", state="disabled")
 add_files_and_folders("", main_path)
-# select, click tree item + open files
+# Select, click tree item + open files
 def item_selected(event):    
     global select_path
     for selected_item in tree.selection():
         item = tree.item(selected_item)
         select_path = item['values'][1]
-        # change menu when select item
+        # Change menu when select item
         m.entryconfig("➲ Open", command=lambda:item_clicked(event), state="normal")
         m.entryconfig("❐ Copy", state="normal")
         m.entryconfig("✎ Rename", state="normal")
         m.entryconfig("✘ Delete in trash", state="normal")
-        if "<ButtonPress" in str(event): # click on empty - remove selection + change menu
+        if "<ButtonPress" in str(event): # Click on empty - remove selection + change menu
             tree.selection_remove(tree.focus())
             select_path = None
             m.entryconfig("➲ Open", command=None, state="disabled")
@@ -282,9 +282,9 @@ def item_selected(event):
             m.entryconfig("✘ Delete in trash", state="disabled")
 def item_clicked(event):
     if select_path is not None:
-        if os.path.isdir(select_path): # open catalog
+        if os.path.isdir(select_path): # Open catalog
             add_files_and_folders("", select_path)
-        else: # open file
+        else: # Open file
             if sys.platform == "win32":
                 os.startfile(select_path)
             else:
@@ -293,7 +293,7 @@ def item_clicked(event):
 tree.bind('<<TreeviewSelect>>', item_selected)
 tree.bind('<Double-Button-1>', item_clicked)
 tree.bind('<Button-1>', item_selected)
-# change dir from input
+# Change dir from input
 def entry_op():
     add_files_and_folders("", entry.get())
 entry.bind("<Return>", lambda event:entry_op())
