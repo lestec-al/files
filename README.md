@@ -16,7 +16,7 @@ Tkinter version (files_tk.py):
 <img src="https://github.com/lestec-al/files/raw/main/data/pic_files_tk_1.png" width="541" height="366" />
 <img src="https://github.com/lestec-al/files/raw/main/data/pic_files_tk_3.png" width="541" height="366" />
 
-For linux debian (xubuntu tested) users there is a fully functional versions in files "files app" and "files tk app"(Tkinter), which is enough to download and run. For others:
+You need:
 - install Python (v3.9 or higher)
 - install PySimpleGUI (https://pysimplegui.readthedocs.io/en/latest/#installing-pysimplegui)
 - install Tkinter (https://tkdocs.com/tutorial/install.html)
@@ -24,5 +24,3 @@ For linux debian (xubuntu tested) users there is a fully functional versions in 
 - download this project and extract
 - launch via command line "python files.py" (or "files_tk.py") in the project folder
 - optional, you can make executable file for different OS, if use "pyinstaller" (https://pyinstaller.readthedocs.io/en/stable/installation.html)
-
-This program is one of my teaching projects.
