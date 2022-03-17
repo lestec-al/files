@@ -1,6 +1,7 @@
 # Files
 A simple python file explorer with PySimpleGUI and Tkinter interfaces. Features:
 - copy, paste, delete to trash and rename (files, catalogs)
+- copy/paste to/from another file manager (only Tkinter windows version)
 - sorts by name (files, catalogs) and size (files)
 - shows hidden files
 - resizability
