@@ -1,12 +1,12 @@
-import tkinter as tk
-import os, stat, sys, subprocess, re
+import os, stat, re, sys, subprocess
 import shutil
-from pathlib import Path
-from send2trash import send2trash
 import configparser
+import tkinter as tk
 from tkinter import ttk
 from tkinter.messagebox import askyesno
 from tkinter import simpledialog
+from pathlib import Path
+from send2trash import send2trash
 # Ini config main path, hidden files + variables
 config = configparser.ConfigParser()
 config.read('data/files.ini')
@@ -21,7 +21,6 @@ hidden = eval(hidden)
 select_path = None
 reverse = False
 sort_size = False
-source = None
 def name_f(): # Sort by name + reverse
     global reverse
     global sort_size
@@ -57,62 +56,69 @@ window = tk.Tk()
 window.resizable(True, True)
 window.iconphoto(False, tk.PhotoImage(file="data/files.png"))
 window.minsize(width=800, height=500)
-frame = tk.Frame(window)
+frame = tk.Frame(window, border=1, bg="white")
 frame.pack(fill="x", side='top')
-folder_icon = tk.PhotoImage(file="data/files_c_24.png")
-file_icon = tk.PhotoImage(file="data/files_f_24.png")
+folder_icon = tk.PhotoImage(file="data/files_c_32.png")
+file_icon = tk.PhotoImage(file="data/files_f_32.png")
 # The staff inside window
-frame_b = tk.Frame(frame)
+frame_b = tk.Frame(frame, border=2, relief="groove", bg="white")
 frame_b.pack(side="left")
-button = tk.Button(frame_b, text="↑", width=2, font=("Helvetica", 14), command=to_up)
+button = tk.Button(frame_b, text="↑", width=2, font=("Arial", 14), relief='flat', bg="white", fg="black", command=to_up)
 button.grid(column=0, row=1)
-button = tk.Button(frame_b, text="🏠", width=2, font=("Helvetica", 14), command=to_home)
+button = tk.Button(frame_b, text="🏠", width=2, font=("Arial", 14), relief='flat', bg="white", fg="black", command=to_home)
 button.grid(column=1, row=1)
-entry = tk.Entry(frame, font="size= 14", justify="left", highlightcolor="white", highlightthickness=0)
+entry = tk.Entry(frame, font=("Arial", 14), justify="left", highlightcolor="white", highlightthickness=0, relief='groove', border=2)
 entry.pack(side="right",fill="both", expand=1)
-label = tk.Label(window, font="size= 14", anchor="w")
+label = tk.Label(window, font=("Arial", 14), anchor="w", bg="white", foreground="grey", border=2)
 label.pack(side='bottom',fill="both")
 # The tree settings (inside window)
-tree_frame = tk.Frame(window)
+tree_frame = tk.Frame(window, border=1, relief='flat', bg="white")
 tree_frame.pack(expand=1, fill="both")
-tree = ttk.Treeview(tree_frame, columns=('#1'), selectmode="browse", show='tree headings')
-tree.heading('#0', text='Name', anchor='w', command=name_f)
+tree = ttk.Treeview(tree_frame, columns=('#1'), selectmode="browse", show='tree headings', style="mystyle.Treeview")
+tree.heading('#0', text='   Name', anchor='w', command=name_f)
 tree.heading('#1', text='Size', anchor='w', command=size_f)
 tree.column("#0", anchor='w')
 tree.column("#1", anchor='e', stretch=False, width=120)
 tree.pack(side="left", expand=1, fill="both")
 style = ttk.Style()
-style.configure("Treeview", rowheight=35, highlightthickness=0, bd=0, font=("Helvetica", 14)) # body font
-style.configure("Treeview.Heading", font=("Helvetica", 14,'bold')) # headings font
+style.configure("Treeview", rowheight=40, font=("Arial", 14))
+style.configure("Treeview.Heading", font=("Arial", 14), foreground="grey")
+style.layout("mystyle.Treeview", [('mystyle.Treeview.treearea', {'sticky': 'nswe'})])
 scrollbar = ttk.Scrollbar(tree_frame, orient='vertical', command=tree.yview)
 tree.configure(yscroll=scrollbar.set)
 scrollbar.pack(side="right",fill="y")
 # File operations
 def copy():
-    global source
-    try:
-        source = select_path
-        m.entryconfig("▣ Paste", state="normal")
-    except:None
+    global select_path
+    if "\\" in select_path:
+        select_path = select_path.replace("\\", "/")
+    os.system(f"powershell.exe Set-Clipboard -path '{select_path}'")
+    m.entryconfig("Paste", state="normal")
 def paste():
-    global source
+    source = window.selection_get(selection="CLIPBOARD")
+    if "/" in source:
+        source = source.replace("/", "\\")
     source_edit = source.rsplit("\\", 1)
-    if source != "":
-        if os.path.isdir(source):
-            if source_edit[0] == entry.get():
-                destination = entry.get() + "\\" + "(copy)" + source_edit[1]
-            else:
-                destination = entry.get() + "\\" + source_edit[1]
-            shutil.copytree(source, destination)
-            destination = ""
-        else:
-            if source_edit[0] == entry.get():
-                destination = entry.get() + "\\" + "(copy)" + source_edit[1]
-            else:
-                destination = entry.get() + "\\"
-            shutil.copy2(source, destination)
-            destination = ""
-        add_files_and_folders("", entry.get())
+    # Search file/dir copies
+    file_copies = 1
+    for f in os.listdir(entry.get()):
+        if f == source_edit[1]:
+            file_copies += 1
+    if file_copies > 1:
+        while True:
+            for f in os.listdir(entry.get()):
+                if f == f"({file_copies})" + source_edit[1]:
+                    file_copies += 1
+                    continue
+            break
+        destination = entry.get() + "\\" + f"({file_copies})" + source_edit[1]
+    else:
+        destination = entry.get() + "\\" + source_edit[1]
+    if os.path.isdir(source):
+        shutil.copytree(source, destination)
+    else:
+        shutil.copy2(source, destination)
+    add_files_and_folders("", entry.get())
 def delete():
     try:
         del_path = select_path
@@ -147,13 +153,13 @@ def hidden_f(): # Show/hide files
         hidden = False
     add_files_and_folders("", entry.get())
 # Right click menu
-m = tk.Menu(tree_frame, tearoff=0, font=("Helvetica", 14))
-m.add_command(label="➲ Open", command=None, state="disabled")
+m = tk.Menu(tree_frame, tearoff=0, font=("Arial", 14))
+m.add_command(label="Open", command=None, state="disabled")
+m.add_command(label="Copy", command=copy, state="disabled")
+m.add_command(label="Rename", command=rename, state="disabled")
+m.add_command(label="Delete in trash", command=delete, state="disabled")
 m.add_separator()
-m.add_command(label="❐ Copy", command=copy, state="disabled")
-m.add_command(label="▣ Paste", command=paste, state="disabled")
-m.add_command(label="✎ Rename", command=rename, state="disabled")
-m.add_command(label="✘ Delete in trash", command=delete, state="disabled")
+m.add_command(label="Paste", command=paste, state="disabled")
 m.add_separator()
 m.add_checkbutton(label="Show hidden files", onvalue=1, offvalue=0, variable=h, command=hidden_f)
 def do_popup(event):
@@ -207,6 +213,7 @@ def add_files_and_folders(parent, dirname):
     # Scan catalogs
     for f in files:
         fullname = os.path.join(dirname, f)
+        f = f"  {f}"
         size = add_size(fullname)
         if hidden == False:
             try:
@@ -227,6 +234,7 @@ def add_files_and_folders(parent, dirname):
     # Scan files
     for f in files:
         fullname = os.path.join(dirname, f)
+        f = f"  {f}"
         size = add_size(fullname)
         if sort_size == True:
             if hidden == False:
@@ -268,7 +276,7 @@ def add_files_and_folders(parent, dirname):
             count += 1
         size_list.clear()
     entry.insert("end", dirname)
-    label["text"]=str(count) + " objects"
+    label["text"]=f"   {str(count)} objects"
     # Set title = catalog name
     try:
         dirname_edit = dirname.rsplit("\\", 1)
@@ -276,10 +284,18 @@ def add_files_and_folders(parent, dirname):
     except:None
     # Clean selection + menu to default
     select_path = None
-    m.entryconfig("➲ Open", command=None, state="disabled")
-    m.entryconfig("❐ Copy", state="disabled")
-    m.entryconfig("✎ Rename", state="disabled")
-    m.entryconfig("✘ Delete in trash", state="disabled")
+    m.entryconfig("Open", command=None, state="disabled")
+    m.entryconfig("Copy", state="disabled")
+    m.entryconfig("Rename", state="disabled")
+    m.entryconfig("Delete in trash", state="disabled")
+    # If clipboard has a path change button
+    try:
+        if "/" in window.selection_get(selection="CLIPBOARD"):
+            m.entryconfig("Paste", state="normal")
+        else:
+            m.entryconfig("Paste", state="disabled")
+    except:
+        m.entryconfig("Paste", state="disabled")
 add_files_and_folders("", main_path)
 # Select, click tree item + open files
 def item_selected(event):    
@@ -288,17 +304,17 @@ def item_selected(event):
         item = tree.item(selected_item)
         select_path = item['values'][1]
         # Change menu when select item
-        m.entryconfig("➲ Open", command=lambda:item_clicked(event), state="normal")
-        m.entryconfig("❐ Copy", state="normal")
-        m.entryconfig("✎ Rename", state="normal")
-        m.entryconfig("✘ Delete in trash", state="normal")
+        m.entryconfig("Open", command=lambda:item_clicked(event), state="normal")
+        m.entryconfig("Copy", state="normal")
+        m.entryconfig("Rename", state="normal")
+        m.entryconfig("Delete in trash", state="normal")
         if "<ButtonPress" in str(event): # Click on empty - remove selection + change menu
             tree.selection_remove(tree.focus())
             select_path = None
-            m.entryconfig("➲ Open", command=None, state="disabled")
-            m.entryconfig("❐ Copy", state="disabled")
-            m.entryconfig("✎ Rename", state="disabled")
-            m.entryconfig("✘ Delete in trash", state="disabled")
+            m.entryconfig("Open", command=None, state="disabled")
+            m.entryconfig("Copy", state="disabled")
+            m.entryconfig("Rename", state="disabled")
+            m.entryconfig("Delete in trash", state="disabled")
 def item_clicked(event):
     if select_path is not None:
         if os.path.isdir(select_path): # Open catalog
