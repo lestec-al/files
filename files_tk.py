@@ -10,13 +10,13 @@ from tkinter import simpledialog
 # Ini config main path, hidden files + variables
 config = configparser.ConfigParser()
 config.read('data/files.ini')
-main_path = config['USER']['main_path']
+main_path = config['USER']['home_path']
 if main_path == "":
-    main_path = config['DEFAULT']['main_path']
+    main_path = config['DEFAULT']['home_path']
 main_path = eval(main_path)
-hidden = config['USER']['hidden']
+hidden = config['USER']['show_hidden']
 if hidden == "":
-    hidden = config['DEFAULT']['hidden']
+    hidden = config['DEFAULT']['show_hidden']
 hidden = eval(hidden)
 select_path = None
 reverse = False
@@ -59,8 +59,8 @@ window.iconphoto(False, tk.PhotoImage(file="data/files.png"))
 window.minsize(width=800, height=500)
 frame = tk.Frame(window)
 frame.pack(fill="x", side='top')
-folder_icon = tk.PhotoImage(file="data/files_c_24.png")
-file_icon = tk.PhotoImage(file="data/files_f_24.png")
+folder_icon = tk.PhotoImage(file="data/files_c.png")
+file_icon = tk.PhotoImage(file="data/files_f.png")
 # The staff inside window
 frame_b = tk.Frame(frame)
 frame_b.pack(side="left")

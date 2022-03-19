@@ -7,19 +7,17 @@ A simple python file explorer with PySimpleGUI and Tkinter interfaces. Features:
 - resizability
 - open files by default program (only Tkinter version)
 
-PySimpleGUI linux version (files.py):
+Tkinter windows version (files_tk_win.py):
 
-<img src="https://github.com/lestec-al/files/raw/main/data/pic_1.png" width="541" height="366" />
-<img src="https://github.com/lestec-al/files/raw/main/data/pic_31.png" width="541" height="366" />
+<img src="https://github.com/lestec-al/files/raw/main/data/pic_tk_win.png" width="541" height="366"/>
 
 Tkinter linux version (files_tk.py):
 
-<img src="https://github.com/lestec-al/files/raw/main/data/pic_files_tk_1.png" width="541" height="366" />
-<img src="https://github.com/lestec-al/files/raw/main/data/pic_files_tk_3.png" width="541" height="366" />
+<img src="https://github.com/lestec-al/files/raw/main/data/pic_tk_linux.png" width="541" height="366"/>
 
-Tkinter windows version (files_tk_win.py):
+PySimpleGUI linux version (files.py):
 
-<img src="https://github.com/lestec-al/files/raw/main/data/pic_files_tk_win.png" width="497" height="330" />
+<img src="https://github.com/lestec-al/files/raw/main/data/pic_psg_linux.png" width="541" height="366"/>
 
 You need:
 - install Python (v3.9 or higher)

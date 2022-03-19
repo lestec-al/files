@@ -7,9 +7,9 @@ import configparser
 # Config files.ini
 config = configparser.ConfigParser()
 config.read('data/files.ini')
-main_path = config['USER']['main_path']
+main_path = config['USER']['home_path']
 if main_path == "":
-    main_path = config['DEFAULT']['main_path']
+    main_path = config['DEFAULT']['home_path']
     main_path = eval(main_path)
 # Variables
 sg.theme("SystemDefault1")
