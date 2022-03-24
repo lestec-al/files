@@ -1,29 +1,26 @@
 # Files
 A simple python file explorer with PySimpleGUI and Tkinter interfaces. Features:
 - copy, paste, delete to trash and rename (files, catalogs)
-- copy/paste to/from another file manager (only Tkinter windows version)
 - sorts by name (files, catalogs) and size (files)
 - shows hidden files
 - resizability
-- open files by default program (only Tkinter version)
+- open files by default program (only Tkinter ver)
+- keyboard navigation (arrows, enter, backspace) support (only Tkinter ver)
+- copy/paste to/from another file manager (only on Windows)
 
-Tkinter windows version (files_tk_win.py):
+Tkinter ver (files_new.py) works only on Windows or Linux Ubuntu-based distros. Screenshots from Windows 10 and Linux Ubuntu 20.04:
 
-<img src="https://github.com/lestec-al/files/raw/main/data/pic_tk_win.png" width="541" height="366"/>
+<img src="https://github.com/lestec-al/files/raw/main/data/pic_tk_win_1.png" width="541" height="366"/>
+<img src="https://github.com/lestec-al/files/raw/main/data/pic_tk_linux_1.png" width="541" height="366"/>
 
-Tkinter linux version (files_tk.py):
+PySimpleGUI ver (files_old.py) works only on Linux Ubuntu-based distros. Screenshot from Linux Ubuntu 20.04:
 
-<img src="https://github.com/lestec-al/files/raw/main/data/pic_tk_linux.png" width="541" height="366"/>
-
-PySimpleGUI linux version (files.py):
-
-<img src="https://github.com/lestec-al/files/raw/main/data/pic_psg_linux.png" width="541" height="366"/>
+<img src="https://github.com/lestec-al/files/raw/main/data/pic_psg_linux_1.png" width="541" height="366"/>
 
 You need:
 - install Python (v3.9 or higher)
-- install PySimpleGUI (https://pysimplegui.readthedocs.io/en/latest/#installing-pysimplegui)
-- install Tkinter (https://tkdocs.com/tutorial/install.html)
+- install Tkinter (https://tkdocs.com/tutorial/install.html) or PySimpleGUI (https://pysimplegui.readthedocs.io/en/latest/#installing-pysimplegui)
 - install Send2Trash (https://pypi.org/project/Send2Trash/)
-- download this project and extract
-- launch via command line "python files.py" (or "files_tk.py" or "files_tk_win.py") in the project folder
+- download (and extract) or clone this repo
+- launch via command line "python files_new.py" in the project folder
 - optional, you can make executable file for different OS, if use "pyinstaller" (https://pyinstaller.readthedocs.io/en/stable/installation.html)
