@@ -5,6 +5,7 @@ A simple python file explorer with PySimpleGUI and Tkinter interfaces. Features:
 - shows hidden files
 - resizability
 - open files by default program (only Tkinter ver)
+- disks buttons (only Tkinter ver)
 - keyboard navigation (arrows, enter, backspace) support (only Tkinter ver)
 - copy/paste to/from another file manager (only on Windows)
 
