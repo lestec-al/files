@@ -1,20 +1,21 @@
 # Files
-A simple python file explorer with PySimpleGUI and Tkinter interfaces. Features:
+A simple python file explorer with Tkinter and PySimpleGUI interfaces. Features:
 - copy, paste, delete to trash and rename (files, catalogs)
 - sorts by name (files, catalogs) and size (files)
 - shows hidden files
 - resizability
-- open files by default program (only Tkinter ver)
-- disks buttons (only Tkinter ver)
-- keyboard navigation (arrows, enter, backspace) support (only Tkinter ver)
+- open files by default program (only Tkinter)
+- local disks buttons (only Tkinter)
+- keyboard navigation (arrows, enter, backspace) support (only Tkinter)
+- select multiple files/catalogs by holding Ctrl and clicking with the mouse (works with bugs, only Tkinter)
 - copy/paste to/from another file manager (only on Windows)
 
-Tkinter ver (files_new.py) works only on Windows or Linux Ubuntu-based distros. Screenshots from Windows 10 and Linux Ubuntu 20.04:
+Tkinter ver (files_new.py) works on Windows, Linux Ubuntu-based distros (should work on MacOS, but not tested). Screenshots from Windows 10 and Linux Ubuntu 20.04:
 
 <img src="https://github.com/lestec-al/files/raw/main/data/pic_tk_win_1.png" width="541" height="366"/>
 <img src="https://github.com/lestec-al/files/raw/main/data/pic_tk_linux_1.png" width="541" height="366"/>
 
-PySimpleGUI ver (files_old.py) works only on Linux Ubuntu-based distros. Screenshot from Linux Ubuntu 20.04:
+PySimpleGUI ver (files_old.py) works on Linux Ubuntu-based distros (should work on MacOS, but not tested). Screenshot from Linux Ubuntu 20.04:
 
 <img src="https://github.com/lestec-al/files/raw/main/data/pic_psg_linux_1.png" width="541" height="366"/>
 

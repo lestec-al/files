@@ -73,65 +73,73 @@ def scan_disks_add_buttons():
                 column += 1
 # File operations
 def copy():
-    global select_path
+    list_i = []
+    for i in tree.selection():
+        path = tree.item(i)["values"][1]
+        if slash in path:
+            path = path.replace(slash, "/")
+        list_i.append(f"'{path}'")
+    if len(list_i) > 1:
+        items = ",".join(list_i)
+    else:
+        items = list_i[0]
     if sys.platform == "win32":
-        if slash in select_path:
-            select_path = select_path.replace(slash, "/")
-        os.system(f"powershell.exe Set-Clipboard -path '{select_path}'")
+        os.system(f"powershell.exe Set-Clipboard -path {items}")
         right_menu.entryconfig("Paste", state="normal")
     else:
-        global linux_clipboard
-        linux_clipboard = select_path
+        global non_win_clipboard
+        non_win_clipboard = items
         right_menu.entryconfig("Paste", state="normal")
 def paste():
     if sys.platform == "win32":
-        source = window.selection_get(selection="CLIPBOARD")
-        if "/" in source:
-            source = source.replace("/", slash)
+        clipboard = window.selection_get(selection="CLIPBOARD").replace("/", slash).split("\n")
     else:
-        global linux_clipboard
-        source = linux_clipboard
-    edit = source.rsplit(slash, 1)
-    # Search file/folder copies
-    file_copies = 1
-    for f in os.listdir(entry.get()):
-        if f == edit[1]:
-            file_copies += 1
-    if file_copies > 1:
-        while True:
-            for f in os.listdir(entry.get()):
-                if f == f"({file_copies})" + edit[1]:
-                    file_copies += 1
-                    continue
-            break
-        destination = entry.get() + slash + f"({file_copies})" + edit[1]
-    else:
-        destination = entry.get() + slash + edit[1]
-    if os.path.isdir(source):
-        shutil.copytree(source, destination)
-    else:
-        shutil.copy2(source, destination)
+        clipboard = non_win_clipboard.replace("'", "").split(",")
+    for source in clipboard:
+        edit = source.rsplit(slash, 1)
+        # Search file/folder copies
+        file_copies = 1
+        for f in os.listdir(entry.get()):
+            if f == edit[1]:
+                file_copies += 1
+        if file_copies > 1:
+            while True:
+                for f in os.listdir(entry.get()):
+                    if f == f"({file_copies})" + edit[1]:
+                        file_copies += 1
+                        continue
+                break
+            destination = entry.get() + slash + f"({file_copies})" + edit[1]
+        else:
+            destination = entry.get() + slash + edit[1]
+        if os.path.isdir(source):
+            shutil.copytree(source, destination)
+        else:
+            shutil.copy2(source, destination)
     update_files_folders(entry.get())
 def delete():
     try:
-        del_path = select_path
-        del_edit = del_path.rsplit(slash, 1)
-        answer = askyesno(title="Files", message=f"Delete '{del_edit[1]}' in trash?")
-        if answer:
+        del_list = []
+        for i in tree.selection():
+            del_path = tree.item(i)["values"][1]
             if os.path.exists(del_path):
-                send2trash(del_path)
-                update_files_folders(entry.get())
+                del_list.append(del_path)
+        answer = askyesno(title="Files", message=f"Delete {len(tree.selection())} objects in trash?")
+        if answer:
+            for di in del_list:
+                send2trash(di)
     except:pass
+    update_files_folders(entry.get())
 def rename():
-    r_path = select_path
-    r_edit = r_path.rsplit(slash, 1)
-    if os.path.exists(r_path):
-        answer_str = simpledialog.askstring(title="Files", prompt=f"Rename '{r_edit[1]}'", parent=tree_frame, initialvalue=r_edit[1])
-        if answer_str is not None:
-            rename_str = r_edit[0] + slash + answer_str
-            os.rename(r_path, rename_str)
-            update_files_folders(entry.get())
-        else:None
+    for i in tree.selection():
+        r_path = tree.item(i)["values"][1]
+        e_path = r_path.rsplit(slash, 1)
+        if os.path.exists(r_path):
+            answer = simpledialog.askstring(title="Files", prompt=f"Rename '{e_path[1]}'", parent=tree_frame, initialvalue=e_path[1])
+            if answer is not None:
+                rename_str = e_path[0] + slash + answer
+                os.rename(r_path, rename_str)
+    update_files_folders(entry.get())
 # Update files/dirs + convert size
 def convert_size(name):
     s = os.stat(name).st_size
@@ -147,11 +155,6 @@ def convert_size(name):
         size = str(round(s/1000000000000, 2)) + " TB"
     return [size, s]
 def update_files_folders(dirname):
-    global home_path
-    global select_path
-    global reverse
-    global sort_size
-    global last_lower_folder
     global last_path
     size_list = []
     count = 0
@@ -198,7 +201,7 @@ def update_files_folders(dirname):
                         tree.insert("", tk.END, text=f, values=["<dir>", fullname], open=False, image=folder_icon)
                         count += 1
                 else:continue
-            elif sys.platform == "linux":
+            else:
                 if f.startswith("  ."):
                     continue
                 elif os.path.isdir(fullname):
@@ -225,7 +228,7 @@ def update_files_folders(dirname):
                         else:
                             size_list_ml = [size[1], fullname, f, size[0]]
                             size_list.append(size_list_ml)
-                    elif sys.platform == "linux":
+                    else:
                         if f.startswith("  ."):
                             continue
                         else:
@@ -247,7 +250,7 @@ def update_files_folders(dirname):
                         else:
                             tree.insert("", tk.END, text=f, values=[size[0], fullname], open=False, image=file_icon)
                             count += 1
-                    elif sys.platform == "linux":
+                    else:
                         if f.startswith("  ."):
                             continue
                         else:
@@ -279,7 +282,6 @@ def update_files_folders(dirname):
         dirname_edit[1] = "Computer"
     window.title(dirname_edit[1])
     # Clean selection + menu to default
-    select_path = None
     right_menu.entryconfig("Open", state="disabled")
     right_menu.entryconfig("Copy", state="disabled")
     right_menu.entryconfig("Rename", state="disabled")
@@ -302,7 +304,7 @@ def update_files_folders(dirname):
                 tree.see(item)
                 break
 # Press UP, DOWN - focus item in start
-def up_down_item_focus():
+def up_down_focus():
     if tree.focus() == "":
         try:
             item = tree.get_children()[0]
@@ -310,29 +312,24 @@ def up_down_item_focus():
             tree.focus(item)
             tree.see(item)
         except:pass
-# Select, click tree item
-def item_selected(event):
-    global select_path
-    for selected_item in tree.selection():
-        item = tree.item(selected_item)
-        select_path = item["values"][1]
-        # Change menu when select item
+# Select, click tree item + when select change menu
+def select():
+    if len(tree.selection()) > 0:
         right_menu.entryconfig("Open", state="normal")
         right_menu.entryconfig("Copy", state="normal")
         right_menu.entryconfig("Rename", state="normal")
         right_menu.entryconfig("Delete in trash", state="normal")
-        # Click on empty - remove selection + change menu
-        if "<ButtonPress" in str(event):
-            tree.selection_remove(tree.focus())
-            select_path = None
-            right_menu.entryconfig("Open", state="disabled")
-            right_menu.entryconfig("Copy", state="disabled")
-            right_menu.entryconfig("Rename", state="disabled")
-            right_menu.entryconfig("Delete in trash", state="disabled")
+# Click on empty - remove selection + change menu
+def remove_selection():
+    tree.selection_remove(tree.focus())
+    right_menu.entryconfig("Open", state="disabled")
+    right_menu.entryconfig("Copy", state="disabled")
+    right_menu.entryconfig("Rename", state="disabled")
+    right_menu.entryconfig("Delete in trash", state="disabled")
 # Open folders/files
-def item_clicked():
-    global select_path
-    if select_path is not None:
+def click():
+    for selected_item in tree.selection():
+        select_path = tree.item(selected_item)["values"][1]
         if os.path.isdir(select_path):
             update_files_folders(select_path)
         else:
@@ -352,12 +349,11 @@ hidden = config["USER"]["show_hidden"]
 if hidden == "":
     hidden = config["DEFAULT"]["show_hidden"]
 hidden = eval(hidden)
-select_path = None
 reverse = False
 sort_size = False
 last_lower_folder = None
 last_path = None
-linux_clipboard = None
+non_win_clipboard = None
 # Slash for OS
 if sys.platform == "win32":
     slash = "\\"
@@ -386,7 +382,7 @@ label.pack(side="bottom",fill="both")
 # Tree view
 tree_frame = tk.Frame(window, border=1, relief="flat", bg="white")
 tree_frame.pack(expand=1, fill="both")
-tree = ttk.Treeview(tree_frame, columns=("#1"), selectmode="browse", show="tree headings", style="mystyle.Treeview")
+tree = ttk.Treeview(tree_frame, columns=("#1"), selectmode="extended", show="tree headings", style="mystyle.Treeview")
 tree.heading("#0", text="   Name", anchor="w", command=sort_name_reverse)
 tree.heading("#1", text="Size", anchor="w", command=sort_size_reverse)
 tree.column("#0", anchor="w")
@@ -407,7 +403,7 @@ if hidden == True:
     hidden_menu.set(1)
 # Right click menu
 right_menu = tk.Menu(tree_frame, tearoff=0, font=("Arial", 12))
-right_menu.add_command(label="Open", command=item_clicked, state="disabled")
+right_menu.add_command(label="Open", command=click, state="disabled")
 right_menu.add_command(label="Copy", command=copy, state="disabled")
 right_menu.add_command(label="Rename", command=rename, state="disabled")
 right_menu.add_command(label="Delete in trash", command=delete, state="disabled")
@@ -420,14 +416,14 @@ scan_disks_add_buttons()
 update_files_folders(home_path)
 tree.focus_set()
 # Keyboard, mouse buttons
-tree.bind("<<TreeviewSelect>>", item_selected)
-tree.bind("<Double-Button-1>", lambda event:item_clicked())
-tree.bind("<Button-1>", item_selected)
-tree.bind("<Return>", lambda event:item_clicked())
+tree.bind("<<TreeviewSelect>>", lambda event:select())
+tree.bind("<Double-Button-1>", lambda event:click())
+tree.bind("<Button-1>", lambda event:remove_selection())
+tree.bind("<Return>", lambda event:click())
 tree.bind("<BackSpace>", lambda event:move_up())
 tree.bind("<Button-3>", open_right_menu)
-tree.bind("<Up>", lambda event:up_down_item_focus())
-tree.bind("<Down>", lambda event:up_down_item_focus())
+tree.bind("<Up>", lambda event:up_down_focus())
+tree.bind("<Down>", lambda event:up_down_focus())
 tree.bind("<Delete>", lambda event:delete())
 entry.bind("<Return>", lambda event:update_files_folders(entry.get()))
 entry.bind("<KP_Enter>", lambda event:update_files_folders(entry.get()))
