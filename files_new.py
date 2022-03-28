@@ -73,23 +73,24 @@ def scan_disks_add_buttons():
                 column += 1
 # File operations
 def copy():
-    list_i = []
-    for i in tree.selection():
-        path = tree.item(i)["values"][1]
-        if slash in path:
-            path = path.replace(slash, "/")
-        list_i.append(f"'{path}'")
-    if len(list_i) > 1:
-        items = ",".join(list_i)
-    else:
-        items = list_i[0]
-    if sys.platform == "win32":
-        os.system(f"powershell.exe Set-Clipboard -path {items}")
-        right_menu.entryconfig("Paste", state="normal")
-    else:
-        global non_win_clipboard
-        non_win_clipboard = items
-        right_menu.entryconfig("Paste", state="normal")
+    if len(tree.selection()) > 0:
+        list_i = []
+        for i in tree.selection():
+            path = tree.item(i)["values"][1]
+            if slash in path:
+                path = path.replace(slash, "/")
+            list_i.append(f"'{path}'")
+        if len(list_i) > 1:
+            items = ",".join(list_i)
+        else:
+            items = list_i[0]
+        if sys.platform == "win32":
+            os.system(f"powershell.exe Set-Clipboard -path {items}")
+            right_menu.entryconfig("Paste", state="normal")
+        else:
+            global non_win_clipboard
+            non_win_clipboard = items
+            right_menu.entryconfig("Paste", state="normal")
 def paste():
     if sys.platform == "win32":
         clipboard = window.selection_get(selection="CLIPBOARD").replace("/", slash).split("\n")
@@ -159,17 +160,17 @@ def update_files_folders(dirname):
     size_list = []
     count = 0
     # Check path
+    if op_slash in dirname:
+        dirname = dirname.replace(op_slash, slash)
+    if re.match(r".+\\$", dirname) or re.match(r".+/$", dirname):
+        dirname = dirname[0:-1]
+    if re.match(r"\w:$", dirname):
+        dirname = dirname + slash
     try:
         files = os.listdir(dirname)
-    except PermissionError as e:
-        tk.messagebox.showerror(title="Error", message=e)
-        dirname = dirname.rsplit(slash, 1)
-        dirname = dirname[0]
-        if re.match(r"\w:$", dirname) or dirname == "":
-            dirname = dirname + slash
-        files = os.listdir(dirname)
-    except:
-        tk.messagebox.showerror(title="Error", message="Incorrect path")
+    except Exception as e:
+        if "Access is denied" in str(e):
+            tk.messagebox.showerror(title="Error", message=e)
         dirname = home_path
         if last_path != None:
             dirname = last_path
@@ -275,12 +276,12 @@ def update_files_folders(dirname):
     label["text"]=f"   {str(count)} objects"
     last_path = dirname
     # Set title = folder name
-    dirname_edit = dirname.rsplit(slash, 1)
     if re.match(r"\w:\\$", dirname):
-        dirname_edit[1] = f"Disk ({dirname[0:2]})"
-    elif dirname_edit[1] == "":
-        dirname_edit[1] = "Computer"
-    window.title(dirname_edit[1])
+        window.title(f"Disk ({dirname[0:2]})")
+    elif dirname == slash:
+        window.title("Computer")
+    else:
+        window.title(dirname.rsplit(slash, 1)[1])
     # Clean selection + menu to default
     right_menu.entryconfig("Open", state="disabled")
     right_menu.entryconfig("Copy", state="disabled")
@@ -328,16 +329,16 @@ def remove_selection():
     right_menu.entryconfig("Delete in trash", state="disabled")
 # Open folders/files
 def click():
-    for selected_item in tree.selection():
-        select_path = tree.item(selected_item)["values"][1]
-        if os.path.isdir(select_path):
-            update_files_folders(select_path)
+    for i in tree.selection():
+        path = tree.item(i)["values"][1]
+        if os.path.isdir(path):
+            update_files_folders(path)
         else:
             if sys.platform == "win32":
-                os.startfile(select_path)
+                os.startfile(path)
             else:
                 opener = "open" if sys.platform == "darwin" else "xdg-open"
-                subprocess.call([opener, select_path])
+                subprocess.call([opener, path])
 # Ini config home path, hidden files + others variables
 config = configparser.ConfigParser()
 config.read("data/files.ini")
@@ -357,8 +358,10 @@ non_win_clipboard = None
 # Slash for OS
 if sys.platform == "win32":
     slash = "\\"
+    op_slash = "/"
 else:
     slash = "/"
+    op_slash = "\\"
 # Window
 window = tk.Tk()
 window.resizable(True, True)
@@ -425,6 +428,8 @@ tree.bind("<Button-3>", open_right_menu)
 tree.bind("<Up>", lambda event:up_down_focus())
 tree.bind("<Down>", lambda event:up_down_focus())
 tree.bind("<Delete>", lambda event:delete())
+tree.bind("<Control-c>", lambda event: copy())
+tree.bind("<Control-v>", lambda event: paste() if right_menu.entrycget(index=5, option="state") == "normal" else None)
 entry.bind("<Return>", lambda event:update_files_folders(entry.get()))
 entry.bind("<KP_Enter>", lambda event:update_files_folders(entry.get()))
 window.mainloop()
