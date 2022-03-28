@@ -34,8 +34,8 @@ revers = ba
 nsort = "⇵ Sort by name"
 ssort = "⇵ Sort by size"
 sort = ssort
-pd = "▣ Paste"
-pa = "!▣ Paste"
+pd = "❏ Paste"
+pa = "!❏ Paste"
 paste = pa
 c1 = "❐ Copy"
 c2 = "!❐ Copy"
@@ -128,7 +128,7 @@ def add_files_in_folder(parent, dirname):
 add_files_in_folder("", main_path)
 path_original = main_path
 # The stuff inside app
-menu_def = ["≡", [hidd, "---", revers, sort, "---", copy, paste, delete, "---", rename, "---", "✇ Settings", "★ About..."]]
+menu_def = ["≡", [hidd, revers, sort, copy, paste, delete, rename, "✇ Settings", "★ About..."]]
 layout = [  [sg.ButtonMenu("", menu_def, background_color="white", key="-MENU-", image_size=(24,24), image_filename=menu_icon), sg.Button(image_size=(24,24), key="↑", image_filename=up_icon), sg.Button(image_size=(24,24), key="⌂", image_filename=home_icon), sg.Input(default_text=main_path, key="-OUT1-", expand_x=True, size=(50,1))],
             [sg.Tree(data=treedata, font=("Helvetica",15), headings=["size"], auto_size_columns=False, col_widths=[10], num_rows=None, col0_width=40, max_col_width=10, row_height=30, key="-TREE-", enable_events=True)],
             [sg.Text(text=str(count) + " objects", key="-OUT111-", justification="center", size=(20,1)), sg.Input(default_text=main_path, readonly=True, key="-OUT11-", size=(40,1), expand_x=True, visible=False)] ]
@@ -151,37 +151,37 @@ while True:
     if event == "☐ Show hidden files":
         hidden = True
         hidd = h
-        menu_def = ["≡", [hidd, "---", revers, sort, "---", copy, paste, delete, "---", rename, "---", "✇ Settings", "★ About..."]]
+        menu_def = ["≡", [hidd, revers, sort, copy, paste, delete, rename, "✇ Settings", "★ About..."]]
         window["-MENU-"].update(menu_definition=menu_def)
         event = "-TREE-double"
     if event == "☑ Show hidden files":
         hidden = False
         hidd = s
-        menu_def = ["≡", [hidd, "---", revers, sort, "---", copy, paste, delete, "---", rename, "---", "✇ Settings", "★ About..."]]
+        menu_def = ["≡", [hidd, revers, sort, copy, paste, delete, rename, "✇ Settings", "★ About..."]]
         window["-MENU-"].update(menu_definition=menu_def)
         event = "-TREE-double"
     if event == "▲ Reverse sort":
         reverse = True
         revers = ab
-        menu_def = ["≡", [hidd, "---", revers, sort, "---", copy, paste, delete, "---", rename, "---", "✇ Settings", "★ About..."]]
+        menu_def = ["≡", [hidd, revers, sort, copy, paste, delete, rename, "✇ Settings", "★ About..."]]
         window["-MENU-"].update(menu_definition=menu_def)
         event = "-TREE-double"
     if event == "▼ Reverse sort":
         reverse = False
         revers = ba
-        menu_def = ["≡", [hidd, "---", revers, sort, "---", copy, paste, delete, "---", rename, "---", "✇ Settings", "★ About..."]]
+        menu_def = ["≡", [hidd, revers, sort, copy, paste, delete, rename, "✇ Settings", "★ About..."]]
         window["-MENU-"].update(menu_definition=menu_def)
         event = "-TREE-double"
     if event == "⇵ Sort by size":
         sort_size = True
         sort = nsort
-        menu_def = ["≡", [hidd, "---", revers, sort, "---", copy, paste, delete, "---", rename, "---", "✇ Settings", "★ About..."]]
+        menu_def = ["≡", [hidd, revers, sort, copy, paste, delete, rename, "✇ Settings", "★ About..."]]
         window["-MENU-"].update(menu_definition=menu_def)
         event = "-TREE-double"
     if event == "⇵ Sort by name":
         sort_size = False
         sort = ssort
-        menu_def = ["≡", [hidd, "---", revers, sort, "---", copy, paste, delete, "---", rename, "---", "✇ Settings", "★ About..."]]
+        menu_def = ["≡", [hidd, revers, sort, copy, paste, delete, rename, "✇ Settings", "★ About..."]]
         window["-MENU-"].update(menu_definition=menu_def)
         event = "-TREE-double"
     if event == "★ About...":
@@ -207,7 +207,7 @@ while True:
         source = down_string
         source_edit = source.rsplit("/", 1)
         paste = pd
-        menu_def = ["≡", [hidd, "---", revers, sort, "---", copy, paste, delete, "---", rename, "---", "✇ Settings", "★ About..."]]
+        menu_def = ["≡", [hidd, revers, sort, copy, paste, delete, rename, "✇ Settings", "★ About..."]]
         window["-MENU-"].update(menu_definition=menu_def)
     if event == "▣ Paste":
         if source != "":
@@ -231,7 +231,7 @@ while True:
                 source_edit = ""
                 destination = ""                
             paste = pa
-            menu_def = ["≡", [hidd, "---", revers, sort, "---", copy, paste, delete, "---", rename, "---", "✇ Settings", "★ About..."]]
+            menu_def = ["≡", [hidd, revers, sort, copy, paste, delete, rename, "✇ Settings", "★ About..."]]
             window["-MENU-"].update(menu_definition=menu_def)
             event = "-TREE-double"
     if event == "✘ Delete in trash":
@@ -330,11 +330,11 @@ while True:
         copy = c2
         delete = d2
         rename = r2
-        menu_def = ["≡", [hidd, "---", revers, sort, "---", copy, paste, delete, "---", rename, "---", "✇ Settings", "★ About..."]]
+        menu_def = ["≡", [hidd, revers, sort, copy, paste, delete, rename, "✇ Settings", "★ About..."]]
         window["-MENU-"].update(menu_definition=menu_def)
     elif down_string != "/" or down_string != path_original:
         copy = c1
         delete = d1
         rename = r1
-        menu_def = ["≡", [hidd, "---", revers, sort, "---", copy, paste, delete, "---", rename, "---", "✇ Settings", "★ About..."]]
+        menu_def = ["≡", [hidd, revers, sort, copy, paste, delete, rename, "✇ Settings", "★ About..."]]
         window["-MENU-"].update(menu_definition=menu_def)
