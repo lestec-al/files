@@ -329,51 +329,49 @@ def remove_selection():
     right_menu.entryconfig("Delete in trash", state="disabled")
 # Open folders/files
 def click():
-    for i in tree.selection():
-        path = tree.item(i)["values"][1]
+    paths = [tree.item(i)["values"][1] for i in tree.selection()]
+    stop = False
+    for path in paths:
         if os.path.isdir(path):
-            update_files_folders(path)
+            if stop == False:
+                update_files_folders(path)
+                stop = True
         else:
             if sys.platform == "win32":
                 os.startfile(path)
             else:
                 opener = "open" if sys.platform == "darwin" else "xdg-open"
                 subprocess.call([opener, path])
-# Ini config home path, hidden files + others variables
+# Fix graphic on Win 10
+if sys.platform == "win32":
+    from ctypes import windll
+    windll.shcore.SetProcessDpiAwareness(1)
+# Ini config home path, showing hidden files + other variables
 config = configparser.ConfigParser()
-config.read("data/files.ini")
-home_path = config["USER"]["home_path"]
-if home_path == "":
-    home_path = config["DEFAULT"]["home_path"]
-home_path = eval(home_path)
-hidden = config["USER"]["show_hidden"]
-if hidden == "":
-    hidden = config["DEFAULT"]["show_hidden"]
-hidden = eval(hidden)
+config.read("files.ini")
+home_path_config = config["USER SETTINGS"]["home_path"]
+home_path = str(Path.home()) if home_path_config == "" else home_path_config
+hidden_config = config["USER SETTINGS"]["show_hidden_files"]
+hidden = True if hidden_config == "True" else False
 reverse = False
 sort_size = False
 last_lower_folder = None
 last_path = None
 non_win_clipboard = None
-# Slash for OS
-if sys.platform == "win32":
-    slash = "\\"
-    op_slash = "/"
-else:
-    slash = "/"
-    op_slash = "\\"
+slash = "\\" if sys.platform == "win32" else "/"
+op_slash = "/" if sys.platform == "win32" else "\\"
 # Window
 window = tk.Tk()
 window.resizable(True, True)
-window.iconphoto(True, tk.PhotoImage(file="data/files.png"))
+window.iconphoto(True, tk.PhotoImage(file="data/icon.png"))
 window.minsize(width=800, height=500)
 frame_up = tk.Frame(window, border=1, bg="white")
 frame_up.pack(fill="x", side="top")
 # Top of window
-folder_icon = tk.PhotoImage(file="data/files_c.png")
-file_icon = tk.PhotoImage(file="data/files_f.png")
-home_icon = tk.PhotoImage(file="data/files_h.png")
-up_icon = tk.PhotoImage(file="data/files_up.png")
+folder_icon = tk.PhotoImage(file="data/icon_folder.png")
+file_icon = tk.PhotoImage(file="data/icon_file.png")
+home_icon = tk.PhotoImage(file="data/icon_home.png")
+up_icon = tk.PhotoImage(file="data/icon_up.png")
 frame_b = tk.Frame(frame_up, border=2, relief="groove", bg="white")
 frame_b.pack(side="left")
 tk.Button(frame_b, image=up_icon, width=25, height=32, relief="flat", bg="white", fg="black", command=move_up).grid(column=0, row=1)

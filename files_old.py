@@ -6,19 +6,18 @@ from send2trash import send2trash
 import configparser
 # Config files.ini
 config = configparser.ConfigParser()
-config.read('data/files.ini')
-main_path = config['USER']['home_path']
+config.read('files.ini')
+main_path = config['USER SETTINGS']['home_path']
 if main_path == "":
-    main_path = config['DEFAULT']['home_path']
-    main_path = eval(main_path)
+    main_path = str(Path.home())
 # Variables
 sg.theme("SystemDefault1")
-icon = "data/files.png"
-folder_icon = "data/files_c.png"
-file_icon = "data/files_f.png"
-home_icon = "data/files_h.png"
-up_icon = "data/files_up.png"
-menu_icon = "data/files_m.png"
+icon = "data/icon.png"
+folder_icon = "data/icon_folder.png"
+file_icon = "data/icon_file.png"
+home_icon = "data/icon_home.png"
+up_icon = "data/icon_up.png"
+menu_icon = "data/icon_menu.png"
 treedata = sg.TreeData()
 hidden = False
 reverse = False
