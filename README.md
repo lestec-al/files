@@ -12,12 +12,12 @@ A simple python file explorer with Tkinter and PySimpleGUI interfaces. Features:
 
 Tkinter ver (files_new.py) works on Windows, Linux (should work on MacOS, but not tested). Screenshots from Windows 10 and Linux Ubuntu 20.04:
 
-<img src="https://github.com/lestec-al/files/raw/main/data/pic_tk_win.png" width="541" height="366"/>
-<img src="https://github.com/lestec-al/files/raw/main/data/pic_tk_linux_1.png" width="541" height="366"/>
+<img src="https://github.com/lestec-al/files/raw/main/data/pic_new_win.png" width="541" height="366"/>
+<img src="https://github.com/lestec-al/files/raw/main/data/pic_new_linux.png" width="541" height="366"/>
 
 PySimpleGUI ver (files_old.py) works on Linux (should work on MacOS, but not tested). Screenshot from Linux Ubuntu 20.04:
 
-<img src="https://github.com/lestec-al/files/raw/main/data/pic_psg_linux_1.png" width="541" height="366"/>
+<img src="https://github.com/lestec-al/files/raw/main/data/pic_old_linux.png" width="541" height="366"/>
 
 You need:
 - install Python (v3.9 or higher)

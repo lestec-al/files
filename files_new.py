@@ -59,7 +59,7 @@ def scan_disks_add_buttons():
         for _ in range(26):
             disk = letters[letter_c]
             if os.path.exists(f"{disk}:{slash}"):
-                tk.Button(frame_b, text=disk, font=("Arial", 14), relief="flat", bg="white", fg="black",
+                tk.Button(frame_b, text=disk.lower(), font=("Arial", 14), relief="flat", bg="white", fg="black",
                     command=lambda disk=disk:update_files_folders(f"{disk}:{slash}")).grid(column=column, row=1)
                 column += 1
             letter_c += 1
@@ -68,7 +68,7 @@ def scan_disks_add_buttons():
         os_user = home_path.rsplit(slash, 1)[1]
         if os.path.exists(f"/media/{os_user}/"):
             for l_disk in os.listdir(f"/media/{os_user}/"):
-                tk.Button(frame_b, text=l_disk[0], font=("Arial", 14), relief="flat", bg="white", fg="black",
+                tk.Button(frame_b, text=l_disk[0].lower(), font=("Arial", 14), relief="flat", bg="white", fg="black",
                     command=lambda l_disk=l_disk:update_files_folders(f"/media/{os_user}/{l_disk}")).grid(column=column, row=1)
                 column += 1
 # File operations
@@ -304,7 +304,7 @@ def update_files_folders(dirname):
                 tree.focus(item)
                 tree.see(item)
                 break
-# Press UP, DOWN - focus item in start
+# Press UP, DOWN - focus item on start
 def up_down_focus():
     if tree.focus() == "":
         try:
@@ -313,14 +313,14 @@ def up_down_focus():
             tree.focus(item)
             tree.see(item)
         except:pass
-# Select, click tree item + when select change menu
+# Click on tree item - change right click menu
 def select():
     if len(tree.selection()) > 0:
         right_menu.entryconfig("Open", state="normal")
         right_menu.entryconfig("Copy", state="normal")
         right_menu.entryconfig("Rename", state="normal")
         right_menu.entryconfig("Delete in trash", state="normal")
-# Click on empty - remove selection + change menu
+# Click on empty - remove selection + change right click menu
 def remove_selection():
     tree.selection_remove(tree.focus())
     right_menu.entryconfig("Open", state="disabled")
