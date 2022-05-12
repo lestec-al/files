@@ -1,9 +1,7 @@
-import os
+import os, shutil, configparser
 import PySimpleGUI as sg
-import shutil
 from pathlib import Path
 from send2trash import send2trash
-import configparser
 # Config files.ini
 config = configparser.ConfigParser()
 config.read('files.ini')

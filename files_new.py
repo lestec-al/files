@@ -1,11 +1,7 @@
-import os, stat, re, sys, subprocess
-import string
-import shutil
-import configparser
+import os, stat, re, sys, subprocess, string, shutil, configparser
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, simpledialog
 from tkinter.messagebox import askyesno
-from tkinter import simpledialog
 from pathlib import Path
 from send2trash import send2trash
 # Interface functions
@@ -210,8 +206,25 @@ def update_files_folders(dirname):
                     count += 1
                 else:continue
         elif os.path.isdir(fullname):
-            tree.insert("", tk.END, text=f, values=["<dir>", fullname], open=False, image=folder_icon)
-            count += 1
+            if sys.platform == "win32":
+                if bool(os.stat(fullname).st_file_attributes & stat.FILE_ATTRIBUTE_HIDDEN):
+                    tree.insert("", tk.END, text=f, values=["<dir>", fullname], open=False, image=folder_hidden_icon)
+                    count += 1
+                else:
+                    try:
+                        if os.readlink(fullname):
+                            tree.insert("", tk.END, text=f, values=["<dir>", fullname], open=False, image=folder_hidden_icon)
+                            count += 1
+                    except:
+                        tree.insert("", tk.END, text=f, values=["<dir>", fullname], open=False, image=folder_icon)
+                        count += 1
+            else:
+                if f.startswith("  ."):
+                    tree.insert("", tk.END, text=f, values=["<dir>", fullname], open=False, image=folder_hidden_icon)
+                    count += 1
+                else:
+                    tree.insert("", tk.END, text=f, values=["<dir>", fullname], open=False, image=folder_icon)
+                    count += 1
         else:continue
     # Scan files
     for f in files:
@@ -238,8 +251,20 @@ def update_files_folders(dirname):
             elif os.path.isdir(fullname):
                 continue
             else:
-                size_list_ml = [size[1], fullname, f, size[0]]
-                size_list.append(size_list_ml)
+                if sys.platform == "win32":
+                    if bool(os.stat(fullname).st_file_attributes & stat.FILE_ATTRIBUTE_HIDDEN):
+                        size_list_ml = [size[1], fullname, f, size[0], "hidden"]
+                        size_list.append(size_list_ml)
+                    else:
+                        size_list_ml = [size[1], fullname, f, size[0]]
+                        size_list.append(size_list_ml)
+                else:
+                    if f.startswith("  ."):
+                        size_list_ml = [size[1], fullname, f, size[0], "hidden"]
+                        size_list.append(size_list_ml)
+                    else:
+                        size_list_ml = [size[1], fullname, f, size[0]]
+                        size_list.append(size_list_ml)
         else:
             if hidden == False:
                 if os.path.isdir(fullname):
@@ -260,8 +285,20 @@ def update_files_folders(dirname):
             elif os.path.isdir(fullname):
                 continue
             else:
-                tree.insert("", tk.END, text=f, values=[size[0], fullname], open=False, image=file_icon)
-                count += 1
+                if sys.platform == "win32":
+                    if bool(os.stat(fullname).st_file_attributes & stat.FILE_ATTRIBUTE_HIDDEN):
+                        tree.insert("", tk.END, text=f, values=[size[0], fullname], open=False, image=file_hidden_icon)
+                        count += 1
+                    else:
+                        tree.insert("", tk.END, text=f, values=[size[0], fullname], open=False, image=file_icon)
+                        count += 1
+                else:
+                    if f.startswith("  ."):
+                        tree.insert("", tk.END, text=f, values=[size[0], fullname], open=False, image=file_hidden_icon)
+                        count += 1
+                    else:
+                        tree.insert("", tk.END, text=f, values=[size[0], fullname], open=False, image=file_icon)
+                        count += 1
     # Sorting
     if sort_size == True:
         if reverse == False:
@@ -269,7 +306,10 @@ def update_files_folders(dirname):
         if reverse == True:
             size_list.sort(key=lambda size_list: size_list[0])
         for s in size_list:
-            tree.insert("", tk.END, text=s[2], values=[s[3], s[1]], open=False, image=file_icon)
+            if len(s) == 4:
+                tree.insert("", tk.END, text=s[2], values=[s[3], s[1]], open=False, image=file_icon)
+            elif len(s) == 5:
+                tree.insert("", tk.END, text=s[2], values=[s[3], s[1]], open=False, image=file_hidden_icon)
             count += 1
         size_list.clear()
     entry.insert("end", dirname)
@@ -370,6 +410,8 @@ frame_up.pack(fill="x", side="top")
 # Top of window
 folder_icon = tk.PhotoImage(file="data/icon_folder.png")
 file_icon = tk.PhotoImage(file="data/icon_file.png")
+folder_hidden_icon = tk.PhotoImage(file="data/icon_folder_hidden.png")
+file_hidden_icon = tk.PhotoImage(file="data/icon_file_hidden.png")
 home_icon = tk.PhotoImage(file="data/icon_home.png")
 up_icon = tk.PhotoImage(file="data/icon_up.png")
 frame_b = tk.Frame(frame_up, border=2, relief="groove", bg="white")
