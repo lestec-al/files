@@ -19,7 +19,7 @@ PySimpleGUI ver (files_old.py) works on Linux (should work on MacOS, but not tes
 
 <img src="https://github.com/lestec-al/files/raw/main/data/pic_old_linux.png" width="541" height="366"/>
 
-You need:
+If you on Windows 10, download "files.7z" from "Releases", unpack and lanch files.exe from catalog, should work. For others:
 - install Python (v3.9 or higher)
 - install Tkinter (https://tkdocs.com/tutorial/install.html) or PySimpleGUI (https://pysimplegui.readthedocs.io/en/latest/#installing-pysimplegui)
 - install Send2Trash (https://pypi.org/project/Send2Trash/)
