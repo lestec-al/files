@@ -382,6 +382,24 @@ def click():
             else:
                 opener = "open" if sys.platform == "darwin" else "xdg-open"
                 subprocess.call([opener, path])
+def new_dir():
+    test = False
+    cancel = False
+    info_text = "Enter catalog name"
+    while test == False and cancel == False:
+        name_dir = simpledialog.askstring(title="Files", prompt=info_text, parent=tree_frame)
+        if name_dir is not None:
+            test = True
+            for f in os.listdir(last_path):
+                if f.lower() == name_dir.lower():
+                    test = False
+                    info_text = "This name is taken"
+        else:
+            cancel = True
+    if test == True:
+        path = os.path.join(last_path, name_dir)
+        os.mkdir(path)
+        update_files_folders(last_path)
 # Fix graphic on Win 10
 if sys.platform == "win32":
     from ctypes import windll
@@ -452,6 +470,8 @@ right_menu.add_command(label="Rename", command=rename, state="disabled")
 right_menu.add_command(label="Delete in trash", command=delete, state="disabled")
 right_menu.add_separator()
 right_menu.add_command(label="Paste", command=paste, state="disabled")
+right_menu.add_separator()
+right_menu.add_command(label="New catalog", command=new_dir, state="normal")
 right_menu.add_separator()
 right_menu.add_checkbutton(label="Show hidden files", onvalue=1, offvalue=0, variable=hidden_menu, command=show_hide)
 right_menu.bind("<FocusOut>", lambda event:right_menu.unpost())# Click elsewhere - close right click menu
