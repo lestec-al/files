@@ -127,9 +127,14 @@ def copy_delete_rename(item, operation):
                     rename(f[2])
                 elif operation == "copy":
                     add_item(f[2])
-                elif operation == "delete":
+                elif operation == "remove":
                     try:send2trash(f[2])
                     except:pass
+                elif operation == "delete":
+                    if os.path.isdir(f[2]):
+                        os.rmdir(f[2])
+                    else:
+                        os.remove(f[2])
         elif items_index != None:
             for i1 in items_index:
                 if i == i1:
@@ -138,9 +143,14 @@ def copy_delete_rename(item, operation):
                             rename(f[2])
                         elif operation == "copy":
                             add_item(f[2])
-                        elif operation == "delete":
+                        elif operation == "remove":
                             try:send2trash(f[2])
                             except:pass
+                        elif operation == "delete":
+                            if os.path.isdir(f[2]):
+                                os.rmdir(f[2])
+                            else:
+                                os.remove(f[2])
         elif items_name != None:
             for n1 in items_name:
                 if f[0].strip().lower() == n1.lower():
@@ -149,9 +159,14 @@ def copy_delete_rename(item, operation):
                             rename(f[2])
                         elif operation == "copy":
                             add_item(f[2])
-                        elif operation == "delete":
+                        elif operation == "remove":
                             try:send2trash(f[2])
                             except:pass
+                        elif operation == "delete":
+                            if os.path.isdir(f[2]):
+                                os.rmdir(f[2])
+                            else:
+                                os.remove(f[2])
     if operation == "copy":
         if len(copy_pathes) > 1:
             items = ",".join(copy_pathes)
@@ -392,11 +407,12 @@ while True:
             update_files_folders(last_path)
         elif input1[0] == "help":
             print()
-            print("- open: '12' 'documents' 'c:\\users' '/home'")
             print("- up: '..'")
-            print("- copy/delete/rename: 'copy 11' 'delete 2,10'")
+            print("- open: '12' 'documents' 'c:\\users' '/home'")
+            print("- copy/rename/remove/delete: 'copy 11' 'delete 2,10'")
+            print("  remove to trash, delete permanently")
             print("- disks: 'disk C' 'disk disk 2'")
-            print("- create directory: 'dir Pictures'")
+            print("- create directory/file: 'dir Pictures' 'file readme.txt'")
             print("- other: 'paste' 'exit' 'home' 'hidden' 'sort' 'reverse'")
             print()
         else:
@@ -406,16 +422,21 @@ while True:
             copy_delete_rename(input1[1], "copy")
         elif input1[0] == "delete":
             copy_delete_rename(input1[1], "delete")
+        elif input1[0] == "remove":
+            copy_delete_rename(input1[1], "remove")
         elif input1[0] == "rename":
             copy_delete_rename(input1[1], "rename")
-        elif input1[0] == "dir":
+        elif input1[0] == "dir" or input1[0] == "file":
             test = True
             for f in last_dir:
                 if f[0].strip().lower() == input1[1].lower():
                     test = False
             if test == True:
                 path = os.path.join(last_path, input1[1])
-                os.mkdir(path)
+                if input1[0] == "dir":
+                    os.mkdir(path)
+                elif input1[0] == "file":
+                    Path(path).touch()
                 update_files_folders(last_path)
             else:
                 print("This name is taken")
