@@ -92,6 +92,14 @@ def paste():
             shutil.copy2(source, destination)
     update_files_folders(last_path)
 def copy_delete_rename(item, operation):
+    def delete_dir(path):
+        for f in os.listdir(path):
+            f1 = os.path.join(path, f)
+            if not os.path.isdir(f1):
+                os.remove(f1)
+            else:
+                delete_dir(f1)
+        os.rmdir(path)
     def add_item(item):
         path = item
         if slash in path:
@@ -132,7 +140,7 @@ def copy_delete_rename(item, operation):
                     except:pass
                 elif operation == "delete":
                     if os.path.isdir(f[2]):
-                        os.rmdir(f[2])
+                        delete_dir(f[2])
                     else:
                         os.remove(f[2])
         elif items_index != None:
@@ -148,7 +156,7 @@ def copy_delete_rename(item, operation):
                             except:pass
                         elif operation == "delete":
                             if os.path.isdir(f[2]):
-                                os.rmdir(f[2])
+                                delete_dir(f[2])
                             else:
                                 os.remove(f[2])
         elif items_name != None:
@@ -164,7 +172,7 @@ def copy_delete_rename(item, operation):
                             except:pass
                         elif operation == "delete":
                             if os.path.isdir(f[2]):
-                                os.rmdir(f[2])
+                                delete_dir(f[2])
                             else:
                                 os.remove(f[2])
     if operation == "copy":

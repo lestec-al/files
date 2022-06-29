@@ -1,6 +1,6 @@
 # Files
 A simple python file explorer with Tkinter, Command line and PySimpleGUI (obsolete) interfaces. Features:
-- copy, paste, delete to trash and rename (files, catalogs)
+- copy, paste, rename, delete to trash (files, catalogs) + in command line ver remove (to trash), delete (permanently)
 - sorts by name (files, catalogs) and size (files)
 - shows hidden files
 - resizability
@@ -10,7 +10,7 @@ A simple python file explorer with Tkinter, Command line and PySimpleGUI (obsole
 - keyboard navigation, copy/paste support (arrows, enter, backspace, ctrl-c/ctrl-v, only Tkinter)
 - select multiple files/catalogs by holding Ctrl and clicking with the mouse (bugs, only Tkinter)
 - copy/paste to/from another file manager (only Windows and Tkinter)
-- in the command line ver, navigation by entering text from the keyboard
+- the command line ver has navigation by typing short commands
 
 Tkinter ver (files_new.py) works on Windows, Linux (should work on MacOS, but not tested). Screenshots from Windows 10 and Linux Ubuntu 20.04:
 
