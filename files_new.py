@@ -72,8 +72,8 @@ def copy():
         list_i = []
         for i in tree.selection():
             path = tree.item(i)["values"][1]
-            if slash in path:
-                path = path.replace(slash, "/")
+            if "\\" in path:
+                path = path.replace("\\", "/")
             list_i.append(f"'{path}'")
         if len(list_i) > 1:
             items = ",".join(list_i)
@@ -96,12 +96,12 @@ def paste():
         # Search file/folder copies
         file_copies = 1
         for f in os.listdir(entry.get()):
-            if f == edit[1]:
+            if f.lower() == edit[1].lower():
                 file_copies += 1
         if file_copies > 1:
             while True:
                 for f in os.listdir(entry.get()):
-                    if f == f"({file_copies})" + edit[1]:
+                    if f.lower() == f"({file_copies}){edit[1]}".lower():
                         file_copies += 1
                         continue
                 break
@@ -131,10 +131,19 @@ def rename():
         r_path = tree.item(i)["values"][1]
         e_path = r_path.rsplit(slash, 1)
         if os.path.exists(r_path):
-            answer = simpledialog.askstring(title="Files", prompt=f"Rename '{e_path[1]}'", parent=tree_frame, initialvalue=e_path[1])
-            if answer is not None:
-                rename_str = e_path[0] + slash + answer
-                os.rename(r_path, rename_str)
+            info_text = f"Rename '{e_path[1]}'"
+            test = False
+            while test == False:
+                test = True
+                new_name = simpledialog.askstring(title="Files", prompt=info_text, parent=tree_frame, initialvalue=e_path[1])
+                if new_name is not None:
+                    for f in os.listdir(entry.get()):
+                        if f.lower() == new_name.lower() and new_name.lower() != e_path[1].lower():
+                            test = False
+                            info_text = "Name is taken"
+            if new_name is not None and new_name.lower() != e_path[1].lower():
+                n_path = e_path[0] + slash + new_name
+                os.rename(r_path, n_path)
     update_files_folders(entry.get())
 # Update files/dirs + convert size
 def convert_size(name):
@@ -395,7 +404,7 @@ def new(goal):
             for f in os.listdir(last_path):
                 if f.lower() == name_dir.lower():
                     test = False
-                    info_text = "This name is taken"
+                    info_text = "Name is taken"
         else:
             cancel = True
     if test == True:

@@ -73,12 +73,12 @@ def paste():
         # Search file/folder copies
         file_copies = 1
         for f in os.listdir(last_path):
-            if f == edit[1]:
+            if f.lower() == edit[1].lower():
                 file_copies += 1
         if file_copies > 1:
             while True:
                 for f in os.listdir(last_path):
-                    if f == f"({file_copies})" + edit[1]:
+                    if f.lower() == f"({file_copies}){edit[1]}".lower():
                         file_copies += 1
                         continue
                 break
@@ -91,32 +91,42 @@ def paste():
             shutil.copy2(source, destination)
     update_files_folders(last_path)
 def copy_delete_rename(item, operation):
-    def remove_to_trash(item):
-        try:
-            from send2trash import send2trash
-            send2trash(item)
-        except:
-            print("Remove to trash not supported")
-    def delete_dir(path):
-        for f in os.listdir(path):
-            f1 = os.path.join(path, f)
+    def delete_dir(d_path):
+        for f in os.listdir(d_path):
+            f1 = os.path.join(d_path, f)
             if not os.path.isdir(f1):
                 os.remove(f1)
             else:
                 delete_dir(f1)
-        os.rmdir(path)
-    def add_item(item):
-        path = item
-        if slash in path:
-            path = path.replace(slash, "/")
-        copy_pathes.append(f"'{path}'")
-    def rename(r_path):
-        e_path = r_path.rsplit(slash, 1)
-        if os.path.exists(r_path):
-            new_name = input(f"Rename '{e_path[1]}' > ")
-            if new_name is not None:
-                rename_str = e_path[0] + slash + new_name
-                os.rename(r_path, rename_str)
+        os.rmdir(d_path)
+    def operations(path):
+        if os.path.exists(path):
+            if operation == "rename":
+                e_path = path.rsplit(slash, 1)
+                test = False
+                while test == False:
+                    test = True
+                    new_name = input(f"Rename '{e_path[1]}' or '..' for cancel > ")
+                    if new_name is not None and new_name != '..':
+                        for f in os.listdir(last_path):
+                            if f.lower() == new_name.lower() and new_name.lower() != e_path[1].lower():
+                                test = False
+                        if test == False:
+                            print("Name is taken")
+                if new_name is not None and new_name.lower() != e_path[1].lower() and new_name != '..':
+                    new_path = e_path[0] + slash + new_name
+                    os.rename(path, new_path)
+            elif operation == "copy":
+                if "\\" in path:
+                    path = path.replace("\\", "/")
+                pathes.append(f"'{path}'")
+            elif operation == "remove":
+                pathes.append(path)
+            elif operation == "delete":
+                if os.path.isdir(path):
+                    delete_dir(path)
+                else:
+                    os.remove(path)
     item_name = None
     items_name = None
     item_index = None
@@ -131,62 +141,37 @@ def copy_delete_rename(item, operation):
             items_name = item.split(",")
         else:
             item_name = item
-    copy_pathes = []
+    pathes = []
     for i,f in enumerate(last_dir):
         i += 1
         if item_index != None and i == item_index or item_name != None and f[0].strip().lower() == item_name.lower():
-            if os.path.exists(f[2]):
-                if operation == "rename":
-                    rename(f[2])
-                elif operation == "copy":
-                    add_item(f[2])
-                elif operation == "remove":
-                    remove_to_trash(f[2])
-                elif operation == "delete":
-                    if os.path.isdir(f[2]):
-                        delete_dir(f[2])
-                    else:
-                        os.remove(f[2])
+            operations(f[2])
         elif items_index != None:
             for i1 in items_index:
                 if i == i1:
-                    if os.path.exists(f[2]):
-                        if operation == "rename":
-                            rename(f[2])
-                        elif operation == "copy":
-                            add_item(f[2])
-                        elif operation == "remove":
-                            remove_to_trash(f[2])
-                        elif operation == "delete":
-                            if os.path.isdir(f[2]):
-                                delete_dir(f[2])
-                            else:
-                                os.remove(f[2])
+                    operations(f[2])
         elif items_name != None:
             for n1 in items_name:
                 if f[0].strip().lower() == n1.lower():
-                    if os.path.exists(f[2]):
-                        if operation == "rename":
-                            rename(f[2])
-                        elif operation == "copy":
-                            add_item(f[2])
-                        elif operation == "remove":
-                            remove_to_trash(f[2])
-                        elif operation == "delete":
-                            if os.path.isdir(f[2]):
-                                delete_dir(f[2])
-                            else:
-                                os.remove(f[2])
+                    operations(f[2])
     if operation == "copy":
-        if len(copy_pathes) > 1:
-            items = ",".join(copy_pathes)
+        if len(pathes) > 1:
+            items = ",".join(pathes)
         else:
-            items = copy_pathes[0]
+            items = pathes[0]
         if sys.platform == "win32":
             os.system(f"powershell.exe Set-Clipboard -path {items}")
         else:
             global non_win_clipboard
             non_win_clipboard = items
+    elif operation == "remove":
+        try:
+            from send2trash import send2trash
+            for p in pathes:
+                send2trash(p)
+            update_files_folders(last_path)
+        except:
+            print("Remove to trash not supported") 
     else:
         update_files_folders(last_path)
 def click(item):
@@ -424,7 +409,7 @@ while True:
             print("- up: '..'")
             print("- open: '12' 'documents' 'c:\\users' '/home'")
             print("- copy/rename/remove/delete: 'copy 11' 'delete 2,10'")
-            print("  remove to trash, delete permanently")
+            print("  remove (to trash, need Send2Trash), delete (permanently)")
             print("- disks: 'disk C' 'disk disk 2'")
             print("- create directory/file: 'dir Pictures' 'file readme.txt'")
             print("- other: 'paste' 'exit' 'home' 'hidden' 'sort' 'reverse'")
@@ -453,7 +438,7 @@ while True:
                     Path(path).touch()
                 update_files_folders(last_path)
             else:
-                print("This name is taken")
+                print("Name is taken")
         elif input1[0] == "disk":
             if sys.platform == "win32":
                 update_files_folders(f"{input1[1].upper()}:{slash}")
