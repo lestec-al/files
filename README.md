@@ -29,6 +29,6 @@ PySimpleGUI ver (files_old.py) works on Linux (should work on MacOS, but not tes
 If you on Windows 10, Tkinter ver available in "Releases". From there download "files.zip", unpack and lanch files.exe from catalog, should work. Universal install for all:
 - install Python (v3.9 or higher)
 - install Tkinter (https://tkdocs.com/tutorial/install.html) or PySimpleGUI (https://pysimplegui.readthedocs.io/en/latest/#installing-pysimplegui) or nothing for command line ver
-- install Send2Trash (https://pypi.org/project/Send2Trash/)
+- install Send2Trash (https://pypi.org/project/Send2Trash/) - optional for command line ver
 - download (and extract) or clone this repo
 - launch via command line "python files_new.py"(or files_cl.py, files_old.py) in the project folder
