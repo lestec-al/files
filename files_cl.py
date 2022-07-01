@@ -1,6 +1,5 @@
 import os, stat, re, sys, subprocess, string, shutil, configparser
 from pathlib import Path
-from send2trash import send2trash
 # Interface functions
 def print_interface():
     if sys.platform == "win32":
@@ -92,6 +91,12 @@ def paste():
             shutil.copy2(source, destination)
     update_files_folders(last_path)
 def copy_delete_rename(item, operation):
+    def remove_to_trash(item):
+        try:
+            from send2trash import send2trash
+            send2trash(item)
+        except:
+            print("Remove to trash not supported")
     def delete_dir(path):
         for f in os.listdir(path):
             f1 = os.path.join(path, f)
@@ -136,8 +141,7 @@ def copy_delete_rename(item, operation):
                 elif operation == "copy":
                     add_item(f[2])
                 elif operation == "remove":
-                    try:send2trash(f[2])
-                    except:pass
+                    remove_to_trash(f[2])
                 elif operation == "delete":
                     if os.path.isdir(f[2]):
                         delete_dir(f[2])
@@ -152,8 +156,7 @@ def copy_delete_rename(item, operation):
                         elif operation == "copy":
                             add_item(f[2])
                         elif operation == "remove":
-                            try:send2trash(f[2])
-                            except:pass
+                            remove_to_trash(f[2])
                         elif operation == "delete":
                             if os.path.isdir(f[2]):
                                 delete_dir(f[2])
@@ -168,8 +171,7 @@ def copy_delete_rename(item, operation):
                         elif operation == "copy":
                             add_item(f[2])
                         elif operation == "remove":
-                            try:send2trash(f[2])
-                            except:pass
+                            remove_to_trash(f[2])
                         elif operation == "delete":
                             if os.path.isdir(f[2]):
                                 delete_dir(f[2])
@@ -365,11 +367,15 @@ def update_files_folders(dirname):
     last_path = dirname
     print_interface()
 # Ini config home path, showing hidden files + other variables
-config = configparser.ConfigParser()
-config.read("files.ini")
-home_path_config = config["USER SETTINGS"]["home_path"]
+try:
+    config = configparser.ConfigParser()
+    config.read("files.ini")
+    home_path_config = config["USER SETTINGS"]["home_path"]
+    hidden_config = config["USER SETTINGS"]["show_hidden_files"]
+except:
+    home_path_config = ""
+    hidden_config = ""
 home_path = str(Path.home()) if home_path_config == "" else home_path_config
-hidden_config = config["USER SETTINGS"]["show_hidden_files"]
 hidden = True if hidden_config == "True" else False
 reverse, sort_size = False, False
 last_path, non_win_clipboard = None, None
