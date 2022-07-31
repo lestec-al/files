@@ -30,7 +30,7 @@ PySimpleGUI ver (files_old.py) works on Linux (should work on MacOS). Screenshot
 - sorts by name (files, catalogs) and size (files)
 - shows hidden files
 - resizability
-- catalog, files creation (only Tkinter and Command line)
+- catalog, files creation (only Tkinter, Kivy and Command line)
 - open files by default program (only Tkinter and Command line)
 - local disks buttons (only Tkinter)
 - keyboard navigation, copy/paste support (arrows, enter, backspace, ctrl-c/ctrl-v, only Tkinter)
