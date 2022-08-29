@@ -31,7 +31,7 @@ Obsolete PySimpleGUI version (files_old.py) works on Linux (should work on MacOS
 
 
 # Features
-- connect to ftp servers and download files from there (tkinter, command line)
+- connect to ftp servers (e.g. ftp://ftp.us.debian.org) and download files from there (tkinter, command line)
 - copy/paste to/from another file manager (windows, tkinter, command line)
 - catalog, files creation (tkinter, kivy, command line)
 - open files by default program (tkinter, command line)
