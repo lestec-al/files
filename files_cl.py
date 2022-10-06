@@ -1,4 +1,4 @@
-import os, stat, re, sys, subprocess, string, shutil, configparser, math
+import os, stat, re, sys, subprocess, string, shutil, math
 from pathlib import Path
 from ftplib import FTP
 
@@ -445,19 +445,9 @@ def update_files(orig_dirname: str):
 
 
 # Variables
-try:
-    config = configparser.ConfigParser()
-    config.read("files.ini")
-    home_path_config = config["USER SETTINGS"]["home_path"]
-    hidden_config = config["USER SETTINGS"]["show_hidden_files"]
-    sort_config = config["USER SETTINGS"]["sort"]
-except:
-    home_path_config = ""
-    hidden_config = ""
-    sort_config = ""
-home_path = str(Path.home()) if home_path_config == "" else home_path_config
-hidden = True if hidden_config == "True" else False
-sort = "size" if sort_config == "size" else "name"
+home_path = str(Path.home())
+hidden = False
+sort = "name"
 reverse = False
 last_path, non_win_clipboard = None, None
 slash = "\\" if sys.platform == "win32" else "/"
@@ -470,6 +460,9 @@ url_ftp = None
 # Start app
 disks = add_disks()
 update_files(home_path)
+
+
+# Main loop
 while True:
     input1 = input("«help» for FAQ > ").split(" ", 1)
 
@@ -486,7 +479,7 @@ while True:
             move_up()
         elif input1[0] == "paste" and ftp == None:
             paste()
-        elif input1[0] == "home":
+        elif input1[0] == ".":
             update_files(home_path)
         elif input1[0] == "hidden":
             if hidden == False:
@@ -504,14 +497,16 @@ while True:
             print()
             print("- up: «..»")
             print("- open: «12» «documents» «c:\\users» «/home» «ftp://ftp.us.debian.org»")
+            print("- home path: «.»")
             print("- copy,rename,remove(to trash),delete(permanently): «copy 11» «delete 2,10»")
-            print("- ftp download: «download 11»")
+            print("- ftp download: «download 11» «download 12,14»")
             print("- show size: «size 9»")
             print("- select page: «page 3»")
             print("- disks: «disk C» «disk disk 2»")
             print("- create: «dir Pictures» «file readme.txt»")
             print("- sorting: «sort»(for ↑↓) «sort name» «sort size»")
-            print("- «exit» «paste» «home» «hidden»")
+            print("- exercute cl command: «code dir» «code ls»")
+            print("- «exit» «paste» «hidden»")
             print()
         else:
             click(input1[0])
@@ -555,6 +550,16 @@ while True:
                     print("Name is taken")
             elif input1[0] == "size":
                 calc_show_size(input1[1])
+            # Test CL commands support
+            elif input1[0] == "code":
+                os.chdir(last_path)
+                try:
+                    msg = subprocess.getoutput(input1[1])
+                    print()
+                    print(msg)
+                    print()
+                except:
+                    subprocess.call(input1[1], creationflags=subprocess.CREATE_NEW_CONSOLE)
 
         elif ftp != None:
             if input1[0] == "download":
