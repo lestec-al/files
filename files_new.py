@@ -28,6 +28,7 @@ def git_rm_cached():
             print("Failed to remove file: ", e)
     update_files(last_path)
 
+
 def git_rm():
     if check_git_repo() == True:
         try:
@@ -41,6 +42,43 @@ def git_rm():
     update_files(last_path)
 
 
+def git_init():
+    # non-bare repository init
+    if check_git_repo() == False:
+        pygit2.init_repository('/.git', False)
+
+
+def git_add():
+    if check_git_repo() == True:
+        repository = pygit2.Repository(last_path)
+    index = repository.index
+    index.add_all()
+    index.write()
+
+
+def git_commit(commit_message):
+    if check_git_repo() == True:
+        repository = pygit2.Repository(last_path)
+    index = repository.index
+    config = repository.config
+    for name in config.get_multivar('user.name'):
+        user_name = name
+    for email in config.get_multivar('user.email'):
+        user_email = email
+    author = pygit2.Signature(user_name, user_email)
+    committer = pygit2.Signature(user_name, user_email)
+    tree = index.write_tree()
+    ref = repository.head.name
+    parents = [repository.head.target]
+
+    repository.create_commit(
+        ref,
+        author, committer, commit_message,
+        tree,
+        parents
+    )
+
+
 def current_file_git_status():
     if (check_git_repo() == True):
         repository = pygit2.Repository(last_path)
@@ -48,7 +86,6 @@ def current_file_git_status():
     return status
 
 
-# 선택된 파일의
 def check_git_repo():
     is_git = True
     # 디렉토리가 Git 저장소인지 확인
@@ -410,10 +447,10 @@ def update_files(orig_dirname: str):
             for f in files:
                 f_stat = f.stat()
                 size = convert_size(f_stat.st_size)
-                #deafult git_status is 0
+                # deafult git_status is 0
                 git_status = 0
                 if f.is_dir():
-                    #오브젝트가 폴더이면 다음과 같은 정보들을 삽입
+                    # 오브젝트가 폴더이면 다음과 같은 정보들을 삽입
                     # git_status 설정하기
                     # code : git_status
                     if hidden == False:
@@ -626,17 +663,36 @@ tk.Button(frame_b, image=up_icon, width=25, height=32, relief="flat",
 tk.Button(frame_b, image=home_icon, width=25, height=32, relief="flat", bg="white",
           fg="black", command=lambda: update_files(home_path)).grid(column=1, row=1)
 
+
+def open_git_commit_window():
+    input_window = tk.Toplevel(window)
+    input_window.title('commit message')
+    input_window.geometry("500x100")
+    input_window.geometry("+100+200")
+
+    label = tk.Label(
+        input_window, text="commit message를 입력해주세요 !")
+    label.pack()
+    entry = tk.Entry(input_window, width=30)
+    entry.pack()
+    button = tk.Button(input_window, text="commit",
+                       command=lambda: (git_commit(entry.get()), input_window.destroy()))
+    button.pack()
+
+
 # git buttons
 frame_down = tk.Frame(window, border=1)
 frame_down.pack(fill="x", side="bottom")
 frame_c = tk.Frame(frame_down, relief="groove", bg="white")
 frame_c.pack(side="bottom")
 tk.Button(frame_c, text='init', width=5, height=1, relief="flat", bg="black",
-          fg="black", command=lambda: update_files(home_path)).grid(column=1, row=0)
+          fg="black", command=lambda: git_init()).grid(column=1, row=0)
 tk.Button(frame_c, text='add', width=5, height=1, relief="flat", bg="black",
-          fg="black", command=lambda: update_files(home_path)).grid(column=2, row=0)
+          fg="black", command=lambda: git_add()).grid(column=2, row=0)
 tk.Button(frame_c, text='commit', width=5, height=1, relief="flat", bg="black",
-          fg="black", command=lambda: update_files(home_path)).grid(column=3, row=0)
+          fg="black", command=lambda: open_git_commit_window()).grid(column=3, row=0)
+# tk.Button(frame_c, text='commit', width=5, height=1, relief="flat", bg="black",
+#           fg="black", command=lambda: git_commit()).grid(column=3, row=0)
 tk.Button(frame_c, text='rm', width=5, height=1, relief="flat", bg="black",
           fg="black", command=lambda: git_rm()).grid(column=4, row=0)
 tk.Button(frame_c, text='rm --cached', width=8, height=1, relief="flat", bg="black",
@@ -647,6 +703,7 @@ tk.Button(frame_c, text='restore --staged', width=10, height=1, relief="flat", b
           fg="black", command=lambda: update_files(home_path)).grid(column=7, row=0)
 tk.Button(frame_c, text='mv', width=6, height=1, relief="flat", bg="black",
           fg="black", command=lambda: update_files(home_path)).grid(column=8, row=0)
+
 
 entry = tk.Entry(frame_up, font=("Arial", 12), justify="left",
                  highlightcolor="white", highlightthickness=0, relief="groove", border=2)
@@ -721,7 +778,7 @@ tree.bind("<Down>", lambda event: up_down_focus())
 tree.bind("<Delete>", lambda event: delete())
 tree.bind("<Control-c>", lambda event: copy())
 tree.bind("<Control-v>", lambda event: paste()
-if right_menu.entrycget(index=5, option="state") == "normal" else None)
+          if right_menu.entrycget(index=5, option="state") == "normal" else None)
 entry.bind("<Return>", lambda event: update_files(entry.get()))
 entry.bind("<KP_Enter>", lambda event: update_files(entry.get()))
 
