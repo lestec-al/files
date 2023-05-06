@@ -42,6 +42,43 @@ def git_rm():
     update_files(last_path)
 
 
+def git_init():
+    # non-bare repository init
+    if check_git_repo() == False:
+        pygit2.init_repository('/.git', False)
+
+
+def git_add():
+    if check_git_repo() == True:
+        repository = pygit2.Repository(last_path)
+    index = repository.index
+    index.add_all()
+    index.write()
+
+
+def git_commit(commit_message):
+    if check_git_repo() == True:
+        repository = pygit2.Repository(last_path)
+    index = repository.index
+    config = repository.config
+    for name in config.get_multivar('user.name'):
+        user_name = name
+    for email in config.get_multivar('user.email'):
+        user_email = email
+    author = pygit2.Signature(user_name, user_email)
+    committer = pygit2.Signature(user_name, user_email)
+    tree = index.write_tree()
+    ref = repository.head.name
+    parents = [repository.head.target]
+
+    repository.create_commit(
+        ref,
+        author, committer, commit_message,
+        tree,
+        parents
+    )
+
+
 def current_file_git_status():
     if (check_git_repo() == True):
         repository = pygit2.Repository(last_path)
@@ -60,6 +97,7 @@ def update_file_git_status(path, file_name):
 
 # 선택된 파일의
 def check_git_repo():
+    is_git = True
     # 디렉토리가 Git 저장소인지 확인
     if os.path.isdir(os.path.join(last_path, ".git")):
         # Git 저장소로부터 Repository 객체를 생성
@@ -657,6 +695,23 @@ tk.Button(frame_b, image=up_icon, width=25, height=32, relief="flat",
 tk.Button(frame_b, image=home_icon, width=25, height=32, relief="flat", bg="white",
           fg="black", command=lambda: update_files(home_path)).grid(column=1, row=1)
 
+
+def open_git_commit_window():
+    input_window = tk.Toplevel(window)
+    input_window.title('commit message')
+    input_window.geometry("500x100")
+    input_window.geometry("+100+200")
+
+    label = tk.Label(
+        input_window, text="commit message를 입력해주세요 !")
+    label.pack()
+    entry = tk.Entry(input_window, width=30)
+    entry.pack()
+    button = tk.Button(input_window, text="commit",
+                       command=lambda: (git_commit(entry.get()), input_window.destroy()))
+    button.pack()
+
+
 # git buttons
 frame_down = tk.Frame(window, border=1)
 frame_down.pack(fill="x", side="bottom")
@@ -752,7 +807,7 @@ tree.bind("<Down>", lambda event: up_down_focus())
 tree.bind("<Delete>", lambda event: delete())
 tree.bind("<Control-c>", lambda event: copy())
 tree.bind("<Control-v>", lambda event: paste()
-if right_menu.entrycget(index=5, option="state") == "normal" else None)
+          if right_menu.entrycget(index=5, option="state") == "normal" else None)
 entry.bind("<Return>", lambda event: update_files(entry.get()))
 entry.bind("<KP_Enter>", lambda event: update_files(entry.get()))
 
