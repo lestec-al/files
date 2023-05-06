@@ -16,6 +16,7 @@ from pathlib import Path
 from ftplib import FTP
 from send2trash import send2trash
 
+
 # Interface
 def git_rm_cached():
     if check_git_repo() == True:
@@ -46,10 +47,11 @@ def current_file_git_status():
         status = repository.status_file(g_current_item)
     return status
 
-#선택된 파일의 
+
+# 선택된 파일의
 def check_git_repo():
     is_git = True
-# 디렉토리가 Git 저장소인지 확인
+    # 디렉토리가 Git 저장소인지 확인
     if os.path.isdir(os.path.join(last_path, ".git")):
         # Git 저장소로부터 Repository 객체를 생성
         try:
@@ -62,6 +64,7 @@ def check_git_repo():
         print("This directory is not a Git repository.")
         is_git = False
     return is_git
+
 
 def sort_name_reverse():
     global sort
@@ -132,7 +135,8 @@ def scan_disks_add_buttons():
         if os.path.exists(f"/media/{os_user}/"):
             for l_disk in os.listdir(f"/media/{os_user}/"):
                 tk.Button(frame_b, text=l_disk[0].lower(), font=("Arial", 14), relief="flat", bg="white", fg="black",
-                          command=lambda l_disk=l_disk: update_files(f"/media/{os_user}/{l_disk}")).grid(column=column, row=1)
+                          command=lambda l_disk=l_disk: update_files(f"/media/{os_user}/{l_disk}")).grid(column=column,
+                                                                                                         row=1)
                 column += 1
 
 
@@ -183,7 +187,7 @@ def remove_selection(menu_only=False):
 def click():
     stop = False
     for i in tree.selection():
-        path = tree.item(i)["values"][1]
+        path = tree.item(i)["values"][2]
         if tree.item(i)["values"][0] == "dir":
             if stop == False:
                 update_files(path)
@@ -195,6 +199,7 @@ def click():
                 else:
                     opener = "open" if sys.platform == "darwin" else "xdg-open"
                     subprocess.call([opener, path])
+
 
 # Operations
 
@@ -330,15 +335,14 @@ def update_files(orig_dirname: str):
             byte_size = var
         else:
             byte_size = os.stat(var).st_size
-        #
         if byte_size >= 1000000000000:
-            size = str(round(byte_size/1000000000000, 2)) + " TB"
+            size = str(round(byte_size / 1000000000000, 2)) + " TB"
         elif byte_size >= 1000000000:
-            size = str(round(byte_size/1000000000, 2)) + " GB"
+            size = str(round(byte_size / 1000000000, 2)) + " GB"
         elif byte_size >= 1000000:
-            size = str(round(byte_size/1000000, 2)) + " MB"
+            size = str(round(byte_size / 1000000, 2)) + " MB"
         elif byte_size >= 1000:
-            size = str(round(byte_size/1000, 2)) + " KB"
+            size = str(round(byte_size / 1000, 2)) + " KB"
         elif byte_size < 1000:
             size = str(byte_size) + " B"
         return size, byte_size
@@ -406,60 +410,68 @@ def update_files(orig_dirname: str):
             for f in files:
                 f_stat = f.stat()
                 size = convert_size(f_stat.st_size)
+                #deafult git_status is 0
+                git_status = 0
                 if f.is_dir():
+                    #오브젝트가 폴더이면 다음과 같은 정보들을 삽입
+                    # git_status 설정하기
+                    # code : git_status
                     if hidden == False:
                         if sys.platform == "win32":
                             if not f.is_symlink() and not bool(f_stat.st_file_attributes & stat.FILE_ATTRIBUTE_HIDDEN):
                                 dirs_list.append(
-                                    [f.name, "dir", f.path, folder_icon])
+                                    [f.name, "dir", f.path, folder_icon, git_status])
                         else:
                             if not f.name.startswith("."):
                                 dirs_list.append(
-                                    [f.name, "dir", f.path, folder_icon])
+                                    [f.name, "dir", f.path, folder_icon, git_status])
                     else:
                         if sys.platform == "win32":
                             if bool(f_stat.st_file_attributes & stat.FILE_ATTRIBUTE_HIDDEN):
                                 dirs_list.append(
-                                    [f.name, "dir", f.path, folder_hidden_icon])
+                                    [f.name, "dir", f.path, folder_hidden_icon, git_status])
                             else:
                                 if f.is_symlink():
                                     dirs_list.append(
-                                        [f.name, "dir", f.path, folder_hidden_icon])
+                                        [f.name, "dir", f.path, folder_hidden_icon, git_status])
                                 else:
                                     dirs_list.append(
-                                        [f.name, "dir", f.path, folder_icon])
+                                        [f.name, "dir", f.path, folder_icon, git_status])
                         else:
                             if f.name.startswith("."):
                                 dirs_list.append(
-                                    [f.name, "dir", f.path, folder_hidden_icon])
+                                    [f.name, "dir", f.path, folder_hidden_icon, git_status])
                             else:
                                 dirs_list.append(
-                                    [f.name, "dir", f.path, folder_icon])
+                                    [f.name, "dir", f.path, folder_icon, git_status])
                 if f.is_file():
+                    # 오브젝트가 파일이면 아래와 같은 정보들을 삽입
+                    # git_status 설정하기
+                    # code : git_status = ??
                     if hidden == False:
                         if sys.platform == "win32":
                             if not bool(f_stat.st_file_attributes & stat.FILE_ATTRIBUTE_HIDDEN):
                                 files_list.append(
-                                    [f.name, size[0], f.path, file_icon, size[1]])
+                                    [f.name, size[0], f.path, file_icon, size[1], git_status])
                         else:
                             if not f.name.startswith("."):
                                 files_list.append(
-                                    [f.name, size[0], f.path, file_icon, size[1]])
+                                    [f.name, size[0], f.path, file_icon, size[1], git_status])
                     else:
                         if sys.platform == "win32":
                             if bool(f_stat.st_file_attributes & stat.FILE_ATTRIBUTE_HIDDEN):
                                 files_list.append(
-                                    [f.name, size[0], f.path, file_hidden_icon, size[1]])
+                                    [f.name, size[0], f.path, file_hidden_icon, size[1], git_status])
                             else:
                                 files_list.append(
-                                    [f.name, size[0], f.path, file_icon, size[1]])
+                                    [f.name, size[0], f.path, file_icon, size[1], git_status])
                         else:
                             if f.name.startswith("."):
                                 files_list.append(
-                                    [f.name, size[0], f.path, file_hidden_icon, size[1]])
+                                    [f.name, size[0], f.path, file_hidden_icon, size[1], git_status])
                             else:
                                 files_list.append(
-                                    [f.name, size[0], f.path, file_icon, size[1]])
+                                    [f.name, size[0], f.path, file_icon, size[1], git_status])
         # FTP
         else:
             ftp.cwd(dirname)
@@ -507,13 +519,15 @@ def update_files(orig_dirname: str):
         entry.delete(0, "end")
         # Add new data
         count = 0
+
+        # [f.name, "dir", f.path, folder_icon, git_logo])
         for i in dirs_list:
             tree.insert("", tk.END, text=i[0], values=[
-                        f"{i[1]}", i[2]], open=False, image=i[3])
+                f"{i[1]}", i[4], i[2]], open=False, image=i[3])
             count += 1
         for i in files_list:
             tree.insert("", tk.END, text=i[0], values=[
-                        f"{i[1]}", i[2]], open=False, image=i[3])
+                f"{i[1]}", i[4], i[2]], open=False, image=i[3])
             count += 1
         #
         if ftp == None:
@@ -571,6 +585,7 @@ def copy_from_ftp():
 # Fix graphic on Win 10
 if sys.platform == "win32" and platform.release() == "10":
     from ctypes import windll
+
     windll.shcore.SetProcessDpiAwareness(1)
 
 # Ini config home path, showing hidden files + other variables
@@ -611,7 +626,6 @@ tk.Button(frame_b, image=up_icon, width=25, height=32, relief="flat",
 tk.Button(frame_b, image=home_icon, width=25, height=32, relief="flat", bg="white",
           fg="black", command=lambda: update_files(home_path)).grid(column=1, row=1)
 
-
 # git buttons
 frame_down = tk.Frame(window, border=1)
 frame_down.pack(fill="x", side="bottom")
@@ -641,22 +655,26 @@ label = tk.Label(window, font=("Arial", 12), anchor="w",
                  bg="white", foreground="grey", border=2)
 label.pack(side="bottom", fill="both")
 
+# Git Status Icon file
+git_temp_icon = tk.PhotoImage(file="data/git_logo.png")
 
 # Tree view
 tree_frame = tk.Frame(window, border=1, relief="flat", bg="white")
 tree_frame.pack(expand=1, fill="both")
 tree = ttk.Treeview(tree_frame, columns=(
-    ["#1"]), selectmode="extended", show="tree headings", style="mystyle.Treeview")
+    ["#1", "#2"]), selectmode="extended", show="tree headings", style="mystyle.Treeview")
 tree.heading("#0", text="   Name ↑", anchor="w", command=sort_name_reverse)
 tree.heading("#1", text="Size", anchor="w", command=sort_size_reverse)
+tree.heading("#2", text="Git_status", anchor="w")  # 새로운 git status 칼럼 헤더 추가
 tree.column("#0", anchor="w")
 tree.column("#1", anchor="e", stretch=False, width=120)
+tree.column("#2", anchor="center", width=80)  # 새로운 git status 칼럼
 tree.pack(side="left", expand=1, fill="both")
 style = ttk.Style()
 style.configure("Treeview", rowheight=40, font=("Arial", 12))
 style.configure("Treeview.Heading", font=("Arial", 12), foreground="grey")
 style.layout("mystyle.Treeview", [
-             ("mystyle.Treeview.treearea", {"sticky": "nswe"})])
+    ("mystyle.Treeview.treearea", {"sticky": "nswe"})])
 scrollbar = ttk.Scrollbar(tree_frame, orient="vertical", command=tree.yview)
 tree.configure(yscroll=scrollbar.set)
 scrollbar.pack(side="right", fill="y")
@@ -703,7 +721,7 @@ tree.bind("<Down>", lambda event: up_down_focus())
 tree.bind("<Delete>", lambda event: delete())
 tree.bind("<Control-c>", lambda event: copy())
 tree.bind("<Control-v>", lambda event: paste()
-          if right_menu.entrycget(index=5, option="state") == "normal" else None)
+if right_menu.entrycget(index=5, option="state") == "normal" else None)
 entry.bind("<Return>", lambda event: update_files(entry.get()))
 entry.bind("<KP_Enter>", lambda event: update_files(entry.get()))
 
