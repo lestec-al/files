@@ -1,5 +1,6 @@
 import os
 import stat
+import pygit2
 import re
 import sys
 import platform
@@ -17,6 +18,28 @@ from send2trash import send2trash
 
 # Interface
 
+def current_file_git_status():
+    if (check_git_repo() == True):
+        repository = pygit2.Repository(last_path)
+        status = repository.status_file(g_current_item)
+    return status
+
+#선택된 파일의 
+def check_git_repo():
+    is_git = True
+# 디렉토리가 Git 저장소인지 확인
+    if os.path.isdir(os.path.join(last_path, ".git")):
+        # Git 저장소로부터 Repository 객체를 생성
+        try:
+            repo = pygit2.Repository(last_path)
+
+        except pygit2.GitError:
+            print("This directory is not a valid Git repository.")
+            is_git = True
+    else:
+        print("This directory is not a Git repository.")
+        is_git = False
+    return is_git
 
 def sort_name_reverse():
     global sort
@@ -104,6 +127,14 @@ def up_down_focus():
 
 
 def select():
+    global g_current_item
+    try:
+        select_row = tree.focus()
+        row_data = tree.item(select_row)
+        g_current_item = row_data["text"]
+    except IndexError:
+        print("IndexError occurred No file selected")
+        g_current_item = None
     """Enable some menu items"""
     if len(tree.selection()) > 0:
         right_menu.entryconfig("Open", state="normal")
