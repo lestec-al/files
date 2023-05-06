@@ -33,6 +33,23 @@ def git_add():
     index.write()
 
 
+def git_commit():
+    if check_git_repo() == True:
+        repository = pygit2.Repository(last_path)
+
+    tree = repository.TreeBuilder().write()
+    ref = repository.head.name
+    parents = [repository.head.target]
+    author = pygit2.Signature('Alice Author', 'alice@authors.tld')
+    committer = pygit2.Signature('Cecil Committer', 'cecil@committers.tld')
+    repository.create_commit(
+        ref,  # the name of the reference to update
+        author, committer, 'one line commit message\n\ndetailed commit message',
+        tree,  # binary string representing the tree object ID
+        parents  # list of binary strings representing parents of the new commit
+    )
+
+
 def current_file_git_status():
     if (check_git_repo() == True):
         repository = pygit2.Repository(last_path)
@@ -618,7 +635,7 @@ tk.Button(frame_c, text='init', width=5, height=1, relief="flat", bg="black",
 tk.Button(frame_c, text='add', width=5, height=1, relief="flat", bg="black",
           fg="black", command=lambda: git_add()).grid(column=2, row=0)
 tk.Button(frame_c, text='commit', width=5, height=1, relief="flat", bg="black",
-          fg="black", command=lambda: update_files(home_path)).grid(column=3, row=0)
+          fg="black", command=lambda: git_commit()).grid(column=3, row=0)
 tk.Button(frame_c, text='rm', width=5, height=1, relief="flat", bg="black",
           fg="black", command=lambda: update_files(home_path)).grid(column=4, row=0)
 tk.Button(frame_c, text='rm --cached', width=8, height=1, relief="flat", bg="black",
