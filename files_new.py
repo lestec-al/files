@@ -19,12 +19,23 @@ from send2trash import send2trash
 # Interface
 def git_rm_cached():
     if check_git_repo() == True:
-        print(1)
         try:
             repo = pygit2.Repository(last_path)
             repo.index.remove(g_current_item)
             repo.index.write()
         except KeyError as e:
+            print("Failed to remove file: ", e)
+    update_files(last_path)
+
+def git_rm():
+    if check_git_repo() == True:
+        try:
+            repo = pygit2.Repository(last_path)
+            tmp_path = last_path + "/" + g_current_item
+            git_rm_cached()
+            os.remove(tmp_path)
+            repo.index.write()
+        except Exception as e:
             print("Failed to remove file: ", e)
     update_files(last_path)
 
@@ -613,7 +624,7 @@ tk.Button(frame_c, text='add', width=5, height=1, relief="flat", bg="black",
 tk.Button(frame_c, text='commit', width=5, height=1, relief="flat", bg="black",
           fg="black", command=lambda: update_files(home_path)).grid(column=3, row=0)
 tk.Button(frame_c, text='rm', width=5, height=1, relief="flat", bg="black",
-          fg="black", command=lambda: update_files(home_path)).grid(column=4, row=0)
+          fg="black", command=lambda: git_rm()).grid(column=4, row=0)
 tk.Button(frame_c, text='rm --cached', width=8, height=1, relief="flat", bg="black",
           fg="black", command=lambda: git_rm_cached()).grid(column=5, row=0)
 tk.Button(frame_c, text='restore', width=6, height=1, relief="flat", bg="black",
