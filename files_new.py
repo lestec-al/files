@@ -104,6 +104,14 @@ def up_down_focus():
 
 
 def select():
+    global g_current_item
+    try:
+        select_row = tree.focus()
+        row_data = tree.item(select_row)
+        g_current_item = row_data["text"]
+    except IndexError:
+        print("IndexError occurred No file selected")
+        g_current_item = None
     """Enable some menu items"""
     if len(tree.selection()) > 0:
         right_menu.entryconfig("Open", state="normal")
