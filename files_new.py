@@ -18,13 +18,22 @@ from send2trash import send2trash
 
 # Interface
 
+
+def git_init():
+    # non-bare repository init
+    if check_git_repo() == False:
+        pygit2.init_repository('/.git', False)
+
+
 def current_file_git_status():
     if (check_git_repo() == True):
         repository = pygit2.Repository(last_path)
         status = repository.status_file(g_current_item)
     return status
 
-#선택된 파일의 
+# 선택된 파일의
+
+
 def check_git_repo():
     is_git = True
 # 디렉토리가 Git 저장소인지 확인
@@ -40,6 +49,7 @@ def check_git_repo():
         print("This directory is not a Git repository.")
         is_git = False
     return is_git
+
 
 def sort_name_reverse():
     global sort
@@ -596,7 +606,7 @@ frame_down.pack(fill="x", side="bottom")
 frame_c = tk.Frame(frame_down, relief="groove", bg="white")
 frame_c.pack(side="bottom")
 tk.Button(frame_c, text='init', width=5, height=1, relief="flat", bg="black",
-          fg="black", command=lambda: update_files(home_path)).grid(column=1, row=0)
+          fg="black", command=lambda: git_init()).grid(column=1, row=0)
 tk.Button(frame_c, text='add', width=5, height=1, relief="flat", bg="black",
           fg="black", command=lambda: update_files(home_path)).grid(column=2, row=0)
 tk.Button(frame_c, text='commit', width=5, height=1, relief="flat", bg="black",
