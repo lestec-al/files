@@ -18,6 +18,13 @@ from send2trash import send2trash
 
 # Interface
 
+def current_file_git_status():
+    if (check_git_repo() == True):
+        repository = pygit2.Repository(last_path)
+        status = repository.status_file(g_current_item)
+    return status
+
+#선택된 파일의 
 def check_git_repo():
     is_git = True
 # 디렉토리가 Git 저장소인지 확인
