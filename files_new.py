@@ -1,4 +1,13 @@
-import os, stat, re, sys, platform, subprocess, string, shutil, configparser, tkinter as tk
+import os
+import stat
+import re
+import sys
+import platform
+import subprocess
+import string
+import shutil
+import configparser
+import tkinter as tk
 from tkinter import ttk, simpledialog
 from tkinter.messagebox import askyesno
 from tkinter import filedialog
@@ -7,6 +16,7 @@ from ftplib import FTP
 from send2trash import send2trash
 
 # Interface
+
 
 def sort_name_reverse():
     global sort
@@ -68,7 +78,7 @@ def scan_disks_add_buttons():
             disk = letters[letter_c]
             if os.path.exists(f"{disk}:{slash}"):
                 tk.Button(frame_b, text=disk.lower(), font=("Arial", 14), relief="flat", bg="white", fg="black",
-                    command=lambda disk=disk:update_files(f"{disk}:{slash}")).grid(column=column, row=1)
+                          command=lambda disk=disk: update_files(f"{disk}:{slash}")).grid(column=column, row=1)
                 column += 1
             letter_c += 1
     if sys.platform == "linux":
@@ -77,7 +87,7 @@ def scan_disks_add_buttons():
         if os.path.exists(f"/media/{os_user}/"):
             for l_disk in os.listdir(f"/media/{os_user}/"):
                 tk.Button(frame_b, text=l_disk[0].lower(), font=("Arial", 14), relief="flat", bg="white", fg="black",
-                    command=lambda l_disk=l_disk:update_files(f"/media/{os_user}/{l_disk}")).grid(column=column, row=1)
+                          command=lambda l_disk=l_disk: update_files(f"/media/{os_user}/{l_disk}")).grid(column=column, row=1)
                 column += 1
 
 
@@ -89,7 +99,8 @@ def up_down_focus():
             tree.selection_set(item)
             tree.focus(item)
             tree.see(item)
-        except:pass
+        except:
+            pass
 
 
 def select():
@@ -134,6 +145,7 @@ def click():
 
 # Operations
 
+
 def new(goal: str):
     try:
         test = False
@@ -143,7 +155,8 @@ def new(goal: str):
         elif goal == "file":
             info_text = "Enter file name"
         while test == False and cancel == False:
-            name_dir = simpledialog.askstring(title="Files", prompt=info_text, parent=tree_frame)
+            name_dir = simpledialog.askstring(
+                title="Files", prompt=info_text, parent=tree_frame)
             if name_dir is not None:
                 test = True
                 for f in os.listdir(last_path):
@@ -188,7 +201,8 @@ def copy():
 
 def paste():
     if sys.platform == "win32":
-        clipboard = window.selection_get(selection="CLIPBOARD").replace("/", slash).split("\n")
+        clipboard = window.selection_get(
+            selection="CLIPBOARD").replace("/", slash).split("\n")
     else:
         clipboard = non_win_clipboard.replace("'", "").split(",")
 
@@ -225,11 +239,13 @@ def delete():
             del_path = tree.item(i)["values"][1]
             if os.path.exists(del_path):
                 del_list.append(del_path)
-        answer = askyesno(title="Files", message=f"Delete {len(tree.selection())} objects in trash?")
+        answer = askyesno(
+            title="Files", message=f"Delete {len(tree.selection())} objects in trash?")
         if answer:
             for di in del_list:
                 send2trash(di)
-    except:pass
+    except:
+        pass
     update_files(entry.get())
 
 
@@ -242,7 +258,8 @@ def rename():
             test = False
             while test == False:
                 test = True
-                new_name = simpledialog.askstring(title="Files", prompt=info_text, parent=tree_frame, initialvalue=e_path[1])
+                new_name = simpledialog.askstring(
+                    title="Files", prompt=info_text, parent=tree_frame, initialvalue=e_path[1])
                 if new_name is not None:
                     for f in os.listdir(entry.get()):
                         if f.lower() == new_name.lower() and new_name.lower() != e_path[1].lower():
@@ -291,15 +308,17 @@ def update_files(orig_dirname: str):
                 try:
                     if ":" in x[1]:
                         ftp_split = x[1].split(":", 1)
-                        ftp.connect(ftp_split[0],int(ftp_split[1]))
+                        ftp.connect(ftp_split[0], int(ftp_split[1]))
                         url_ftp = f"ftp://{ftp_split[0]}:{ftp_split[1]}"
                     else:
                         ftp.connect(x[1])
                         url_ftp = f"ftp://{x[1]}"
                     ftp.login()
                     #
-                    right_menu.add_command(label="Copy to folder", command=copy_from_ftp, state="disable")
-                    right_menu.entryconfig("Show hidden files", state="disable")
+                    right_menu.add_command(
+                        label="Copy to folder", command=copy_from_ftp, state="disable")
+                    right_menu.entryconfig(
+                        "Show hidden files", state="disable")
                     right_menu.entryconfig("New file", state="disable")
                     right_menu.entryconfig("New catalog", state="disable")
                 except:
@@ -338,64 +357,82 @@ def update_files(orig_dirname: str):
                     if hidden == False:
                         if sys.platform == "win32":
                             if not f.is_symlink() and not bool(f_stat.st_file_attributes & stat.FILE_ATTRIBUTE_HIDDEN):
-                                dirs_list.append([f.name, "dir", f.path, folder_icon])
+                                dirs_list.append(
+                                    [f.name, "dir", f.path, folder_icon])
                         else:
                             if not f.name.startswith("."):
-                                dirs_list.append([f.name, "dir", f.path, folder_icon])
+                                dirs_list.append(
+                                    [f.name, "dir", f.path, folder_icon])
                     else:
                         if sys.platform == "win32":
                             if bool(f_stat.st_file_attributes & stat.FILE_ATTRIBUTE_HIDDEN):
-                                dirs_list.append([f.name, "dir", f.path, folder_hidden_icon])
+                                dirs_list.append(
+                                    [f.name, "dir", f.path, folder_hidden_icon])
                             else:
                                 if f.is_symlink():
-                                    dirs_list.append([f.name, "dir", f.path, folder_hidden_icon])
+                                    dirs_list.append(
+                                        [f.name, "dir", f.path, folder_hidden_icon])
                                 else:
-                                    dirs_list.append([f.name, "dir", f.path, folder_icon])
+                                    dirs_list.append(
+                                        [f.name, "dir", f.path, folder_icon])
                         else:
                             if f.name.startswith("."):
-                                dirs_list.append([f.name, "dir", f.path, folder_hidden_icon])
+                                dirs_list.append(
+                                    [f.name, "dir", f.path, folder_hidden_icon])
                             else:
-                                dirs_list.append([f.name, "dir", f.path, folder_icon])
+                                dirs_list.append(
+                                    [f.name, "dir", f.path, folder_icon])
                 if f.is_file():
                     if hidden == False:
                         if sys.platform == "win32":
                             if not bool(f_stat.st_file_attributes & stat.FILE_ATTRIBUTE_HIDDEN):
-                                files_list.append([f.name, size[0], f.path, file_icon, size[1]])
+                                files_list.append(
+                                    [f.name, size[0], f.path, file_icon, size[1]])
                         else:
                             if not f.name.startswith("."):
-                                files_list.append([f.name, size[0], f.path, file_icon, size[1]])
+                                files_list.append(
+                                    [f.name, size[0], f.path, file_icon, size[1]])
                     else:
                         if sys.platform == "win32":
                             if bool(f_stat.st_file_attributes & stat.FILE_ATTRIBUTE_HIDDEN):
-                                files_list.append([f.name, size[0], f.path, file_hidden_icon, size[1]])
+                                files_list.append(
+                                    [f.name, size[0], f.path, file_hidden_icon, size[1]])
                             else:
-                                files_list.append([f.name, size[0], f.path, file_icon, size[1]])
+                                files_list.append(
+                                    [f.name, size[0], f.path, file_icon, size[1]])
                         else:
                             if f.name.startswith("."):
-                                files_list.append([f.name, size[0], f.path, file_hidden_icon, size[1]])
+                                files_list.append(
+                                    [f.name, size[0], f.path, file_hidden_icon, size[1]])
                             else:
-                                files_list.append([f.name, size[0], f.path, file_icon, size[1]])
+                                files_list.append(
+                                    [f.name, size[0], f.path, file_icon, size[1]])
         # FTP
         else:
             ftp.cwd(dirname)
             try:
                 for f in ftp.mlsd():
                     if f[1]["type"] == "dir":
-                        dirs_list.append([f[0], "dir", f"{orig_dirname}/{f[0]}", folder_icon])
+                        dirs_list.append(
+                            [f[0], "dir", f"{orig_dirname}/{f[0]}", folder_icon])
                     elif f[1]["type"] == "file":
                         size = convert_size(int(f[1]["size"]))
-                        files_list.append([f[0], size[0], f"{orig_dirname}/{f[0]}", file_icon, size[1]])
+                        files_list.append(
+                            [f[0], size[0], f"{orig_dirname}/{f[0]}", file_icon, size[1]])
             except:
                 ftp.voidcmd('TYPE I')
                 for f in ftp.nlst():
                     try:
                         if "." in f and not f.startswith("."):
                             size = convert_size(ftp.size(f))
-                            files_list.append([f, size[0], f"{orig_dirname}/{f}", file_icon, size[1]])    
+                            files_list.append(
+                                [f, size[0], f"{orig_dirname}/{f}", file_icon, size[1]])
                         else:
-                            dirs_list.append([f, "dir", f"{orig_dirname}/{f}", folder_icon])
+                            dirs_list.append(
+                                [f, "dir", f"{orig_dirname}/{f}", folder_icon])
                     except:
-                        dirs_list.append([f, "dir", f"{orig_dirname}/{f}", folder_icon])
+                        dirs_list.append(
+                            [f, "dir", f"{orig_dirname}/{f}", folder_icon])
         # Sorting
         if sort == "size":
             if reverse == False:
@@ -418,10 +455,12 @@ def update_files(orig_dirname: str):
         # Add new data
         count = 0
         for i in dirs_list:
-            tree.insert("", tk.END, text=i[0], values=[f"{i[1]}", i[2]], open=False, image=i[3])
+            tree.insert("", tk.END, text=i[0], values=[
+                        f"{i[1]}", i[2]], open=False, image=i[3])
             count += 1
         for i in files_list:
-            tree.insert("", tk.END, text=i[0], values=[f"{i[1]}", i[2]], open=False, image=i[3])
+            tree.insert("", tk.END, text=i[0], values=[
+                        f"{i[1]}", i[2]], open=False, image=i[3])
             count += 1
         #
         if ftp == None:
@@ -431,7 +470,7 @@ def update_files(orig_dirname: str):
             last_path = ftp.pwd()
             entry.insert("end", f"{url_ftp}{ftp.pwd()}")
         #
-        label["text"]=f"   {str(count)} objects"
+        label["text"] = f"   {str(count)} objects"
         # Set title = folder name
         if ftp == None:
             if re.match(r"\w:\\$", dirname):
@@ -477,14 +516,15 @@ def copy_from_ftp():
 
 
 # Fix graphic on Win 10
-if sys.platform == "win32"and platform.release() == "10":
+if sys.platform == "win32" and platform.release() == "10":
     from ctypes import windll
     windll.shcore.SetProcessDpiAwareness(1)
 
 # Ini config home path, showing hidden files + other variables
 config = configparser.ConfigParser()
 config.read("files.ini")
-home_path = str(Path.home()) if config["USER SETTINGS"]["home_path"] == "" else config["USER SETTINGS"]["home_path"]
+home_path = str(Path.home(
+)) if config["USER SETTINGS"]["home_path"] == "" else config["USER SETTINGS"]["home_path"]
 hidden = True if config["USER SETTINGS"]["show_hidden_files"] == "True" else False
 sort = "size" if config["USER SETTINGS"]["sort"] == "size" else "name"
 reverse = False
@@ -513,17 +553,47 @@ home_icon = tk.PhotoImage(file="data/icon_home.png")
 up_icon = tk.PhotoImage(file="data/icon_up.png")
 frame_b = tk.Frame(frame_up, border=2, relief="groove", bg="white")
 frame_b.pack(side="left")
-tk.Button(frame_b, image=up_icon, width=25, height=32, relief="flat", bg="white", fg="black", command=move_up).grid(column=0, row=1)
-tk.Button(frame_b, image=home_icon, width=25, height=32, relief="flat", bg="white", fg="black", command=lambda:update_files(home_path)).grid(column=1, row=1)
-entry = tk.Entry(frame_up, font=("Arial", 12), justify="left", highlightcolor="white", highlightthickness=0, relief="groove", border=2)
-entry.pack(side="right",fill="both", expand=1)
-label = tk.Label(window, font=("Arial", 12), anchor="w", bg="white", foreground="grey", border=2)
-label.pack(side="bottom",fill="both")
+tk.Button(frame_b, image=up_icon, width=25, height=32, relief="flat",
+          bg="white", fg="black", command=move_up).grid(column=0, row=1)
+tk.Button(frame_b, image=home_icon, width=25, height=32, relief="flat", bg="white",
+          fg="black", command=lambda: update_files(home_path)).grid(column=1, row=1)
+
+
+# git buttons
+frame_down = tk.Frame(window, border=1)
+frame_down.pack(fill="x", side="bottom")
+frame_c = tk.Frame(frame_down, relief="groove", bg="white")
+frame_c.pack(side="bottom")
+tk.Button(frame_c, text='init', width=5, height=1, relief="flat", bg="black",
+          fg="black", command=lambda: update_files(home_path)).grid(column=1, row=0)
+tk.Button(frame_c, text='add', width=5, height=1, relief="flat", bg="black",
+          fg="black", command=lambda: update_files(home_path)).grid(column=2, row=0)
+tk.Button(frame_c, text='commit', width=5, height=1, relief="flat", bg="black",
+          fg="black", command=lambda: update_files(home_path)).grid(column=3, row=0)
+tk.Button(frame_c, text='rm', width=5, height=1, relief="flat", bg="black",
+          fg="black", command=lambda: update_files(home_path)).grid(column=4, row=0)
+tk.Button(frame_c, text='rm --cached', width=8, height=1, relief="flat", bg="black",
+          fg="black", command=lambda: update_files(home_path)).grid(column=5, row=0)
+tk.Button(frame_c, text='restore', width=6, height=1, relief="flat", bg="black",
+          fg="black", command=lambda: update_files(home_path)).grid(column=6, row=0)
+tk.Button(frame_c, text='restore --staged', width=10, height=1, relief="flat", bg="black",
+          fg="black", command=lambda: update_files(home_path)).grid(column=7, row=0)
+tk.Button(frame_c, text='mv', width=6, height=1, relief="flat", bg="black",
+          fg="black", command=lambda: update_files(home_path)).grid(column=8, row=0)
+
+entry = tk.Entry(frame_up, font=("Arial", 12), justify="left",
+                 highlightcolor="white", highlightthickness=0, relief="groove", border=2)
+entry.pack(side="right", fill="both", expand=1)
+label = tk.Label(window, font=("Arial", 12), anchor="w",
+                 bg="white", foreground="grey", border=2)
+label.pack(side="bottom", fill="both")
+
 
 # Tree view
 tree_frame = tk.Frame(window, border=1, relief="flat", bg="white")
 tree_frame.pack(expand=1, fill="both")
-tree = ttk.Treeview(tree_frame, columns=(["#1"]), selectmode="extended", show="tree headings", style="mystyle.Treeview")
+tree = ttk.Treeview(tree_frame, columns=(
+    ["#1"]), selectmode="extended", show="tree headings", style="mystyle.Treeview")
 tree.heading("#0", text="   Name ↑", anchor="w", command=sort_name_reverse)
 tree.heading("#1", text="Size", anchor="w", command=sort_size_reverse)
 tree.column("#0", anchor="w")
@@ -532,10 +602,11 @@ tree.pack(side="left", expand=1, fill="both")
 style = ttk.Style()
 style.configure("Treeview", rowheight=40, font=("Arial", 12))
 style.configure("Treeview.Heading", font=("Arial", 12), foreground="grey")
-style.layout("mystyle.Treeview", [("mystyle.Treeview.treearea", {"sticky":"nswe"})])
+style.layout("mystyle.Treeview", [
+             ("mystyle.Treeview.treearea", {"sticky": "nswe"})])
 scrollbar = ttk.Scrollbar(tree_frame, orient="vertical", command=tree.yview)
 tree.configure(yscroll=scrollbar.set)
-scrollbar.pack(side="right",fill="y")
+scrollbar.pack(side="right", fill="y")
 
 # On/off hidden files checkbutton on start
 hidden_menu = tk.IntVar()
@@ -549,32 +620,38 @@ right_menu = tk.Menu(tree_frame, tearoff=0, font=("Arial", 12))
 right_menu.add_command(label="Open", command=click, state="disabled")
 right_menu.add_command(label="Copy", command=copy, state="disabled")
 right_menu.add_command(label="Rename", command=rename, state="disabled")
-right_menu.add_command(label="Delete in trash", command=delete, state="disabled")
+right_menu.add_command(label="Delete in trash",
+                       command=delete, state="disabled")
 right_menu.add_separator()
 right_menu.add_command(label="Paste", command=paste, state="disabled")
 right_menu.add_separator()
-right_menu.add_command(label="New file", command=lambda:new("file"), state="normal")
-right_menu.add_command(label="New catalog", command=lambda:new("dir"), state="normal")
+right_menu.add_command(
+    label="New file", command=lambda: new("file"), state="normal")
+right_menu.add_command(label="New catalog",
+                       command=lambda: new("dir"), state="normal")
 right_menu.add_separator()
-right_menu.add_checkbutton(label="Show hidden files", onvalue=1, offvalue=0, variable=hidden_menu, command=show_hide)
-right_menu.bind("<FocusOut>", lambda event:right_menu.unpost())# Click elsewhere - close right click menu
+right_menu.add_checkbutton(label="Show hidden files", onvalue=1,
+                           offvalue=0, variable=hidden_menu, command=show_hide)
+# Click elsewhere - close right click menu
+right_menu.bind("<FocusOut>", lambda event: right_menu.unpost())
 scan_disks_add_buttons()
 update_files(home_path)
 tree.focus_set()
 
 # Keyboard, mouse buttons
-tree.bind("<<TreeviewSelect>>", lambda event:select())
-tree.bind("<Double-Button-1>", lambda event:click())
-tree.bind("<Button-1>", lambda event:remove_selection())
-tree.bind("<Return>", lambda event:click())
-tree.bind("<BackSpace>", lambda event:move_up())
+tree.bind("<<TreeviewSelect>>", lambda event: select())
+tree.bind("<Double-Button-1>", lambda event: click())
+tree.bind("<Button-1>", lambda event: remove_selection())
+tree.bind("<Return>", lambda event: click())
+tree.bind("<BackSpace>", lambda event: move_up())
 tree.bind("<Button-3>", open_right_menu)
-tree.bind("<Up>", lambda event:up_down_focus())
-tree.bind("<Down>", lambda event:up_down_focus())
-tree.bind("<Delete>", lambda event:delete())
+tree.bind("<Up>", lambda event: up_down_focus())
+tree.bind("<Down>", lambda event: up_down_focus())
+tree.bind("<Delete>", lambda event: delete())
 tree.bind("<Control-c>", lambda event: copy())
-tree.bind("<Control-v>", lambda event: paste() if right_menu.entrycget(index=5, option="state") == "normal" else None)
-entry.bind("<Return>", lambda event:update_files(entry.get()))
-entry.bind("<KP_Enter>", lambda event:update_files(entry.get()))
+tree.bind("<Control-v>", lambda event: paste()
+          if right_menu.entrycget(index=5, option="state") == "normal" else None)
+entry.bind("<Return>", lambda event: update_files(entry.get()))
+entry.bind("<KP_Enter>", lambda event: update_files(entry.get()))
 
 window.mainloop()
