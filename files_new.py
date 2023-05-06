@@ -37,11 +37,17 @@ def git_commit():
     if check_git_repo() == True:
         repository = pygit2.Repository(last_path)
 
+    config = repository.config
+    for name in config.get_multivar('user.name'):
+        user_name = name
+    for email in config.get_multivar('user.email'):
+        user_email = email
+    author = pygit2.Signature(user_name, user_email)
+    committer = pygit2.Signature(user_name, user_email)
     tree = repository.TreeBuilder().write()
     ref = repository.head.name
     parents = [repository.head.target]
-    author = pygit2.Signature('Alice Author', 'alice@authors.tld')
-    committer = pygit2.Signature('Cecil Committer', 'cecil@committers.tld')
+
     repository.create_commit(
         ref,  # the name of the reference to update
         author, committer, 'one line commit message\n\ndetailed commit message',
