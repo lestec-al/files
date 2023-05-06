@@ -17,6 +17,17 @@ from ftplib import FTP
 from send2trash import send2trash
 
 # Interface
+def git_rm_cached():
+    if check_git_repo() == True:
+        print(1)
+        try:
+            repo = pygit2.Repository(last_path)
+            repo.index.remove(g_current_item)
+            repo.index.write()
+        except KeyError as e:
+            print("Failed to remove file: ", e)
+    update_files(last_path)
+
 
 def current_file_git_status():
     if (check_git_repo() == True):
@@ -604,7 +615,7 @@ tk.Button(frame_c, text='commit', width=5, height=1, relief="flat", bg="black",
 tk.Button(frame_c, text='rm', width=5, height=1, relief="flat", bg="black",
           fg="black", command=lambda: update_files(home_path)).grid(column=4, row=0)
 tk.Button(frame_c, text='rm --cached', width=8, height=1, relief="flat", bg="black",
-          fg="black", command=lambda: update_files(home_path)).grid(column=5, row=0)
+          fg="black", command=lambda: git_rm_cached()).grid(column=5, row=0)
 tk.Button(frame_c, text='restore', width=6, height=1, relief="flat", bg="black",
           fg="black", command=lambda: update_files(home_path)).grid(column=6, row=0)
 tk.Button(frame_c, text='restore --staged', width=10, height=1, relief="flat", bg="black",
