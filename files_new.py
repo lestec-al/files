@@ -1,5 +1,6 @@
 import os
 import stat
+import pygit2
 import re
 import sys
 import platform
@@ -17,6 +18,21 @@ from send2trash import send2trash
 
 # Interface
 
+def check_git_repo():
+    is_git = True
+# 디렉토리가 Git 저장소인지 확인
+    if os.path.isdir(os.path.join(last_path, ".git")):
+        # Git 저장소로부터 Repository 객체를 생성
+        try:
+            repo = pygit2.Repository(last_path)
+
+        except pygit2.GitError:
+            print("This directory is not a valid Git repository.")
+            is_git = True
+    else:
+        print("This directory is not a Git repository.")
+        is_git = False
+    return is_git
 
 def sort_name_reverse():
     global sort
