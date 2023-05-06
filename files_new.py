@@ -33,10 +33,10 @@ def git_add():
     index.write()
 
 
-def git_commit():
+def git_commit(commit_message):
     if check_git_repo() == True:
         repository = pygit2.Repository(last_path)
-
+    index = repository.index
     config = repository.config
     for name in config.get_multivar('user.name'):
         user_name = name
@@ -44,15 +44,15 @@ def git_commit():
         user_email = email
     author = pygit2.Signature(user_name, user_email)
     committer = pygit2.Signature(user_name, user_email)
-    tree = repository.TreeBuilder().write()
+    tree = index.write_tree()
     ref = repository.head.name
     parents = [repository.head.target]
 
     repository.create_commit(
-        ref,  # the name of the reference to update
-        author, committer, 'one line commit message\n\ndetailed commit message',
-        tree,  # binary string representing the tree object ID
-        parents  # list of binary strings representing parents of the new commit
+        ref,
+        author, committer, commit_message,
+        tree,
+        parents
     )
 
 
@@ -631,6 +631,22 @@ tk.Button(frame_b, image=home_icon, width=25, height=32, relief="flat", bg="whit
           fg="black", command=lambda: update_files(home_path)).grid(column=1, row=1)
 
 
+def open_git_commit_window():
+    input_window = tk.Toplevel(window)
+    input_window.title('commit message')
+    input_window.geometry("500x100")
+    input_window.geometry("+100+200")
+
+    label = tk.Label(
+        input_window, text="commit message를 입력해주세요 !")
+    label.pack()
+    entry = tk.Entry(input_window, width=30)
+    entry.pack()
+    button = tk.Button(input_window, text="commit",
+                       command=lambda: (git_commit(entry.get()), input_window.destroy()))
+    button.pack()
+
+
 # git buttons
 frame_down = tk.Frame(window, border=1)
 frame_down.pack(fill="x", side="bottom")
@@ -641,7 +657,9 @@ tk.Button(frame_c, text='init', width=5, height=1, relief="flat", bg="black",
 tk.Button(frame_c, text='add', width=5, height=1, relief="flat", bg="black",
           fg="black", command=lambda: git_add()).grid(column=2, row=0)
 tk.Button(frame_c, text='commit', width=5, height=1, relief="flat", bg="black",
-          fg="black", command=lambda: git_commit()).grid(column=3, row=0)
+          fg="black", command=lambda: open_git_commit_window()).grid(column=3, row=0)
+# tk.Button(frame_c, text='commit', width=5, height=1, relief="flat", bg="black",
+#           fg="black", command=lambda: git_commit()).grid(column=3, row=0)
 tk.Button(frame_c, text='rm', width=5, height=1, relief="flat", bg="black",
           fg="black", command=lambda: update_files(home_path)).grid(column=4, row=0)
 tk.Button(frame_c, text='rm --cached', width=8, height=1, relief="flat", bg="black",
@@ -652,6 +670,7 @@ tk.Button(frame_c, text='restore --staged', width=10, height=1, relief="flat", b
           fg="black", command=lambda: update_files(home_path)).grid(column=7, row=0)
 tk.Button(frame_c, text='mv', width=6, height=1, relief="flat", bg="black",
           fg="black", command=lambda: update_files(home_path)).grid(column=8, row=0)
+
 
 entry = tk.Entry(frame_up, font=("Arial", 12), justify="left",
                  highlightcolor="white", highlightthickness=0, relief="groove", border=2)
