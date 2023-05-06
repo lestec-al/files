@@ -25,6 +25,14 @@ def git_init():
         pygit2.init_repository('/.git', False)
 
 
+def git_add():
+    if check_git_repo() == True:
+        repository = pygit2.Repository(last_path)
+    index = repository.index
+    index.add_all()
+    index.write()
+
+
 def current_file_git_status():
     if (check_git_repo() == True):
         repository = pygit2.Repository(last_path)
@@ -608,7 +616,7 @@ frame_c.pack(side="bottom")
 tk.Button(frame_c, text='init', width=5, height=1, relief="flat", bg="black",
           fg="black", command=lambda: git_init()).grid(column=1, row=0)
 tk.Button(frame_c, text='add', width=5, height=1, relief="flat", bg="black",
-          fg="black", command=lambda: update_files(home_path)).grid(column=2, row=0)
+          fg="black", command=lambda: git_add()).grid(column=2, row=0)
 tk.Button(frame_c, text='commit', width=5, height=1, relief="flat", bg="black",
           fg="black", command=lambda: update_files(home_path)).grid(column=3, row=0)
 tk.Button(frame_c, text='rm', width=5, height=1, relief="flat", bg="black",
