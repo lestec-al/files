@@ -464,7 +464,6 @@ def update_files(orig_dirname: str):
                 dirname = "/"
         # Scan
         files_list, dirs_list = [], []
-
         if ftp == None:
             files = os.scandir(dirname)
             git_repo = pygit2.Repository()
@@ -718,11 +717,13 @@ frame_down.pack(fill="x", side="bottom")
 frame_c = tk.Frame(frame_down, relief="groove", bg="white")
 frame_c.pack(side="bottom")
 tk.Button(frame_c, text='init', width=5, height=1, relief="flat", bg="black",
-          fg="black", command=lambda: update_files(home_path)).grid(column=1, row=0)
+          fg="black", command=lambda: git_init()).grid(column=1, row=0)
 tk.Button(frame_c, text='add', width=5, height=1, relief="flat", bg="black",
-          fg="black", command=lambda: update_files(home_path)).grid(column=2, row=0)
+          fg="black", command=lambda: git_add()).grid(column=2, row=0)
 tk.Button(frame_c, text='commit', width=5, height=1, relief="flat", bg="black",
-          fg="black", command=lambda: update_files(home_path)).grid(column=3, row=0)
+          fg="black", command=lambda: open_git_commit_window()).grid(column=3, row=0)
+# tk.Button(frame_c, text='commit', width=5, height=1, relief="flat", bg="black",
+#           fg="black", command=lambda: git_commit()).grid(column=3, row=0)
 tk.Button(frame_c, text='rm', width=5, height=1, relief="flat", bg="black",
           fg="black", command=lambda: git_rm()).grid(column=4, row=0)
 tk.Button(frame_c, text='rm --cached', width=8, height=1, relief="flat", bg="black",
@@ -733,6 +734,7 @@ tk.Button(frame_c, text='restore --staged', width=10, height=1, relief="flat", b
           fg="black", command=lambda: update_files(home_path)).grid(column=7, row=0)
 tk.Button(frame_c, text='mv', width=6, height=1, relief="flat", bg="black",
           fg="black", command=lambda: update_files(home_path)).grid(column=8, row=0)
+
 
 entry = tk.Entry(frame_up, font=("Arial", 12), justify="left",
                  highlightcolor="white", highlightthickness=0, relief="groove", border=2)
