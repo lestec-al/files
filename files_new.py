@@ -79,6 +79,18 @@ def git_commit(commit_message):
     )
 
 
+def git_mv(new_file_name):
+    repository = pygit2.Repository(last_path)
+    index = repository.index
+    old_file_name = g_current_item
+    index.remove(old_file_name)
+    os.rename(old_file_name, new_file_name)
+    index.add(new_file_name)
+    index.write()
+
+    update_files(last_path)
+
+
 def current_file_git_status():
     if (check_git_repo() == True):
         repository = pygit2.Repository(last_path)
@@ -710,10 +722,28 @@ def open_git_commit_window():
     label = tk.Label(
         input_window, text="commit message를 입력해주세요 !")
     label.pack()
-    entry = tk.Entry(input_window, width=30)
-    entry.pack()
+    input_entry = tk.Entry(input_window, width=30)
+    input_entry.pack()
+    input_entry.focus_set()
     button = tk.Button(input_window, text="commit",
-                       command=lambda: (git_commit(entry.get()), input_window.destroy()))
+                       command=lambda: (git_commit(input_entry.get()), input_window.destroy()))
+    button.pack()
+
+
+def open_git_mv_window():
+    input_window = tk.Toplevel(window)
+    input_window.title('파일명 변경')
+    input_window.geometry("500x100")
+    input_window.geometry("+100+200")
+
+    label = tk.Label(
+        input_window, text="변경할 이름을 입력해주세요 !")
+    label.pack()
+    input_entry = tk.Entry(input_window, width=30)
+    input_entry.pack()
+    input_entry.focus_set()
+    button = tk.Button(input_window, text="rename",
+                       command=lambda: (git_mv(input_entry.get()), input_window.destroy()))
     button.pack()
 
 
@@ -728,8 +758,6 @@ tk.Button(frame_c, text='add', width=5, height=1, relief="flat", bg="black",
           fg="black", command=lambda: git_add()).grid(column=2, row=0)
 tk.Button(frame_c, text='commit', width=5, height=1, relief="flat", bg="black",
           fg="black", command=lambda: open_git_commit_window()).grid(column=3, row=0)
-# tk.Button(frame_c, text='commit', width=5, height=1, relief="flat", bg="black",
-#           fg="black", command=lambda: git_commit()).grid(column=3, row=0)
 tk.Button(frame_c, text='rm', width=5, height=1, relief="flat", bg="black",
           fg="black", command=lambda: git_rm()).grid(column=4, row=0)
 tk.Button(frame_c, text='rm --cached', width=8, height=1, relief="flat", bg="black",
@@ -739,7 +767,7 @@ tk.Button(frame_c, text='restore', width=6, height=1, relief="flat", bg="black",
 tk.Button(frame_c, text='restore --staged', width=10, height=1, relief="flat", bg="black",
           fg="black", command=lambda: update_files(home_path)).grid(column=7, row=0)
 tk.Button(frame_c, text='mv', width=6, height=1, relief="flat", bg="black",
-          fg="black", command=lambda: update_files(home_path)).grid(column=8, row=0)
+          fg="black", command=lambda: open_git_mv_window()).grid(column=8, row=0)
 
 entry = tk.Entry(frame_up, font=("Arial", 12), justify="left",
                  highlightcolor="white", highlightthickness=0, relief="groove", border=2)
