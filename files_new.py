@@ -512,7 +512,13 @@ def update_files(orig_dirname: str):
                 if f.is_file():
                     # 오브젝트가 파일이면 아래와 같은 정보들을 삽입
                     if is_repo_exist:  # if true -> cant init
-                        git_status = git_repo.status_file(f.name)
+                        repo_dir = dirname
+                        repo_dir = repo_dir[(len(git_repo.path) - 5):]
+                        if not repo_dir:
+                            git_status = git_repo.status_file(f.name)
+                        else:
+                            git_status = git_repo.status_file(repo_dir + '/' + f.name)
+
                     else:  # if not exist -> can init, and flag is
                         git_status = -1
 
@@ -734,7 +740,6 @@ tk.Button(frame_c, text='restore --staged', width=10, height=1, relief="flat", b
           fg="black", command=lambda: update_files(home_path)).grid(column=7, row=0)
 tk.Button(frame_c, text='mv', width=6, height=1, relief="flat", bg="black",
           fg="black", command=lambda: update_files(home_path)).grid(column=8, row=0)
-
 
 entry = tk.Entry(frame_up, font=("Arial", 12), justify="left",
                  highlightcolor="white", highlightthickness=0, relief="groove", border=2)
