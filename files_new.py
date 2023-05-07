@@ -106,6 +106,18 @@ def git_commit(commit_message):
     )
 
 
+def git_mv(new_file_name):
+    repository = pygit2.Repository(last_path)
+    index = repository.index
+    old_file_name = g_current_item
+    index.remove(old_file_name)
+    os.rename(old_file_name, new_file_name)
+    index.add(new_file_name)
+    index.write()
+
+    update_files(last_path)
+
+
 def current_file_git_status():
     if (check_git_repo() == True):
         repository = pygit2.Repository(last_path)
@@ -113,6 +125,16 @@ def current_file_git_status():
     return status
 
 
+def update_file_git_status(path, file_name):
+    if (check_git_repo(path) == True):
+        repository = pygit2.Repository(path)
+        status = repository.status_file(file_name)
+    else:
+        return 0
+    return status
+
+
+# 선택된 파일의
 def check_git_repo():
     is_git = True
     # 디렉토리가 Git 저장소인지 확인
@@ -128,6 +150,18 @@ def check_git_repo():
         print("This directory is not a Git repository.")
         is_git = False
     return is_git
+
+
+def update_git_repo(path):
+    try:
+        # 디렉토리가 Git 저장소인지 확인 레포가 만들어지면 init 불가능
+        repo = pygit2.Repository(path)
+
+    except pygit2.GitError:
+        print("This directory is not a valid Git repository.")
+        return False, pygit2.Repository()
+
+    return True, repo
 
 
 def sort_name_reverse():
@@ -471,15 +505,21 @@ def update_files(orig_dirname: str):
         files_list, dirs_list = [], []
         if ftp == None:
             files = os.scandir(dirname)
+            git_repo = pygit2.Repository()
+            is_repo_exist, git_repo = update_git_repo(dirname)
+            print(is_repo_exist, git_repo)
+
             for f in files:
                 f_stat = f.stat()
                 size = convert_size(f_stat.st_size)
-                # deafult git_status is 0
-                git_status = 0
+
                 if f.is_dir():
                     # 오브젝트가 폴더이면 다음과 같은 정보들을 삽입
-                    # git_status 설정하기
-                    # code : git_status
+                    if is_repo_exist:  # if true -> cant init
+                        git_status = 0  # status 0 of file is current state
+                    else:  # if not exist -> can init, and flag is -1
+                        git_status = -1
+
                     if hidden == False:
                         if sys.platform == "win32":
                             if not f.is_symlink() and not bool(f_stat.st_file_attributes & stat.FILE_ATTRIBUTE_HIDDEN):
@@ -510,8 +550,17 @@ def update_files(orig_dirname: str):
                                     [f.name, "dir", f.path, folder_icon, git_status])
                 if f.is_file():
                     # 오브젝트가 파일이면 아래와 같은 정보들을 삽입
-                    # git_status 설정하기
-                    # code : git_status = ??
+                    if is_repo_exist:  # if true -> cant init
+                        repo_dir = dirname
+                        repo_dir = repo_dir[(len(git_repo.path) - 5):]
+                        if not repo_dir:
+                            git_status = git_repo.status_file(f.name)
+                        else:
+                            git_status = git_repo.status_file(repo_dir + '/' + f.name)
+
+                    else:  # if not exist -> can init, and flag is
+                        git_status = -1
+
                     if hidden == False:
                         if sys.platform == "win32":
                             if not bool(f_stat.st_file_attributes & stat.FILE_ATTRIBUTE_HIDDEN):
@@ -584,14 +633,14 @@ def update_files(orig_dirname: str):
         # Add new data
         count = 0
 
-        # [f.name, "dir", f.path, folder_icon, git_logo])
+        # [f.name, "dir", f.path, folder_icon, git_status])
         for i in dirs_list:
             tree.insert("", tk.END, text=i[0], values=[
                 f"{i[1]}", i[4], i[2]], open=False, image=i[3])
             count += 1
         for i in files_list:
             tree.insert("", tk.END, text=i[0], values=[
-                f"{i[1]}", i[4], i[2]], open=False, image=i[3])
+                f"{i[1]}", i[5], i[2]], open=False, image=i[3])
             count += 1
         #
         if ftp == None:
@@ -700,10 +749,28 @@ def open_git_commit_window():
     label = tk.Label(
         input_window, text="commit message를 입력해주세요 !")
     label.pack()
-    entry = tk.Entry(input_window, width=30)
-    entry.pack()
+    input_entry = tk.Entry(input_window, width=30)
+    input_entry.pack()
+    input_entry.focus_set()
     button = tk.Button(input_window, text="commit",
-                       command=lambda: (git_commit(entry.get()), input_window.destroy()))
+                       command=lambda: (git_commit(input_entry.get()), input_window.destroy()))
+    button.pack()
+
+
+def open_git_mv_window():
+    input_window = tk.Toplevel(window)
+    input_window.title('파일명 변경')
+    input_window.geometry("500x100")
+    input_window.geometry("+100+200")
+
+    label = tk.Label(
+        input_window, text="변경할 이름을 입력해주세요 !")
+    label.pack()
+    input_entry = tk.Entry(input_window, width=30)
+    input_entry.pack()
+    input_entry.focus_set()
+    button = tk.Button(input_window, text="rename",
+                       command=lambda: (git_mv(input_entry.get()), input_window.destroy()))
     button.pack()
 
 
@@ -718,8 +785,6 @@ tk.Button(frame_c, text='add', width=5, height=1, relief="flat", bg="black",
           fg="black", command=lambda: git_add()).grid(column=2, row=0)
 tk.Button(frame_c, text='commit', width=5, height=1, relief="flat", bg="black",
           fg="black", command=lambda: open_git_commit_window()).grid(column=3, row=0)
-# tk.Button(frame_c, text='commit', width=5, height=1, relief="flat", bg="black",
-#           fg="black", command=lambda: git_commit()).grid(column=3, row=0)
 tk.Button(frame_c, text='rm', width=5, height=1, relief="flat", bg="black",
           fg="black", command=lambda: git_rm()).grid(column=4, row=0)
 tk.Button(frame_c, text='rm --cached', width=8, height=1, relief="flat", bg="black",
@@ -729,8 +794,7 @@ tk.Button(frame_c, text='restore', width=6, height=1, relief="flat", bg="black",
 tk.Button(frame_c, text='restore --staged', width=10, height=1, relief="flat", bg="black",
           fg="black", command=lambda: git_restore_staged()).grid(column=7, row=0)
 tk.Button(frame_c, text='mv', width=6, height=1, relief="flat", bg="black",
-          fg="black", command=lambda: update_files(home_path)).grid(column=8, row=0)
-
+          fg="black", command=lambda: open_git_mv_window()).grid(column=8, row=0)
 
 entry = tk.Entry(frame_up, font=("Arial", 12), justify="left",
                  highlightcolor="white", highlightthickness=0, relief="groove", border=2)
