@@ -83,8 +83,7 @@ def git_mv(new_file_name):
     repository = pygit2.Repository(last_path)
     index = repository.index
     old_file_name = g_current_item
-    old_path = last_path + '/' + old_file_name
-    new_path = last_path + '/' + new_file_name
+    index.remove(old_file_name)
     os.rename(old_file_name, new_file_name)
     index.add(new_file_name)
     index.write()
