@@ -79,6 +79,19 @@ def git_commit(commit_message):
     )
 
 
+def git_mv(new_file_name):
+    repository = pygit2.Repository(last_path)
+    index = repository.index
+    old_file_name = g_current_item
+    old_path = last_path + '/' + old_file_name
+    new_path = last_path + '/' + new_file_name
+    os.rename(old_file_name, new_file_name)
+    index.add(new_file_name)
+    index.write()
+
+    update_files(last_path)
+
+
 def current_file_git_status():
     if (check_git_repo() == True):
         repository = pygit2.Repository(last_path)
