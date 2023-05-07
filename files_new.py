@@ -33,6 +33,7 @@ def git_restore():
             f.write(file_content)
     update_files(last_path)
 
+
 def git_restore_staged():
     if check_git_repo() == True:
         repo = pygit2.Repository(last_path)
