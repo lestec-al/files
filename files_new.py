@@ -267,6 +267,8 @@ def select():
         select_row = tree.focus()
         row_data = tree.item(select_row)
         g_current_item = row_data["text"]
+        if not tree.selection():
+            g_current_item = ''
     except IndexError:
         print("IndexError occurred No file selected")
         g_current_item = None
