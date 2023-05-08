@@ -37,6 +37,11 @@ git_status_dict = {
     16384: "GIT_STATUS_IGNORED",
     32768: "GIT_STATUS_CONFLICTED"
 }
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> develop
 # Interface
 
 
@@ -95,14 +100,21 @@ def git_rm():
 def git_init():
     # non-bare repository init
     if not check_git_repo(last_path):
+<<<<<<< HEAD
         pygit2.init_repository('/.git', False)
+=======
+        pygit2.init_repository(f'{last_path}/.git', False)
+>>>>>>> develop
 
 
 def git_add():
     if check_git_repo(last_path):
         repository = pygit2.Repository(last_path)
     index = repository.index
-    index.add_all()
+    if g_current_item:
+        index.add(g_current_item)
+    else:
+        index.add_all()
     index.write()
     update_files(last_path)
 
@@ -128,6 +140,7 @@ def git_commit(commit_message):
         tree,
         parents
     )
+    update_files(last_path)
 
 
 def git_mv(new_file_name):
@@ -145,17 +158,25 @@ def git_mv(new_file_name):
         update_files(last_path)
 
 def current_file_git_status():
+<<<<<<< HEAD
     status = None
     if check_git_repo(last_path):
         repository = pygit2.Repository(last_path)
     else:
         status =0
+=======
+    if check_git_repo(last_path):
+        repository = pygit2.Repository(last_path)
+        status = repository.status_file(g_current_item)
+    else:
+        status = 0
+>>>>>>> develop
     return status
 
 
 
 def update_file_git_status(path, file_name):
-    if (check_git_repo(path) == True):
+    if check_git_repo(path):
         repository = pygit2.Repository(path)
         status = repository.status_file(file_name)
     else:
@@ -168,10 +189,20 @@ def check_git_repo(path):
     try:
         # 디렉토리가 Git 저장소인지 확인 레포가 만들어지면 init 불가능
         repo = pygit2.Repository(path)
+<<<<<<< HEAD
     except pygit2.GitError:
         print("This directory is not a valid Git repository.")
         return False
     return True
+=======
+
+    except pygit2.GitError:
+        print("This directory is not a valid Git repository.")
+        return False
+
+    return True
+
+>>>>>>> develop
 
 def update_git_repo(path):
     try:
@@ -279,6 +310,7 @@ def select():
         select_row = tree.focus()
         row_data = tree.item(select_row)
         g_current_item = row_data["text"]
+<<<<<<< HEAD
         current_git_status = current_file_git_status()
         if check_git_repo() ==True:
             try : 
@@ -320,6 +352,10 @@ def select():
                     continue
                 else:
                     x.config(state = "disabled")
+=======
+        if not tree.selection():
+            g_current_item = ''
+>>>>>>> develop
     except IndexError:
         print("IndexError occurred No file selected")
         g_current_item = None
@@ -589,30 +625,30 @@ def update_files(orig_dirname: str):
                         if sys.platform == "win32":
                             if not f.is_symlink() and not bool(f_stat.st_file_attributes & stat.FILE_ATTRIBUTE_HIDDEN):
                                 dirs_list.append(
-                                    [f.name, "dir", f.path, folder_icon, git_status])
+                                    [f.name, "dir", f.path, folder_icon, 0, git_status_dict[git_status_dict[git_status]]])
                         else:
                             if not f.name.startswith("."):
                                 dirs_list.append(
-                                    [f.name, "dir", f.path, folder_icon, git_status])
+                                    [f.name, "dir", f.path, folder_icon, 0, git_status_dict[git_status]])
                     else:
                         if sys.platform == "win32":
                             if bool(f_stat.st_file_attributes & stat.FILE_ATTRIBUTE_HIDDEN):
                                 dirs_list.append(
-                                    [f.name, "dir", f.path, folder_hidden_icon, git_status])
+                                    [f.name, "dir", f.path, folder_hidden_icon, 0, git_status_dict[git_status]])
                             else:
                                 if f.is_symlink():
                                     dirs_list.append(
-                                        [f.name, "dir", f.path, folder_hidden_icon, git_status])
+                                        [f.name, "dir", f.path, folder_hidden_icon, 0, git_status_dict[git_status]])
                                 else:
                                     dirs_list.append(
-                                        [f.name, "dir", f.path, folder_icon, git_status])
+                                        [f.name, "dir", f.path, folder_icon, 0, git_status_dict[git_status]])
                         else:
                             if f.name.startswith("."):
                                 dirs_list.append(
-                                    [f.name, "dir", f.path, folder_hidden_icon, git_status])
+                                    [f.name, "dir", f.path, folder_hidden_icon, 0, git_status_dict[git_status]])
                             else:
                                 dirs_list.append(
-                                    [f.name, "dir", f.path, folder_icon, git_status])
+                                    [f.name, "dir", f.path, folder_icon, 0, git_status_dict[git_status]])
                 if f.is_file():
                     # 오브젝트가 파일이면 아래와 같은 정보들을 삽입
                     if is_repo_exist:  # if true -> cant init
@@ -631,38 +667,38 @@ def update_files(orig_dirname: str):
                         if sys.platform == "win32":
                             if not bool(f_stat.st_file_attributes & stat.FILE_ATTRIBUTE_HIDDEN):
                                 files_list.append(
-                                    [f.name, size[0], f.path, file_icon, size[1], git_status])
+                                    [f.name, size[0], f.path, file_icon, size[1], git_status_dict[git_status]])
                         else:
                             if not f.name.startswith("."):
                                 # new file : 1, modified : 2, renamed : 257, modified + staged : 258
-                                if git_status == 1 or git_status == 2 or git_status == 257 or git_status == 258:
+                                if git_status_dict[git_status] == "STAGED" or git_status_dict[git_status] == "UNSTAGED-STAGED":
                                     g_staged_list.append(
-                                        [f.name, size[0], f.path, file_icon, size[1], git_status])
+                                        [f.name, size[0], f.path, file_icon, size[1], git_status_dict[git_status]])
                                 files_list.append(
-                                    [f.name, size[0], f.path, file_icon, size[1], git_status])
+                                    [f.name, size[0], f.path, file_icon, size[1], git_status_dict[git_status]])
                     else:
                         if sys.platform == "win32":
                             if bool(f_stat.st_file_attributes & stat.FILE_ATTRIBUTE_HIDDEN):
                                 files_list.append(
-                                    [f.name, size[0], f.path, file_hidden_icon, size[1], git_status])
+                                    [f.name, size[0], f.path, file_hidden_icon, size[1], git_status_dict[git_status]])
                             else:
                                 files_list.append(
-                                    [f.name, size[0], f.path, file_icon, size[1], git_status])
+                                    [f.name, size[0], f.path, file_icon, size[1], git_status_dict[git_status]])
                         else:
                             if f.name.startswith("."):
                                 # new file : 1, modified : 2, renamed : 257, modified + staged : 258
-                                if git_status == 1 or git_status == 2 or git_status == 257 or git_status == 258:
+                                if git_status_dict[git_status] == "STAGED" or git_status_dict[git_status] == "UNSTAGED-STAGED":
                                     g_staged_list.append(
-                                        [f.name, size[0], f.path, file_icon, size[1], git_status])
+                                        [f.name, size[0], f.path, file_icon, size[1], git_status_dict[git_status]])
                                 files_list.append(
-                                    [f.name, size[0], f.path, file_hidden_icon, size[1], git_status])
+                                    [f.name, size[0], f.path, file_hidden_icon, size[1], git_status_dict[git_status]])
                             else:
                                 # new file : 1, modified : 2, renamed : 257 or modified + staged : 258
-                                if git_status == 1 or git_status == 2 or git_status == 257 or git_status == 258:
+                                if git_status_dict[git_status] == "STAGED" or git_status_dict[git_status] == "UNSTAGED-STAGED":
                                     g_staged_list.append(
-                                        [f.name, size[0], f.path, file_icon, size[1], git_status])
+                                        [f.name, size[0], f.path, file_icon, size[1], git_status_dict[git_status]])
                                 files_list.append(
-                                    [f.name, size[0], f.path, file_icon, size[1], git_status])
+                                    [f.name, size[0], f.path, file_icon, size[1], git_status_dict[git_status]])
         # FTP
         else:
             ftp.cwd(dirname)
@@ -714,7 +750,7 @@ def update_files(orig_dirname: str):
         # [f.name, "dir", f.path, folder_icon, git_status])
         for i in dirs_list:
             tree.insert("", tk.END, text=i[0], values=[
-                f"{i[1]}", i[4], i[2]], open=False, image=i[3])
+                f"{i[1]}", i[5], i[2]], open=False, image=i[3])
             count += 1
         for i in files_list:
             tree.insert("", tk.END, text=i[0], values=[
