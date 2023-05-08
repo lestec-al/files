@@ -66,7 +66,7 @@ def git_restore_staged():
         obj = repo.revparse_single(
             'HEAD').tree[g_current_item]  # Get object from db
         index.add(pygit2.IndexEntry(g_current_item,
-                                    obj.id, obj.filemode))  # Add to inde
+                  obj.id, obj.filemode))  # Add to inde
         index.write()
     update_files(last_path)
 
@@ -105,7 +105,10 @@ def git_add():
     if check_git_repo(last_path):
         repository = pygit2.Repository(last_path)
     index = repository.index
-    index.add_all()
+    if g_current_item:
+        index.add(g_current_item)
+    else:
+        index.add_all()
     index.write()
     update_files(last_path)
 
@@ -131,6 +134,7 @@ def git_commit(commit_message):
         tree,
         parents
     )
+    update_files(last_path)
 
 
 def git_mv(new_file_name):
@@ -283,6 +287,8 @@ def select():
         select_row = tree.focus()
         row_data = tree.item(select_row)
         g_current_item = row_data["text"]
+        if not tree.selection():
+            g_current_item = ''
     except IndexError:
         print("IndexError occurred No file selected")
         g_current_item = None
@@ -966,7 +972,7 @@ tree.bind("<Down>", lambda event: up_down_focus())
 tree.bind("<Delete>", lambda event: delete())
 tree.bind("<Control-c>", lambda event: copy())
 tree.bind("<Control-v>", lambda event: paste()
-if right_menu.entrycget(index=5, option="state") == "normal" else None)
+          if right_menu.entrycget(index=5, option="state") == "normal" else None)
 entry.bind("<Return>", lambda event: update_files(entry.get()))
 entry.bind("<KP_Enter>", lambda event: update_files(entry.get()))
 
