@@ -37,14 +37,7 @@ git_status_dict = {
     16384: "GIT_STATUS_IGNORED",
     32768: "GIT_STATUS_CONFLICTED"
 }
-<<<<<<< HEAD
-=======
-
-
->>>>>>> develop
 # Interface
-
-
 def git_restore():
     if check_git_repo(last_path):
         repo = pygit2.Repository(last_path)
@@ -100,11 +93,7 @@ def git_rm():
 def git_init():
     # non-bare repository init
     if not check_git_repo(last_path):
-<<<<<<< HEAD
-        pygit2.init_repository('/.git', False)
-=======
         pygit2.init_repository(f'{last_path}/.git', False)
->>>>>>> develop
 
 
 def git_add():
@@ -158,19 +147,11 @@ def git_mv(new_file_name):
         update_files(last_path)
 
 def current_file_git_status():
-<<<<<<< HEAD
-    status = None
-    if check_git_repo(last_path):
-        repository = pygit2.Repository(last_path)
-    else:
-        status =0
-=======
-    if check_git_repo(last_path):
+    if (check_git_repo(last_path)):
         repository = pygit2.Repository(last_path)
         status = repository.status_file(g_current_item)
     else:
         status = 0
->>>>>>> develop
     return status
 
 
@@ -189,20 +170,10 @@ def check_git_repo(path):
     try:
         # 디렉토리가 Git 저장소인지 확인 레포가 만들어지면 init 불가능
         repo = pygit2.Repository(path)
-<<<<<<< HEAD
     except pygit2.GitError:
         print("This directory is not a valid Git repository.")
         return False
     return True
-=======
-
-    except pygit2.GitError:
-        print("This directory is not a valid Git repository.")
-        return False
-
-    return True
-
->>>>>>> develop
 
 def update_git_repo(path):
     try:
@@ -310,9 +281,11 @@ def select():
         select_row = tree.focus()
         row_data = tree.item(select_row)
         g_current_item = row_data["text"]
-<<<<<<< HEAD
+
+        if not tree.selection():
+            g_current_item = ''
         current_git_status = current_file_git_status()
-        if check_git_repo() ==True:
+        if check_git_repo(last_path):
             try : 
                 if git_status_dict[current_git_status] == "STAGED":
                     for x in buttons:
@@ -352,10 +325,7 @@ def select():
                     continue
                 else:
                     x.config(state = "disabled")
-=======
-        if not tree.selection():
-            g_current_item = ''
->>>>>>> develop
+
     except IndexError:
         print("IndexError occurred No file selected")
         g_current_item = None
