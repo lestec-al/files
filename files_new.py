@@ -43,7 +43,7 @@ git_status_dict = {
 
 
 def git_restore():
-    if check_git_repo() == True:
+    if check_git_repo(last_path):
         repo = pygit2.Repository(last_path)
         head_commit = repo.head.peel(pygit2.Commit)
         head_tree = head_commit.tree
@@ -58,7 +58,7 @@ def git_restore():
 
 
 def git_restore_staged():
-    if check_git_repo() == True:
+    if check_git_repo(last_path):
         repo = pygit2.Repository(last_path)
         index = repo.index
         index.read()
@@ -72,7 +72,7 @@ def git_restore_staged():
 
 
 def git_rm_cached():
-    if check_git_repo() == True:
+    if check_git_repo(last_path):
         try:
             repo = pygit2.Repository(last_path)
             repo.index.remove(g_current_item)
@@ -83,7 +83,7 @@ def git_rm_cached():
 
 
 def git_rm():
-    if check_git_repo() == True:
+    if check_git_repo(last_path):
         try:
             repo = pygit2.Repository(last_path)
             tmp_path = last_path + "/" + g_current_item
@@ -97,12 +97,12 @@ def git_rm():
 
 def git_init():
     # non-bare repository init
-    if check_git_repo() == False:
+    if not check_git_repo(last_path):
         pygit2.init_repository('/.git', False)
 
 
 def git_add():
-    if check_git_repo() == True:
+    if check_git_repo(last_path):
         repository = pygit2.Repository(last_path)
     index = repository.index
     index.add_all()
@@ -111,7 +111,7 @@ def git_add():
 
 
 def git_commit(commit_message):
-    if check_git_repo() == True:
+    if check_git_repo(last_path):
         repository = pygit2.Repository(last_path)
     index = repository.index
     config = repository.config
@@ -134,7 +134,7 @@ def git_commit(commit_message):
 
 
 def git_mv(new_file_name):
-    if check_git_repo() == True:
+    if check_git_repo(last_path):
         repository = pygit2.Repository(last_path)
         index = repository.index
         old_file_name = g_current_item
@@ -149,14 +149,16 @@ def git_mv(new_file_name):
 
 
 def current_file_git_status():
-    if (check_git_repo() == True):
+    if check_git_repo(last_path):
         repository = pygit2.Repository(last_path)
         status = repository.status_file(g_current_item)
+    else:
+        status = 0
     return status
 
 
 def update_file_git_status(path, file_name):
-    if (check_git_repo(path) == True):
+    if check_git_repo(path):
         repository = pygit2.Repository(path)
         status = repository.status_file(file_name)
     else:
@@ -165,21 +167,16 @@ def update_file_git_status(path, file_name):
 
 
 # 선택된 파일의
-def check_git_repo():
-    is_git = True
-    # 디렉토리가 Git 저장소인지 확인
-    if os.path.isdir(os.path.join(last_path, ".git")):
-        # Git 저장소로부터 Repository 객체를 생성
-        try:
-            repo = pygit2.Repository(last_path)
+def check_git_repo(path):
+    try:
+        # 디렉토리가 Git 저장소인지 확인 레포가 만들어지면 init 불가능
+        repo = pygit2.Repository(path)
 
-        except pygit2.GitError:
-            print("This directory is not a valid Git repository.")
-            is_git = True
-    else:
-        print("This directory is not a Git repository.")
-        is_git = False
-    return is_git
+    except pygit2.GitError:
+        print("This directory is not a valid Git repository.")
+        return False
+
+    return True
 
 
 def update_git_repo(path):
@@ -601,7 +598,7 @@ def update_files(orig_dirname: str):
                         else:
                             if not f.name.startswith("."):
                                 # new file : 1, modified : 2, renamed : 257, modified + staged : 258
-                                if git_status_dict[git_status] == 1 or git_status_dict[git_status] == 2 or git_status_dict[git_status] == 257 or git_status_dict[git_status] == 258:
+                                if git_status_dict[git_status] == "STAGED" or git_status_dict[git_status] == "UNSTAGED-STAGED":
                                     g_staged_list.append(
                                         [f.name, size[0], f.path, file_icon, size[1], git_status_dict[git_status]])
                                 files_list.append(
@@ -617,14 +614,14 @@ def update_files(orig_dirname: str):
                         else:
                             if f.name.startswith("."):
                                 # new file : 1, modified : 2, renamed : 257, modified + staged : 258
-                                if git_status_dict[git_status] == 1 or git_status_dict[git_status] == 2 or git_status_dict[git_status] == 257 or git_status_dict[git_status] == 258:
+                                if git_status_dict[git_status] == "STAGED" or git_status_dict[git_status] == "UNSTAGED-STAGED":
                                     g_staged_list.append(
                                         [f.name, size[0], f.path, file_icon, size[1], git_status_dict[git_status]])
                                 files_list.append(
                                     [f.name, size[0], f.path, file_hidden_icon, size[1], git_status_dict[git_status]])
                             else:
                                 # new file : 1, modified : 2, renamed : 257 or modified + staged : 258
-                                if git_status_dict[git_status] == 1 or git_status_dict[git_status] == 2 or git_status_dict[git_status] == 257 or git_status_dict[git_status] == 258:
+                                if git_status_dict[git_status] == "STAGED" or git_status_dict[git_status] == "UNSTAGED-STAGED":
                                     g_staged_list.append(
                                         [f.name, size[0], f.path, file_icon, size[1], git_status_dict[git_status]])
                                 files_list.append(
