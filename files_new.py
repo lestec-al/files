@@ -71,7 +71,7 @@ def git_restore():
         blob_oid = tree_entry.oid
         blob = repo[blob_oid]
         file_content = blob.data
-        tmp_path = last_path + "/" + g_current_item
+        tmp_path = last_path + g_current_item
         with open(tmp_path, "wb") as f:
             f.write(file_content)
     update_files(last_path)
@@ -95,6 +95,7 @@ def git_rm_cached():
     if check_git_repo(last_path):
         try:
             repo = pygit2.Repository(last_path)
+            print(g_current_item)
             repo.index.remove(g_current_item)
             repo.index.write()
         except KeyError as e:
@@ -171,16 +172,6 @@ def git_mv(new_file_name):
         index.write()
 
         update_files(last_path)
-
-
-def setting_relative_path():
-    status = None
-    if check_git_repo(last_path):
-        repository = pygit2.Repository(last_path)
-        global g_current_item
-        tmp = get_relative_repo_path(last_path, repository) + g_current_item
-        g_current_item = tmp
-
 
 
 def update_file_git_status(path, file_name):
@@ -320,7 +311,6 @@ def select():
         select_row = tree.focus()
         row_data = tree.item(select_row)
         g_current_item = row_data["text"]
-        setting_relative_path()
         if not tree.selection():
             g_current_item = ''
             for x in buttons:
