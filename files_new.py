@@ -66,7 +66,7 @@ def git_restore_staged():
         obj = repo.revparse_single(
             'HEAD').tree[g_current_item]  # Get object from db
         index.add(pygit2.IndexEntry(g_current_item,
-                  obj.id, obj.filemode))  # Add to inde
+                                    obj.id, obj.filemode))  # Add to inde
         index.write()
     update_files(last_path)
 
@@ -105,8 +105,9 @@ def git_add():
     if check_git_repo(last_path):
         repository = pygit2.Repository(last_path)
     index = repository.index
+    path = get_relative_repo_path(last_path, repository) + g_current_item
     if g_current_item:
-        index.add(g_current_item)
+        index.add(path)
     else:
         index.add_all()
     index.write()
@@ -170,7 +171,18 @@ def update_file_git_status(path, file_name):
     return status
 
 
-# 선택된 파일의
+# cur_directory_path 현재 접근한 디렉토리정보(아마 last_path), repo 객체를 넣으면 하위폴더에 대한
+# 상대 경로를 반환함. 만약 .git 폴더가 있는 폴더면 반환값은 '' 이며 하위 폴더의 경우 상대경로 + '/'를 반환
+# 전달 받은 relative_path와 파일명을 결합하여 사용
+def get_relative_repo_path(cur_directory_path, repo):
+    repo_dir = cur_directory_path
+    repo_dir = repo_dir[(len(repo.path) - 5):]
+    if not repo_dir:
+        return ''
+    else:
+        return repo_dir + '/'
+
+
 def check_git_repo(path):
     try:
         # 디렉토리가 Git 저장소인지 확인 레포가 만들어지면 init 불가능
@@ -558,7 +570,8 @@ def update_files(orig_dirname: str):
                         if sys.platform == "win32":
                             if not f.is_symlink() and not bool(f_stat.st_file_attributes & stat.FILE_ATTRIBUTE_HIDDEN):
                                 dirs_list.append(
-                                    [f.name, "dir", f.path, folder_icon, 0, git_status_dict[git_status_dict[git_status]]])
+                                    [f.name, "dir", f.path, folder_icon, 0,
+                                     git_status_dict[git_status_dict[git_status]]])
                         else:
                             if not f.name.startswith("."):
                                 dirs_list.append(
@@ -604,7 +617,8 @@ def update_files(orig_dirname: str):
                         else:
                             if not f.name.startswith("."):
                                 # new file : 1, modified : 2, renamed : 257, modified + staged : 258
-                                if git_status_dict[git_status] == "STAGED" or git_status_dict[git_status] == "UNSTAGED-STAGED":
+                                if git_status_dict[git_status] == "STAGED" or git_status_dict[
+                                    git_status] == "UNSTAGED-STAGED":
                                     g_staged_list.append(
                                         [f.name, size[0], f.path, file_icon, size[1], git_status_dict[git_status]])
                                 files_list.append(
@@ -620,14 +634,16 @@ def update_files(orig_dirname: str):
                         else:
                             if f.name.startswith("."):
                                 # new file : 1, modified : 2, renamed : 257, modified + staged : 258
-                                if git_status_dict[git_status] == "STAGED" or git_status_dict[git_status] == "UNSTAGED-STAGED":
+                                if git_status_dict[git_status] == "STAGED" or git_status_dict[
+                                    git_status] == "UNSTAGED-STAGED":
                                     g_staged_list.append(
                                         [f.name, size[0], f.path, file_icon, size[1], git_status_dict[git_status]])
                                 files_list.append(
                                     [f.name, size[0], f.path, file_hidden_icon, size[1], git_status_dict[git_status]])
                             else:
                                 # new file : 1, modified : 2, renamed : 257 or modified + staged : 258
-                                if git_status_dict[git_status] == "STAGED" or git_status_dict[git_status] == "UNSTAGED-STAGED":
+                                if git_status_dict[git_status] == "STAGED" or git_status_dict[
+                                    git_status] == "UNSTAGED-STAGED":
                                     g_staged_list.append(
                                         [f.name, size[0], f.path, file_icon, size[1], git_status_dict[git_status]])
                                 files_list.append(
@@ -972,7 +988,7 @@ tree.bind("<Down>", lambda event: up_down_focus())
 tree.bind("<Delete>", lambda event: delete())
 tree.bind("<Control-c>", lambda event: copy())
 tree.bind("<Control-v>", lambda event: paste()
-          if right_menu.entrycget(index=5, option="state") == "normal" else None)
+if right_menu.entrycget(index=5, option="state") == "normal" else None)
 entry.bind("<Return>", lambda event: update_files(entry.get()))
 entry.bind("<KP_Enter>", lambda event: update_files(entry.get()))
 
