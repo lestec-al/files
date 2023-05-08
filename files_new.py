@@ -16,8 +16,35 @@ from pathlib import Path
 from ftplib import FTP
 from send2trash import send2trash
 
-
 # Interface
+
+
+def git_restore():
+    if check_git_repo() == True:
+        repo = pygit2.Repository(last_path)
+        head_commit = repo.head.peel(pygit2.Commit)
+        head_tree = head_commit.tree
+        tree_entry = head_tree[g_current_item]
+        blob_oid = tree_entry.oid
+        blob = repo[blob_oid]
+        file_content = blob.data
+        tmp_path = last_path + "/" + g_current_item
+        with open(tmp_path, "wb") as f:
+            f.write(file_content)
+    update_files(last_path)
+
+
+def git_restore_staged():
+    if check_git_repo() == True:
+        repo = pygit2.Repository(last_path)
+        index = repo.index
+        index.read()
+        index.remove(g_current_item)
+        obj = repo.revparse_single('HEAD').tree[g_current_item] # Get object from db
+        index.add(pygit2.IndexEntry(g_current_item, obj.id, obj.filemode)) # Add to inde
+        index.write()
+    update_files(last_path)
+
 def git_rm_cached():
     if check_git_repo() == True:
         try:
@@ -833,9 +860,9 @@ tk.Button(frame_c, text='rm', width=5, height=1, relief="flat", bg="black",
 tk.Button(frame_c, text='rm --cached', width=8, height=1, relief="flat", bg="black",
           fg="black", command=lambda: git_rm_cached()).grid(column=5, row=0)
 tk.Button(frame_c, text='restore', width=6, height=1, relief="flat", bg="black",
-          fg="black", command=lambda: update_files(home_path)).grid(column=6, row=0)
+          fg="black", command=lambda: git_restore()).grid(column=6, row=0)
 tk.Button(frame_c, text='restore --staged', width=10, height=1, relief="flat", bg="black",
-          fg="black", command=lambda: update_files(home_path)).grid(column=7, row=0)
+          fg="black", command=lambda: git_restore_staged()).grid(column=7, row=0)
 tk.Button(frame_c, text='mv', width=6, height=1, relief="flat", bg="black",
           fg="black", command=lambda: open_git_mv_window()).grid(column=8, row=0)
 
