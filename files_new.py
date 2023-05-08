@@ -124,12 +124,16 @@ def git_mv(new_file_name):
 
         update_files(last_path)
 
-
 def current_file_git_status():
+    status = None
     if (check_git_repo() == True):
         repository = pygit2.Repository(last_path)
-        status = repository.status_file(g_current_item)
+        try:
+            status = repository.status_file(g_current_item)
+        except KeyError:
+            status = None
     return status
+
 
 
 def update_file_git_status(path, file_name):
@@ -263,6 +267,11 @@ def select():
         select_row = tree.focus()
         row_data = tree.item(select_row)
         g_current_item = row_data["text"]
+        print(current_file_git_status())
+        #print(row_data)
+        #current_git_state = row_data["values"][4]
+        #print(current_git_state)
+        
     except IndexError:
         print("IndexError occurred No file selected")
         g_current_item = None
