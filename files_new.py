@@ -750,6 +750,39 @@ def open_error_window(error_type):
     button.pack()
 
 
+def confirm_staged_files():
+    if not g_staged_list:
+        open_error_window('commit')
+        return
+    confirm_window = tk.Toplevel(window)
+    confirm_window.title('staging files')
+    confirm_window.geometry("500x200")
+    confirm_window.geometry("+100+100")
+
+    label = tk.Label(
+        confirm_window, text="commit할 파일을 확인해 주세요 !")
+    label.pack()
+
+    confirm_frame = tk.Frame(confirm_window)
+    confirm_frame.pack()
+
+    listNodes = tk.Listbox(confirm_frame, width=30,
+                           height=8, font=("Helvetica", 15))
+    listNodes.pack(side="left", fill="y")
+
+    scrollbar = tk.Scrollbar(confirm_frame, orient="vertical")
+    scrollbar.config(command=listNodes.yview)
+    scrollbar.pack(side="right", fill="y")
+
+    listNodes.config(yscrollcommand=scrollbar.set)
+    for file in g_staged_list:
+        listNodes.insert(tk.END, file[0])
+
+    button = tk.Button(confirm_window, text="확인 완료",
+                       command=lambda: (open_git_commit_window(), confirm_window.destroy()))
+    button.pack()
+
+
 def open_git_commit_window():
     input_window = tk.Toplevel(window)
     input_window.title('commit message')
@@ -815,6 +848,9 @@ label.pack(side="bottom", fill="both")
 
 # Git Status Icon file
 git_temp_icon = tk.PhotoImage(file="data/git_logo.png")
+
+# git staged file list
+g_staged_list = []
 
 # Tree view
 tree_frame = tk.Frame(window, border=1, relief="flat", bg="white")
