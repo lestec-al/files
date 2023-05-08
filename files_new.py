@@ -40,10 +40,13 @@ def git_restore_staged():
         index = repo.index
         index.read()
         index.remove(g_current_item)
-        obj = repo.revparse_single('HEAD').tree[g_current_item] # Get object from db
-        index.add(pygit2.IndexEntry(g_current_item, obj.id, obj.filemode)) # Add to inde
+        obj = repo.revparse_single(
+            'HEAD').tree[g_current_item]  # Get object from db
+        index.add(pygit2.IndexEntry(g_current_item,
+                  obj.id, obj.filemode))  # Add to inde
         index.write()
     update_files(last_path)
+
 
 def git_rm_cached():
     if check_git_repo() == True:
@@ -81,6 +84,7 @@ def git_add():
     index = repository.index
     index.add_all()
     index.write()
+    update_files(last_path)
 
 
 def git_commit(commit_message):
@@ -107,15 +111,18 @@ def git_commit(commit_message):
 
 
 def git_mv(new_file_name):
-    repository = pygit2.Repository(last_path)
-    index = repository.index
-    old_file_name = g_current_item
-    index.remove(old_file_name)
-    os.rename(old_file_name, new_file_name)
-    index.add(new_file_name)
-    index.write()
+    if check_git_repo() == True:
+        repository = pygit2.Repository(last_path)
+        index = repository.index
+        old_file_name = g_current_item
+        old_path = f'{last_path}/{old_file_name}'
+        new_path = f'{last_path}/{new_file_name}'
+        index.remove(old_file_name)
+        os.rename(old_path, new_path)
+        index.add(new_file_name)
+        index.write()
 
-    update_files(last_path)
+        update_files(last_path)
 
 
 def current_file_git_status():
@@ -502,7 +509,8 @@ def update_files(orig_dirname: str):
             else:
                 dirname = "/"
         # Scan
-        files_list, dirs_list = [], []
+        global g_staged_list
+        files_list, dirs_list, g_staged_list = [], [], []
         if ftp == None:
             files = os.scandir(dirname)
             git_repo = pygit2.Repository()
@@ -556,7 +564,8 @@ def update_files(orig_dirname: str):
                         if not repo_dir:
                             git_status = git_repo.status_file(f.name)
                         else:
-                            git_status = git_repo.status_file(repo_dir + '/' + f.name)
+                            git_status = git_repo.status_file(
+                                repo_dir + '/' + f.name)
 
                     else:  # if not exist -> can init, and flag is
                         git_status = -1
@@ -568,6 +577,10 @@ def update_files(orig_dirname: str):
                                     [f.name, size[0], f.path, file_icon, size[1], git_status])
                         else:
                             if not f.name.startswith("."):
+                                # new file : 1, modified : 2, renamed : 257, modified + staged : 258
+                                if git_status == 1 or git_status == 2 or git_status == 257 or git_status == 258:
+                                    g_staged_list.append(
+                                        [f.name, size[0], f.path, file_icon, size[1], git_status])
                                 files_list.append(
                                     [f.name, size[0], f.path, file_icon, size[1], git_status])
                     else:
@@ -580,9 +593,17 @@ def update_files(orig_dirname: str):
                                     [f.name, size[0], f.path, file_icon, size[1], git_status])
                         else:
                             if f.name.startswith("."):
+                                # new file : 1, modified : 2, renamed : 257, modified + staged : 258
+                                if git_status == 1 or git_status == 2 or git_status == 257 or git_status == 258:
+                                    g_staged_list.append(
+                                        [f.name, size[0], f.path, file_icon, size[1], git_status])
                                 files_list.append(
                                     [f.name, size[0], f.path, file_hidden_icon, size[1], git_status])
                             else:
+                                # new file : 1, modified : 2, renamed : 257 or modified + staged : 258
+                                if git_status == 1 or git_status == 2 or git_status == 257 or git_status == 258:
+                                    g_staged_list.append(
+                                        [f.name, size[0], f.path, file_icon, size[1], git_status])
                                 files_list.append(
                                     [f.name, size[0], f.path, file_icon, size[1], git_status])
         # FTP
@@ -740,6 +761,59 @@ tk.Button(frame_b, image=home_icon, width=25, height=32, relief="flat", bg="whit
           fg="black", command=lambda: update_files(home_path)).grid(column=1, row=1)
 
 
+# error type을 파라미터로 받고 type에 따라 error_text 띄우기
+def open_error_window(error_type):
+    error_window = tk.Toplevel(window)
+    error_window.title('error')
+    error_window.geometry("500x50")
+    error_window.geometry("+100+200")
+
+    error_text = {
+        'init': 'git init 할 수 없는 디렉토리입니다',
+        'add': '추가할 파일이 없습니다',
+        'commit': 'commit 할 수 있는 파일이 없습니다'
+    }
+    label = tk.Label(
+        error_window, text=error_text[error_type])
+    label.pack()
+    button = tk.Button(error_window, text="확인",
+                       command=lambda: (error_window.destroy()))
+    button.pack()
+
+
+def confirm_staged_files():
+    if not g_staged_list:
+        open_error_window('commit')
+        return
+    confirm_window = tk.Toplevel(window)
+    confirm_window.title('staging files')
+    confirm_window.geometry("500x200")
+    confirm_window.geometry("+100+100")
+
+    label = tk.Label(
+        confirm_window, text="commit할 파일을 확인해 주세요 !")
+    label.pack()
+
+    confirm_frame = tk.Frame(confirm_window)
+    confirm_frame.pack()
+
+    listNodes = tk.Listbox(confirm_frame, width=30,
+                           height=8, font=("Helvetica", 15))
+    listNodes.pack(side="left", fill="y")
+
+    scrollbar = tk.Scrollbar(confirm_frame, orient="vertical")
+    scrollbar.config(command=listNodes.yview)
+    scrollbar.pack(side="right", fill="y")
+
+    listNodes.config(yscrollcommand=scrollbar.set)
+    for file in g_staged_list:
+        listNodes.insert(tk.END, file[0])
+
+    button = tk.Button(confirm_window, text="확인 완료",
+                       command=lambda: (open_git_commit_window(), confirm_window.destroy()))
+    button.pack()
+
+
 def open_git_commit_window():
     input_window = tk.Toplevel(window)
     input_window.title('commit message')
@@ -784,7 +858,7 @@ tk.Button(frame_c, text='init', width=5, height=1, relief="flat", bg="black",
 tk.Button(frame_c, text='add', width=5, height=1, relief="flat", bg="black",
           fg="black", command=lambda: git_add()).grid(column=2, row=0)
 tk.Button(frame_c, text='commit', width=5, height=1, relief="flat", bg="black",
-          fg="black", command=lambda: open_git_commit_window()).grid(column=3, row=0)
+          fg="black", command=lambda: confirm_staged_files()).grid(column=3, row=0)
 tk.Button(frame_c, text='rm', width=5, height=1, relief="flat", bg="black",
           fg="black", command=lambda: git_rm()).grid(column=4, row=0)
 tk.Button(frame_c, text='rm --cached', width=8, height=1, relief="flat", bg="black",
@@ -805,6 +879,9 @@ label.pack(side="bottom", fill="both")
 
 # Git Status Icon file
 git_temp_icon = tk.PhotoImage(file="data/git_logo.png")
+
+# git staged file list
+g_staged_list = []
 
 # Tree view
 tree_frame = tk.Frame(window, border=1, relief="flat", bg="white")
