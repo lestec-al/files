@@ -298,6 +298,8 @@ def select():
 
         if not tree.selection():
             g_current_item = ''
+            for x in buttons:
+                x.config(state="disabled")
         current_git_status = current_file_git_status()
         if check_git_repo(last_path):
             try : 
