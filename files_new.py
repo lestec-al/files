@@ -478,7 +478,8 @@ def update_files(orig_dirname: str):
             else:
                 dirname = "/"
         # Scan
-        files_list, dirs_list = [], []
+        global g_staged_list
+        files_list, dirs_list, g_staged_list = [], [], []
         if ftp == None:
             files = os.scandir(dirname)
             git_repo = pygit2.Repository()
@@ -545,6 +546,10 @@ def update_files(orig_dirname: str):
                                     [f.name, size[0], f.path, file_icon, size[1], git_status])
                         else:
                             if not f.name.startswith("."):
+                                # new file : 1, modified : 2, renamed : 257
+                                if git_status == 1 or git_status == 2 or git_status == 257:
+                                    g_staged_list.append(
+                                        [f.name, size[0], f.path, file_icon, size[1], git_status])
                                 files_list.append(
                                     [f.name, size[0], f.path, file_icon, size[1], git_status])
                     else:
@@ -557,9 +562,17 @@ def update_files(orig_dirname: str):
                                     [f.name, size[0], f.path, file_icon, size[1], git_status])
                         else:
                             if f.name.startswith("."):
+                                # new file : 1, modified : 2, renamed : 257
+                                if git_status == 1 or git_status == 2 or git_status == 257:
+                                    g_staged_list.append(
+                                        [f.name, size[0], f.path, file_icon, size[1], git_status])
                                 files_list.append(
                                     [f.name, size[0], f.path, file_hidden_icon, size[1], git_status])
                             else:
+                                # new file : 1, modified : 2, renamed : 257
+                                if git_status == 1 or git_status == 2 or git_status == 257:
+                                    g_staged_list.append(
+                                        [f.name, size[0], f.path, file_icon, size[1], git_status])
                                 files_list.append(
                                     [f.name, size[0], f.path, file_icon, size[1], git_status])
         # FTP
