@@ -101,7 +101,7 @@ def git_add():
     if check_git_repo(last_path):
         repository = pygit2.Repository(last_path)
     index = repository.index
-    path = get_relative_repo_path(last_path, repository) + g_current_item
+    path = g_current_item
     if g_current_item:
         index.add(path)
     else:
@@ -148,15 +148,15 @@ def git_mv(new_file_name):
 
         update_files(last_path)
 
-def current_file_git_status():
+
+def setting_relative_path():
     status = None
-    if (check_git_repo(last_path)):
+    if check_git_repo(last_path):
         repository = pygit2.Repository(last_path)
-        try:
-            status = repository.status_file(g_current_item)
-        except KeyError:
-            status = None
-    return status
+        global g_current_item
+        tmp = get_relative_repo_path(last_path, repository) + g_current_item
+        g_current_item = tmp
+
 
 
 def update_file_git_status(path, file_name):
@@ -295,6 +295,7 @@ def select():
         select_row = tree.focus()
         row_data = tree.item(select_row)
         g_current_item = row_data["text"]
+        setting_relative_path()
         if not tree.selection():
             g_current_item = ''
             for x in buttons:
@@ -346,7 +347,6 @@ def select():
                     x.config(state = "disabled")
 
     except IndexError:
-        print("IndexError occurred No file selected")
         g_current_item = None
     """Enable some menu items"""
     if len(tree.selection()) > 0:
@@ -1060,5 +1060,4 @@ tree.bind("<Control-v>", lambda event: paste()
 if right_menu.entrycget(index=5, option="state") == "normal" else None)
 entry.bind("<Return>", lambda event: update_files(entry.get()))
 entry.bind("<KP_Enter>", lambda event: update_files(entry.get()))
-
 window.mainloop()
