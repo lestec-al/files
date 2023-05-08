@@ -80,15 +80,18 @@ def git_commit(commit_message):
 
 
 def git_mv(new_file_name):
-    repository = pygit2.Repository(last_path)
-    index = repository.index
-    old_file_name = g_current_item
-    index.remove(old_file_name)
-    os.rename(old_file_name, new_file_name)
-    index.add(new_file_name)
-    index.write()
+    if check_git_repo() == True:
+        repository = pygit2.Repository(last_path)
+        index = repository.index
+        old_file_name = g_current_item
+        old_path = f'{last_path}/{old_file_name}'
+        new_path = f'{last_path}/{new_file_name}'
+        index.remove(old_file_name)
+        os.rename(old_path, new_path)
+        index.add(new_file_name)
+        index.write()
 
-    update_files(last_path)
+        update_files(last_path)
 
 
 def current_file_git_status():
@@ -529,7 +532,8 @@ def update_files(orig_dirname: str):
                         if not repo_dir:
                             git_status = git_repo.status_file(f.name)
                         else:
-                            git_status = git_repo.status_file(repo_dir + '/' + f.name)
+                            git_status = git_repo.status_file(
+                                repo_dir + '/' + f.name)
 
                     else:  # if not exist -> can init, and flag is
                         git_status = -1
