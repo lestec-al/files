@@ -16,6 +16,28 @@ from pathlib import Path
 from ftplib import FTP
 from send2trash import send2trash
 
+
+# git status dictionary
+git_status_dict = {
+    -1: "NOT_GIT_REPOSITORY",
+    0: "UNMODIFIED",
+    1: "STAGED",
+    2: "STAGED",
+    4: "GIT_STATUS_INDEX_DELETED",
+    8: "GIT_STATUS_INDEX_RENAMED",
+    16: "GIT_STATUS_INDEX_TYPECHANGE",
+    128: "UNTRACKED",
+    132: "UNTRACKED",
+    256: "UNSTAGED",
+    257: "UNSTAGED-STAGED",
+    258: "UNSTAGED-STAGED",
+    512: "GIT_STATUS_WT_DELETED",
+    1024: "GIT_STATUS_WT_RENAMED",
+    2048: "GIT_STATUS_WT_TYPECHANGE",
+    4096: "GIT_STATUS_WT_UNREADABLE",
+    16384: "GIT_STATUS_IGNORED",
+    32768: "GIT_STATUS_CONFLICTED"
+}
 # Interface
 
 
@@ -267,11 +289,25 @@ def select():
         select_row = tree.focus()
         row_data = tree.item(select_row)
         g_current_item = row_data["text"]
-        print(current_file_git_status())
+        current_git_status = current_file_git_status()
+        try : 
+            if git_status_dict[current_git_status] == "STAGED":
+                print(1)
+            elif git_status_dict[current_git_status] == "UNMODIFIED":
+                print(git_status_dict[current_git_status])
+            elif git_status_dict[current_git_status] == "UNSTAGED":
+                print("Unstaged")
+            elif git_status_dict[current_git_status] == "UNTRACKED":
+                print("UNTRACKED")
+            elif git_status_dict[current_git_status] == "UNSTAGED-STAGED":
+                print("UNSTAGED-STAGED")
+            else:
+                print(None)
+        except :
+            print("Invalid Git status code:", current_git_status)
         #print(row_data)
         #current_git_state = row_data["values"][4]
-        #print(current_git_state)
-        
+        #print(current_git_state)  
     except IndexError:
         print("IndexError occurred No file selected")
         g_current_item = None
@@ -862,22 +898,38 @@ frame_down = tk.Frame(window, border=1)
 frame_down.pack(fill="x", side="bottom")
 frame_c = tk.Frame(frame_down, relief="groove", bg="white")
 frame_c.pack(side="bottom")
-tk.Button(frame_c, text='init', width=5, height=1, relief="flat", bg="black",
-          fg="black", command=lambda: git_init()).grid(column=1, row=0)
-tk.Button(frame_c, text='add', width=5, height=1, relief="flat", bg="black",
-          fg="black", command=lambda: git_add()).grid(column=2, row=0)
-tk.Button(frame_c, text='commit', width=5, height=1, relief="flat", bg="black",
-          fg="black", command=lambda: confirm_staged_files()).grid(column=3, row=0)
-tk.Button(frame_c, text='rm', width=5, height=1, relief="flat", bg="black",
-          fg="black", command=lambda: git_rm()).grid(column=4, row=0)
-tk.Button(frame_c, text='rm --cached', width=8, height=1, relief="flat", bg="black",
-          fg="black", command=lambda: git_rm_cached()).grid(column=5, row=0)
-tk.Button(frame_c, text='restore', width=6, height=1, relief="flat", bg="black",
-          fg="black", command=lambda: git_restore()).grid(column=6, row=0)
-tk.Button(frame_c, text='restore --staged', width=10, height=1, relief="flat", bg="black",
-          fg="black", command=lambda: git_restore_staged()).grid(column=7, row=0)
-tk.Button(frame_c, text='mv', width=6, height=1, relief="flat", bg="black",
-          fg="black", command=lambda: open_git_mv_window()).grid(column=8, row=0)
+#init button
+init_button = tk.Button(frame_c, text='init', width=5, height=1, relief="flat", bg="black",
+          fg="black", command=lambda: git_init())
+init_button.grid(column=1, row=0)
+#add button
+add_button = tk.Button(frame_c, text='add', width=5, height=1, relief="flat", bg="black",
+          fg="black", command=lambda: git_add())
+add_button.grid(column=2, row=0)
+#commit button
+commit_button = tk.Button(frame_c, text='commit', width=5, height=1, relief="flat", bg="black",
+          fg="black", command=lambda: confirm_staged_files())
+commit_button.grid(column=3, row=0)
+#git_rm button
+rm_button = tk.Button(frame_c, text='rm', width=5, height=1, relief="flat", bg="black",
+          fg="black", command=lambda: git_rm())
+rm_button.grid(column=4, row=0)
+#git_rm_cached button
+rm_cached_button = tk.Button(frame_c, text='rm --cached', width=8, height=1, relief="flat", bg="black",
+          fg="black", command=lambda: git_rm_cached())
+rm_cached_button.grid(column=5, row=0)
+#git_restore button
+restore_button = tk.Button(frame_c, text='restore', width=6, height=1, relief="flat", bg="black",
+          fg="black", command=lambda: git_restore())
+restore_button.grid(column=6, row=0)
+#git_restore --staged button
+restore_staged_button = tk.Button(frame_c, text='restore --staged', width=10, height=1, relief="flat", bg="black",
+          fg="black", command=lambda: git_restore_staged())
+restore_staged_button.grid(column=7, row=0)
+#git_mv button
+mv_button = tk.Button(frame_c, text='mv', width=6, height=1, relief="flat", bg="black",
+          fg="black", command=lambda: open_git_mv_window())
+mv_button.grid(column=8, row=0)
 
 entry = tk.Entry(frame_up, font=("Arial", 12), justify="left",
                  highlightcolor="white", highlightthickness=0, relief="groove", border=2)
