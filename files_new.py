@@ -67,7 +67,8 @@ def git_restore():
         repo = pygit2.Repository(last_path)
         head_commit = repo.head.peel(pygit2.Commit)
         head_tree = head_commit.tree
-        tree_entry = head_tree[g_current_item]
+        relative_path = get_relative_repo_path(last_path, repo) + g_current_item
+        tree_entry = head_tree[relative_path]
         blob_oid = tree_entry.oid
         blob = repo[blob_oid]
         file_content = blob.data
@@ -82,10 +83,11 @@ def git_restore_staged():
         repo = pygit2.Repository(last_path)
         index = repo.index
         index.read()
-        index.remove(g_current_item)
+        relative_path = get_relative_repo_path(last_path, repo) + g_current_item
+        index.remove(relative_path)
         obj = repo.revparse_single(
-            'HEAD').tree[g_current_item]  # Get object from db
-        index.add(pygit2.IndexEntry(g_current_item,
+            'HEAD').tree[relative_path]  # Get object from db
+        index.add(pygit2.IndexEntry(relative_path,
                                     obj.id, obj.filemode))  # Add to inde
         index.write()
     update_files(last_path)
@@ -95,7 +97,7 @@ def git_rm_cached():
     if check_git_repo(last_path):
         try:
             repo = pygit2.Repository(last_path)
-            repo.index.remove(g_current_item)
+            repo.index.remove(get_relative_repo_path(last_path, repo)+g_current_item)
             repo.index.write()
         except KeyError as e:
             print("Failed to remove file: ", e)
@@ -125,13 +127,14 @@ def git_add():
     if check_git_repo(last_path):
         repository = pygit2.Repository(last_path)
     index = repository.index
-    path = g_current_item
+    path = get_relative_repo_path(last_path, repository) + g_current_item
     if g_current_item:
         index.add(path)
     else:
         index.add_all()
     index.write()
     update_files(last_path)
+
 
 
 def git_commit(commit_message):
@@ -171,16 +174,6 @@ def git_mv(new_file_name):
         index.write()
 
         update_files(last_path)
-
-
-def setting_relative_path():
-    status = None
-    if check_git_repo(last_path):
-        repository = pygit2.Repository(last_path)
-        global g_current_item
-        tmp = get_relative_repo_path(last_path, repository) + g_current_item
-        g_current_item = tmp
-
 
 
 def update_file_git_status(path, file_name):
@@ -320,7 +313,6 @@ def select():
         select_row = tree.focus()
         row_data = tree.item(select_row)
         g_current_item = row_data["text"]
-        setting_relative_path()
         if not tree.selection():
             g_current_item = ''
             for x in buttons:
