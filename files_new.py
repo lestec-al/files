@@ -82,7 +82,10 @@ def git_add():
     if check_git_repo() == True:
         repository = pygit2.Repository(last_path)
     index = repository.index
-    index.add(g_current_item)
+    if g_current_item:
+        index.add(g_current_item)
+    else:
+        index.add_all()
     index.write()
     update_files(last_path)
 
