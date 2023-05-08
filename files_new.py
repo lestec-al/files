@@ -149,13 +149,14 @@ def git_mv(new_file_name):
         update_files(last_path)
 
 def current_file_git_status():
+    status = None
     if (check_git_repo(last_path)):
         repository = pygit2.Repository(last_path)
-        status = repository.status_file(g_current_item)
-    else:
-        status = 0
+        try:
+            status = repository.status_file(g_current_item)
+        except KeyError:
+            status = None
     return status
-
 
 
 def update_file_git_status(path, file_name):
