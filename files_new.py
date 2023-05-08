@@ -302,37 +302,37 @@ def select():
         current_git_status = row_data["values"][1]
         folder_status = row_data["values"][0]
         if check_git_repo(last_path):
-            try : 
-                if folder_status == 'dir':
+            if folder_status == 'dir':
                     for x in buttons:
                         x.config(state="disabled")
-                if git_status_dict[current_git_status] == "STAGED":
+            try : 
+                if current_git_status == "STAGED":
                     for x in buttons:
-                        if x == commit_button or x==restore_staged_button or x== rm_cached_button :
+                        if x == commit_button or x==restore_staged_button or x== rm_cached_button or x==mv_button :
                             continue
                         else:
                             x.config(state = "disabled")
 
-                elif git_status_dict[current_git_status] == "UNMODIFIED":
+                elif current_git_status == "UNMODIFIED":
                     for x in buttons:
-                        if x == rm_button or x == rm_cached_button or x == mv_button:
+                        if x == rm_button or x == rm_cached_button or x == mv_button or  x == commit_button:
                             continue
                         else:
                             x.config(state= "disabled")
-                elif git_status_dict[current_git_status] == "UNSTAGED":
+                elif current_git_status == "UNSTAGED":
                     for x in buttons :
-                        if x == add_button or x == rm_button or x == rm_cached_button or x == mv_button or x==restore_button :
+                        if x == add_button or x == rm_button or x == rm_cached_button or x == mv_button or x==restore_button or x==commit_button :
                             continue
                         else:
                             x.config(state = "disabled")
 
-                elif git_status_dict[current_git_status] == "UNTRACKED":
+                elif current_git_status == "UNTRACKED":
                     for x in buttons:
                         if x==add_button:
                             continue
                         else:
                             x.config(state = "disabled")
-                elif git_status_dict[current_git_status] == "UNSTAGED-STAGED":
+                elif current_git_status == "UNSTAGED-STAGED":
                     init_button.config(state= "disabled")
                 else:
                     print(None)
