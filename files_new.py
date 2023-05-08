@@ -295,14 +295,17 @@ def select():
         select_row = tree.focus()
         row_data = tree.item(select_row)
         g_current_item = row_data["text"]
-
         if not tree.selection():
             g_current_item = ''
             for x in buttons:
                 x.config(state="disabled")
-        current_git_status = current_file_git_status()
+        current_git_status = row_data["values"][1]
+        folder_status = row_data["values"][0]
         if check_git_repo(last_path):
             try : 
+                if folder_status == 'dir':
+                    for x in buttons:
+                        x.config(state="disabled")
                 if git_status_dict[current_git_status] == "STAGED":
                     for x in buttons:
                         if x == commit_button or x==restore_staged_button or x== rm_cached_button :
