@@ -75,7 +75,7 @@ def git_rm():
 def git_init():
     # non-bare repository init
     if check_git_repo() == False:
-        pygit2.init_repository('/.git', False)
+        pygit2.init_repository(f'{last_path}/.git', False)
 
 
 def git_add():
@@ -111,6 +111,7 @@ def git_commit(commit_message):
         tree,
         parents
     )
+    update_files(last_path)
 
 
 def git_mv(new_file_name):
