@@ -16,6 +16,29 @@ from pathlib import Path
 from ftplib import FTP
 from send2trash import send2trash
 
+
+# git status dictionary
+git_status_dict = {
+    -1: "NOT_GIT_REPOSITORY",
+    0: "UNMODIFIED",
+    1: "STAGED",
+    2: "STAGED",
+    4: "GIT_STATUS_INDEX_DELETED",
+    8: "GIT_STATUS_INDEX_RENAMED",
+    16: "GIT_STATUS_INDEX_TYPECHANGE",
+    128: "UNTRACKED",
+    132: "UNTRACKED",
+    256: "UNSTAGED",
+    257: "UNSTAGED-STAGED",
+    258: "UNSTAGED-STAGED",
+    512: "GIT_STATUS_WT_DELETED",
+    1024: "GIT_STATUS_WT_RENAMED",
+    2048: "GIT_STATUS_WT_TYPECHANGE",
+    4096: "GIT_STATUS_WT_UNREADABLE",
+    16384: "GIT_STATUS_IGNORED",
+    32768: "GIT_STATUS_CONFLICTED"
+}
+
 # Interface
 
 
