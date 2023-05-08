@@ -40,10 +40,13 @@ def git_restore_staged():
         index = repo.index
         index.read()
         index.remove(g_current_item)
-        obj = repo.revparse_single('HEAD').tree[g_current_item] # Get object from db
-        index.add(pygit2.IndexEntry(g_current_item, obj.id, obj.filemode)) # Add to inde
+        obj = repo.revparse_single(
+            'HEAD').tree[g_current_item]  # Get object from db
+        index.add(pygit2.IndexEntry(g_current_item,
+                  obj.id, obj.filemode))  # Add to inde
         index.write()
     update_files(last_path)
+
 
 def git_rm_cached():
     if check_git_repo() == True:
@@ -81,6 +84,7 @@ def git_add():
     index = repository.index
     index.add_all()
     index.write()
+    update_files(last_path)
 
 
 def git_commit(commit_message):
