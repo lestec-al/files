@@ -37,6 +37,30 @@ git_status_dict = {
     16384: "GIT_STATUS_IGNORED",
     32768: "GIT_STATUS_CONFLICTED"
 }
+
+# icons for status [default, unstaged, staged, both]
+icon_status_dict = {
+    -1: 0,
+    0: 0,
+    1: 2,
+    2: 2,
+    4: 0,
+    8: 0,
+    16: 0,
+    128: 1,
+    132: 1,
+    256: 1,
+    257: 3,
+    258: 3,
+    512: 0,
+    1024: 0,
+    2048: 0,
+    4096: 0,
+    16384: 0,
+    32768: 0
+}
+
+
 # Interface
 def git_restore():
     if check_git_repo(last_path):
@@ -189,6 +213,7 @@ def check_git_repo(path):
         return False
     return True
 
+
 def update_git_repo(path):
     try:
         # 디렉토리가 Git 저장소인지 확인 레포가 만들어지면 init 불가능
@@ -312,7 +337,7 @@ def select():
                         if x == commit_button or x==restore_staged_button or x== rm_cached_button or x==mv_button :
                             continue
                         else:
-                            x.config(state = "disabled")
+                            x.config(state="disabled")
 
                 elif current_git_status == "UNMODIFIED":
                     for x in buttons:
@@ -325,11 +350,11 @@ def select():
                         if x == add_button or x == rm_button or x == rm_cached_button or x == mv_button or x==restore_button or x==commit_button :
                             continue
                         else:
-                            x.config(state = "disabled")
+                            x.config(state="disabled")
 
                 elif current_git_status == "UNTRACKED":
                     for x in buttons:
-                        if x==add_button:
+                        if x == add_button:
                             continue
                         else:
                             x.config(state = "disabled")
@@ -337,14 +362,14 @@ def select():
                     init_button.config(state= "disabled")
                 else:
                     print(None)
-            except :
+            except:
                 print("Invalid Git status code:", current_git_status)
         else:
             for x in buttons:
                 if x == init_button:
                     continue
                 else:
-                    x.config(state = "disabled")
+                    x.config(state="disabled")
 
     except IndexError:
         g_current_item = None
@@ -614,12 +639,13 @@ def update_files(orig_dirname: str):
                         if sys.platform == "win32":
                             if not f.is_symlink() and not bool(f_stat.st_file_attributes & stat.FILE_ATTRIBUTE_HIDDEN):
                                 dirs_list.append(
-                                    [f.name, "dir", f.path, folder_icon, 0,
-                                     git_status_dict[git_status_dict[git_status]]])
+                                    [f.name, "dir", f.path, folder_icon_list[icon_status_dict[git_status]], 0,
+                                     git_status_dict[git_status]])
                         else:
                             if not f.name.startswith("."):
                                 dirs_list.append(
-                                    [f.name, "dir", f.path, folder_icon, 0, git_status_dict[git_status]])
+                                    [f.name, "dir", f.path, folder_icon_list[icon_status_dict[git_status]], 0,
+                                     git_status_dict[git_status]])
                     else:
                         if sys.platform == "win32":
                             if bool(f_stat.st_file_attributes & stat.FILE_ATTRIBUTE_HIDDEN):
@@ -631,14 +657,16 @@ def update_files(orig_dirname: str):
                                         [f.name, "dir", f.path, folder_hidden_icon, 0, git_status_dict[git_status]])
                                 else:
                                     dirs_list.append(
-                                        [f.name, "dir", f.path, folder_icon, 0, git_status_dict[git_status]])
+                                        [f.name, "dir", f.path, folder_icon_list[icon_status_dict[git_status]], 0,
+                                         git_status_dict[git_status]])
                         else:
                             if f.name.startswith("."):
                                 dirs_list.append(
                                     [f.name, "dir", f.path, folder_hidden_icon, 0, git_status_dict[git_status]])
                             else:
                                 dirs_list.append(
-                                    [f.name, "dir", f.path, folder_icon, 0, git_status_dict[git_status]])
+                                    [f.name, "dir", f.path, folder_icon_list[icon_status_dict[git_status]], 0,
+                                     git_status_dict[git_status]])
                 if f.is_file():
                     # 오브젝트가 파일이면 아래와 같은 정보들을 삽입
                     if is_repo_exist:  # if true -> cant init
@@ -661,12 +689,14 @@ def update_files(orig_dirname: str):
                         else:
                             if not f.name.startswith("."):
                                 # new file : 1, modified : 2, renamed : 257, modified + staged : 258
-                                if git_status_dict[git_status] == "STAGED" or git_status_dict[
-                                    git_status] == "UNSTAGED-STAGED":
+                                if git_status_dict[git_status] == "STAGED" \
+                                        or git_status_dict[git_status] == "UNSTAGED-STAGED":
                                     g_staged_list.append(
-                                        [f.name, size[0], f.path, file_icon, size[1], git_status_dict[git_status]])
+                                        [f.name, size[0], f.path, file_icon_list[icon_status_dict[git_status]], size[1],
+                                         git_status_dict[git_status]])
                                 files_list.append(
-                                    [f.name, size[0], f.path, file_icon, size[1], git_status_dict[git_status]])
+                                    [f.name, size[0], f.path, file_icon_list[icon_status_dict[git_status]], size[1],
+                                     git_status_dict[git_status]])
                     else:
                         if sys.platform == "win32":
                             if bool(f_stat.st_file_attributes & stat.FILE_ATTRIBUTE_HIDDEN):
@@ -674,24 +704,28 @@ def update_files(orig_dirname: str):
                                     [f.name, size[0], f.path, file_hidden_icon, size[1], git_status_dict[git_status]])
                             else:
                                 files_list.append(
-                                    [f.name, size[0], f.path, file_icon, size[1], git_status_dict[git_status]])
+                                    [f.name, size[0], f.path, file_icon_list[icon_status_dict[git_status]], size[1],
+                                     git_status_dict[git_status]])
                         else:
                             if f.name.startswith("."):
                                 # new file : 1, modified : 2, renamed : 257, modified + staged : 258
-                                if git_status_dict[git_status] == "STAGED" or git_status_dict[
-                                    git_status] == "UNSTAGED-STAGED":
+                                if git_status_dict[git_status] == "STAGED" \
+                                        or git_status_dict[git_status] == "UNSTAGED-STAGED":
                                     g_staged_list.append(
-                                        [f.name, size[0], f.path, file_icon, size[1], git_status_dict[git_status]])
+                                        [f.name, size[0], f.path, file_icon_list[icon_status_dict[git_status]], size[1],
+                                         git_status_dict[git_status]])
                                 files_list.append(
                                     [f.name, size[0], f.path, file_hidden_icon, size[1], git_status_dict[git_status]])
                             else:
                                 # new file : 1, modified : 2, renamed : 257 or modified + staged : 258
-                                if git_status_dict[git_status] == "STAGED" or git_status_dict[
-                                    git_status] == "UNSTAGED-STAGED":
+                                if git_status_dict[git_status] == "STAGED" \
+                                        or git_status_dict[git_status] == "UNSTAGED-STAGED":
                                     g_staged_list.append(
-                                        [f.name, size[0], f.path, file_icon, size[1], git_status_dict[git_status]])
+                                        [f.name, size[0], f.path, file_icon_list[icon_status_dict[git_status]], size[1],
+                                         git_status_dict[git_status]])
                                 files_list.append(
-                                    [f.name, size[0], f.path, file_icon, size[1], git_status_dict[git_status]])
+                                    [f.name, size[0], f.path, file_icon_list[icon_status_dict[git_status]], size[1],
+                                     git_status_dict[git_status]])
         # FTP
         else:
             ftp.cwd(dirname)
@@ -833,8 +867,12 @@ frame_up = tk.Frame(window, border=1, bg="white")
 frame_up.pack(fill="x", side="top")
 
 # Top of window
-folder_icon = tk.PhotoImage(file="data/icon_folder.png")
+folder_icon_list = [tk.PhotoImage(file="data/icon_folder.png"), tk.PhotoImage(file="data/icon_folder_unstaged.png"),
+                    tk.PhotoImage(file="data/icon_folder_staged.png"), tk.PhotoImage(file="data/icon_folder_both.png")]
+file_icon_list = [tk.PhotoImage(file="data/icon_file.png"), tk.PhotoImage(file="data/icon_file_unstaged.png"),
+                  tk.PhotoImage(file="data/icon_file_staged.png"), tk.PhotoImage(file="data/icon_file_both.png")]
 file_icon = tk.PhotoImage(file="data/icon_file.png")
+folder_icon = tk.PhotoImage(file="data/icon_folder.png")
 folder_hidden_icon = tk.PhotoImage(file="data/icon_folder_hidden.png")
 file_hidden_icon = tk.PhotoImage(file="data/icon_file_hidden.png")
 home_icon = tk.PhotoImage(file="data/icon_home.png")
@@ -940,44 +978,44 @@ frame_down.pack(fill="x", side="bottom")
 frame_c = tk.Frame(frame_down, relief="groove", bg="white")
 frame_c.pack(side="bottom")
 buttons = []
-#init button
+# init button
 init_button = tk.Button(frame_c, text='init', width=5, height=1, relief="flat", bg="black",
-          fg="black", command=lambda: git_init())
+                        fg="black", command=lambda: git_init())
 init_button.grid(column=1, row=0)
 buttons.append(init_button)
-#add button
+# add button
 add_button = tk.Button(frame_c, text='add', width=5, height=1, relief="flat", bg="black",
-          fg="black", command=lambda: git_add())
+                       fg="black", command=lambda: git_add())
 add_button.grid(column=2, row=0)
 buttons.append(add_button)
-#commit button
+# commit button
 commit_button = tk.Button(frame_c, text='commit', width=5, height=1, relief="flat", bg="black",
-          fg="black", command=lambda: confirm_staged_files())
+                          fg="black", command=lambda: confirm_staged_files())
 commit_button.grid(column=3, row=0)
 buttons.append(commit_button)
-#git_rm button
+# git_rm button
 rm_button = tk.Button(frame_c, text='rm', width=5, height=1, relief="flat", bg="black",
-          fg="black", command=lambda: git_rm())
+                      fg="black", command=lambda: git_rm())
 rm_button.grid(column=4, row=0)
 buttons.append(rm_button)
-#git_rm_cached button
+# git_rm_cached button
 rm_cached_button = tk.Button(frame_c, text='rm --cached', width=8, height=1, relief="flat", bg="black",
-          fg="black", command=lambda: git_rm_cached())
+                             fg="black", command=lambda: git_rm_cached())
 rm_cached_button.grid(column=5, row=0)
 buttons.append(rm_cached_button)
-#git_restore button
+# git_restore button
 restore_button = tk.Button(frame_c, text='restore', width=6, height=1, relief="flat", bg="black",
-          fg="black", command=lambda: git_restore())
+                           fg="black", command=lambda: git_restore())
 restore_button.grid(column=6, row=0)
 buttons.append(restore_button)
-#git_restore --staged button
+# git_restore --staged button
 restore_staged_button = tk.Button(frame_c, text='restore --staged', width=10, height=1, relief="flat", bg="black",
-          fg="black", command=lambda: git_restore_staged())
+                                  fg="black", command=lambda: git_restore_staged())
 restore_staged_button.grid(column=7, row=0)
 buttons.append(restore_staged_button)
-#git_mv button
+# git_mv button
 mv_button = tk.Button(frame_c, text='mv', width=6, height=1, relief="flat", bg="black",
-          fg="black", command=lambda: open_git_mv_window())
+                      fg="black", command=lambda: open_git_mv_window())
 mv_button.grid(column=8, row=0)
 buttons.append(mv_button)
 
