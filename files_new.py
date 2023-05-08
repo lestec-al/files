@@ -75,14 +75,17 @@ def git_rm():
 def git_init():
     # non-bare repository init
     if check_git_repo() == False:
-        pygit2.init_repository('/.git', False)
+        pygit2.init_repository(f'{last_path}/.git', False)
 
 
 def git_add():
     if check_git_repo() == True:
         repository = pygit2.Repository(last_path)
     index = repository.index
-    index.add_all()
+    if g_current_item:
+        index.add(g_current_item)
+    else:
+        index.add_all()
     index.write()
     update_files(last_path)
 
@@ -108,6 +111,7 @@ def git_commit(commit_message):
         tree,
         parents
     )
+    update_files(last_path)
 
 
 def git_mv(new_file_name):
@@ -263,6 +267,8 @@ def select():
         select_row = tree.focus()
         row_data = tree.item(select_row)
         g_current_item = row_data["text"]
+        if not tree.selection():
+            g_current_item = ''
     except IndexError:
         print("IndexError occurred No file selected")
         g_current_item = None
