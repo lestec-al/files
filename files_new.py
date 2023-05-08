@@ -98,7 +98,7 @@ def git_rm():
 def git_init():
     # non-bare repository init
     if not check_git_repo(last_path):
-        pygit2.init_repository('/.git', False)
+        pygit2.init_repository(f'{last_path}/.git', False)
 
 
 def git_add():
