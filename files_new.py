@@ -67,7 +67,8 @@ def git_restore():
         repo = pygit2.Repository(last_path)
         head_commit = repo.head.peel(pygit2.Commit)
         head_tree = head_commit.tree
-        relative_path = get_relative_repo_path(last_path, repo) + g_current_item
+        relative_path = get_relative_repo_path(
+            last_path, repo) + g_current_item
         tree_entry = head_tree[relative_path]
         blob_oid = tree_entry.oid
         blob = repo[blob_oid]
@@ -83,7 +84,8 @@ def git_restore_staged():
         repo = pygit2.Repository(last_path)
         index = repo.index
         index.read()
-        relative_path = get_relative_repo_path(last_path, repo) + g_current_item
+        relative_path = get_relative_repo_path(
+            last_path, repo) + g_current_item
         index.remove(relative_path)
         try :
             obj = repo.revparse_single(
@@ -100,7 +102,8 @@ def git_rm_cached():
     if check_git_repo(last_path):
         try:
             repo = pygit2.Repository(last_path)
-            repo.index.remove(get_relative_repo_path(last_path, repo)+g_current_item)
+            repo.index.remove(get_relative_repo_path(
+                last_path, repo)+g_current_item)
             repo.index.write()
         except KeyError as e:
             print("Failed to remove file: ", e)
@@ -143,7 +146,6 @@ def git_add():
         index.add_all()
     index.write()
     update_files(last_path)
-
 
 
 def git_commit(commit_message):
@@ -622,8 +624,7 @@ def update_files(orig_dirname: str):
             else:
                 dirname = "/"
         # Scan
-        global g_staged_list
-        files_list, dirs_list, g_staged_list = [], [], []
+        files_list, dirs_list = [], []
         if ftp == None:
             files = os.scandir(dirname)
             git_repo = pygit2.Repository()
@@ -694,12 +695,6 @@ def update_files(orig_dirname: str):
                                     [f.name, size[0], f.path, file_icon, size[1], git_status_dict[git_status]])
                         else:
                             if not f.name.startswith("."):
-                                # new file : 1, modified : 2, renamed : 257, modified + staged : 258
-                                if git_status_dict[git_status] == "STAGED" \
-                                        or git_status_dict[git_status] == "UNSTAGED-STAGED":
-                                    g_staged_list.append(
-                                        [f.name, size[0], f.path, file_icon_list[icon_status_dict[git_status]], size[1],
-                                         git_status_dict[git_status]])
                                 files_list.append(
                                     [f.name, size[0], f.path, file_icon_list[icon_status_dict[git_status]], size[1],
                                      git_status_dict[git_status]])
@@ -714,21 +709,9 @@ def update_files(orig_dirname: str):
                                      git_status_dict[git_status]])
                         else:
                             if f.name.startswith("."):
-                                # new file : 1, modified : 2, renamed : 257, modified + staged : 258
-                                if git_status_dict[git_status] == "STAGED" \
-                                        or git_status_dict[git_status] == "UNSTAGED-STAGED":
-                                    g_staged_list.append(
-                                        [f.name, size[0], f.path, file_icon_list[icon_status_dict[git_status]], size[1],
-                                         git_status_dict[git_status]])
                                 files_list.append(
                                     [f.name, size[0], f.path, file_hidden_icon, size[1], git_status_dict[git_status]])
                             else:
-                                # new file : 1, modified : 2, renamed : 257 or modified + staged : 258
-                                if git_status_dict[git_status] == "STAGED" \
-                                        or git_status_dict[git_status] == "UNSTAGED-STAGED":
-                                    g_staged_list.append(
-                                        [f.name, size[0], f.path, file_icon_list[icon_status_dict[git_status]], size[1],
-                                         git_status_dict[git_status]])
                                 files_list.append(
                                     [f.name, size[0], f.path, file_icon_list[icon_status_dict[git_status]], size[1],
                                      git_status_dict[git_status]])
@@ -912,9 +895,18 @@ def open_error_window(error_type):
 
 
 def confirm_staged_files():
-    if not g_staged_list:
+    if check_git_repo(last_path):
+        repository = pygit2.Repository(last_path)
+    status = repository.status()
+    staged_list = []
+    for file_name, flag in status.items():
+        if git_status_dict[flag] == "STAGED" or git_status_dict[flag] == "UNSTAGED-STAGED":
+            staged_list.append(file_name)
+
+    if not staged_list:
         open_error_window('commit')
         return
+
     confirm_window = tk.Toplevel(window)
     confirm_window.title('staging files')
     confirm_window.geometry("500x200")
@@ -936,8 +928,8 @@ def confirm_staged_files():
     scrollbar.pack(side="right", fill="y")
 
     listNodes.config(yscrollcommand=scrollbar.set)
-    for file in g_staged_list:
-        listNodes.insert(tk.END, file[0])
+    for file in staged_list:
+        listNodes.insert(tk.END, file)
 
     button = tk.Button(confirm_window, text="확인 완료",
                        command=lambda: (open_git_commit_window(), confirm_window.destroy()))
@@ -1035,9 +1027,6 @@ label.pack(side="bottom", fill="both")
 # Git Status Icon file
 git_temp_icon = tk.PhotoImage(file="data/git_logo.png")
 
-# git staged file list
-g_staged_list = []
-
 # Tree view
 tree_frame = tk.Frame(window, border=1, relief="flat", bg="white")
 tree_frame.pack(expand=1, fill="both")
@@ -1101,7 +1090,7 @@ tree.bind("<Down>", lambda event: up_down_focus())
 tree.bind("<Delete>", lambda event: delete())
 tree.bind("<Control-c>", lambda event: copy())
 tree.bind("<Control-v>", lambda event: paste()
-if right_menu.entrycget(index=5, option="state") == "normal" else None)
+          if right_menu.entrycget(index=5, option="state") == "normal" else None)
 entry.bind("<Return>", lambda event: update_files(entry.get()))
 entry.bind("<KP_Enter>", lambda event: update_files(entry.get()))
 window.mainloop()
