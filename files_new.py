@@ -87,11 +87,14 @@ def git_restore_staged():
         relative_path = get_relative_repo_path(
             last_path, repo) + g_current_item
         index.remove(relative_path)
-        obj = repo.revparse_single(
-            'HEAD').tree[relative_path]  # Get object from db
-        index.add(pygit2.IndexEntry(relative_path,
-                                    obj.id, obj.filemode))  # Add to inde
-        index.write()
+        try :
+            obj = repo.revparse_single(
+                'HEAD').tree[relative_path]  # Get object from db
+            index.add(pygit2.IndexEntry(relative_path,
+                                        obj.id, obj.filemode))  # Add to inde
+            index.write()
+        except KeyError:
+            git_rm_cached()
     update_files(last_path)
 
 
@@ -129,9 +132,15 @@ def git_init():
 def git_add():
     if check_git_repo(last_path):
         repository = pygit2.Repository(last_path)
+    print(g_current_item)
     index = repository.index
-    path = get_relative_repo_path(last_path, repository) + g_current_item
-    if g_current_item:
+    
+    if g_current_item != None :
+        path = get_relative_repo_path(last_path, repository) + g_current_item
+    else:
+        path = None
+
+    if path != None:
         index.add(path)
     else:
         index.add_all()
@@ -318,46 +327,51 @@ def select():
         if not tree.selection():
             g_current_item = ''
             for x in buttons:
-                x.config(state="disabled")
+                if x == add_button or x == init_button and (not check_git_repo(last_path)):
+                    continue
+                else:
+                    x.config(state="disabled")
         current_git_status = row_data["values"][1]
         folder_status = row_data["values"][0]
         if check_git_repo(last_path):
             if folder_status == 'dir':
-                for x in buttons:
-                    x.config(state="disabled")
-            try:
-                if current_git_status == "STAGED":
                     for x in buttons:
-                        if x == commit_button or x == restore_staged_button or x == rm_cached_button or x == mv_button:
-                            continue
-                        else:
+                        if x != add_button:
                             x.config(state="disabled")
+            else:                
+                try : 
+                    if current_git_status == "STAGED":
+                        for x in buttons:
+                            if x == commit_button or x==restore_staged_button or x== rm_cached_button or x==mv_button :
+                                continue
+                            else:
+                                x.config(state="disabled")
 
-                elif current_git_status == "UNMODIFIED":
-                    for x in buttons:
-                        if x == rm_button or x == rm_cached_button or x == mv_button or x == commit_button:
-                            continue
-                        else:
-                            x.config(state="disabled")
-                elif current_git_status == "UNSTAGED":
-                    for x in buttons:
-                        if x == add_button or x == rm_button or x == rm_cached_button or x == mv_button or x == restore_button or x == commit_button:
-                            continue
-                        else:
-                            x.config(state="disabled")
+                    elif current_git_status == "UNMODIFIED":
+                        for x in buttons:
+                            if x == rm_button or x == rm_cached_button or x == mv_button or  x == commit_button:
+                                continue
+                            else:
+                                x.config(state= "disabled")
+                    elif current_git_status == "UNSTAGED":
+                        for x in buttons :
+                            if x == add_button or x == rm_button or x == rm_cached_button or x == mv_button or x==restore_button or x==commit_button :
+                                continue
+                            else:
+                                x.config(state="disabled")
 
-                elif current_git_status == "UNTRACKED":
-                    for x in buttons:
-                        if x == add_button:
-                            continue
-                        else:
-                            x.config(state="disabled")
-                elif current_git_status == "UNSTAGED-STAGED":
-                    init_button.config(state="disabled")
-                else:
-                    print(None)
-            except:
-                print("Invalid Git status code:", current_git_status)
+                    elif current_git_status == "UNTRACKED":
+                        for x in buttons:
+                            if x == add_button:
+                                continue
+                            else:
+                                x.config(state = "disabled")
+                    elif current_git_status == "UNSTAGED-STAGED":
+                        init_button.config(state= "disabled")
+                    else:
+                        print(None)
+                except:
+                    print("Invalid Git status code:", current_git_status)
         else:
             for x in buttons:
                 if x == init_button:
