@@ -131,11 +131,12 @@ def git_add():
         repository = pygit2.Repository(last_path)
     print(g_current_item)
     index = repository.index
+    
     if g_current_item != None :
         path = get_relative_repo_path(last_path, repository) + g_current_item
     else:
         path = None
-    
+
     if path != None:
         index.add(path)
     else:
