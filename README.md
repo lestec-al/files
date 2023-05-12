@@ -4,6 +4,7 @@
 <a href="https://fixed-borogovia-5fe.notion.site/OSS-Team-13-4df2df4655c645a8a7e49e15abbffa3c">
 <img src="https://img.shields.io/badge/NOTION-team_page-green?&style=for-the-badge&logo=notion">
 </a>
+
 </p>
 
 ## 목차
@@ -187,15 +188,16 @@ untracked - staged 된 파일 ex) git rm --cached 명령어 실행 시에는 unt
 			</td>
 		</tr>
 		<tr>
-			<td width="65%">
+			<td width="50%">
 				<h4 align="center">
-				<a href = "https://raw.githubusercontent.com/osamhack2021/WEB_APP_IOT_ModuChangGo_Chang-keeper/edit/image/ui/web_history.png"><img src="/image/ui/web_storages_detail_page.png" width="100%" height="100%">
-					</a><br>커밋 메뉴 클릭 시 staging된 change를 보여줌. <br>
+<img width="804" alt="git_commit_show_staged_list" src="https://github.com/rbgksqkr/react/assets/63959171/487c96fb-7094-4427-af14-aa05d3cd05da">
+          <br><br>shows the list of staged changes
 				</h4>
 			</td>
-			<td width="35%">
+			<td width="50%">
 	   			<h4 align="center">
-		   		<a href="https://raw.githubusercontent.com/osamhack2021/WEB_APP_IOT_ModuChangGo_Chang-keeper/edit/image/ui/app_storages_detail_page.png"><img src="/image/ui/app_storages_detail_page.png" width="75%" height="75%"></a><br><br>커밋을 확인하면 repo에 커밋 적용 및 staged -> committed로 change</h4></td>
+<img width="804" alt="git_commit_message" src="https://github.com/rbgksqkr/react/assets/63959171/860d5f44-ff43-40c9-b30a-37d7765bef86">
+            <br><br>commit message 작성</h4></td>
 		</tr>
 </tbody>
 </table>
