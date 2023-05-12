@@ -151,7 +151,7 @@ untracked - staged 된 파일 ex) git rm --cached 명령어 실행 시에는 unt
 
 <table><tbody>
 		<tr>
-			<td colspan=2>
+			<td colspan=3>
 				<br>
 				<b>Git add 기능</b><br>
 				<br>
