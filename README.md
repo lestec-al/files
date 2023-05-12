@@ -76,16 +76,16 @@ deactivate
 		<tr>
 			<td width="33%">
 				<h4 align="center">
-				<a href = "https://raw.githubusercontent.com/CAU-OSS-project-practice/OSS-file-manager/develop/data/execution_image/rootdir.png"><img src="/data/execution_image/rootdir.png" width="75%" height="75%">
+				<a href = "https://raw.githubusercontent.com/CAU-OSS-project-practice/OSS-file-manager/develop/data/execution_image/rootdir.png"><img src="/data/execution_image/rootdir.png" width="100%" height="100%">
 					</a><br><br> 파일 탐색은 루트 디렉토리에서 시작
 				</h4>
 			</td>
 			<td width="33%">
 	   			<h4 align="center">
-		   		<a href="https://raw.githubusercontent.com/CAU-OSS-project-practice/OSS-file-manager/develop/data/execution_image/in%20folder.png"><img src="/data/execution_image/in folder.png" width="75%" height="75%"></a><br><br>현재 디렉토리에 포함된 모든 파일과 디렉토리는 아이콘, 이름, 확장자로 표현 </h4></td>
+		   		<a href="https://raw.githubusercontent.com/CAU-OSS-project-practice/OSS-file-manager/develop/data/execution_image/in%20folder.png"><img src="/data/execution_image/in folder.png" width="100%" height="100%"></a><br><br>현재 디렉토리에 포함된 모든 파일과 디렉토리는 아이콘, 이름, 확장자로 표현 </h4></td>
             <td width="33%">
 	   			<h4 align="center">
-		   		<a href="https://raw.githubusercontent.com/CAU-OSS-project-practice/OSS-file-manager/develop/data/execution_image/double-click.gif"><img src="/data/execution_image/double-click.gif" width="75%" height="75%"></a><br><br>더블 클릭을 통해 브라우징 가능 </h4></td>
+		   		<a href="https://raw.githubusercontent.com/CAU-OSS-project-practice/OSS-file-manager/develop/data/execution_image/double-click.gif"><img src="/data/execution_image/double-click.gif" width="100%" height="100%"></a><br><br>더블 클릭을 통해 브라우징 가능 </h4></td>
 		</tr>
 </tbody>
 </table>
@@ -130,13 +130,13 @@ deactivate
 			</td>
 			<td width="25%">
 	   			<h4 align="center">
-		   		<a href="https://github.com/CAU-OSS-project-practice/OSS-file-manager/blob/develop/data/icon_file_unstaged.png?raw=true"><img src="/data/icon_file_unstaged.png" width="75%" height="75%"></a><br>unstaged(modified)된 파일 표시<br></h4></td>
+		   		<a href="https://github.com/CAU-OSS-project-practice/OSS-file-manager/blob/develop/data/icon_file_unstaged.png?raw=true"><img src="/data/icon_file_unstaged.png" width="100%" height="100%"></a><br>unstaged(modified)된 파일 표시<br></h4></td>
                 <td width="25%">
 	   			<h4 align="center">
-		   		<a href="https://raw.githubusercontent.com/CAU-OSS-project-practice/OSS-file-manager/develop/data/icon_file.png"><img src="/data/icon_file.png" width="75%" height="75%"></a><br><br>committed(unmodified)된 파일 표시</h4></td>
+		   		<a href="https://raw.githubusercontent.com/CAU-OSS-project-practice/OSS-file-manager/develop/data/icon_file.png"><img src="/data/icon_file.png" width="100%" height="100%"></a><br><br>committed(unmodified)된 파일 표시</h4></td>
                 <td width="25%">
 	   			<h4 align="center">
-		   		<a href="https://raw.githubusercontent.com/CAU-OSS-project-practice/OSS-file-manager/develop/data/icon_file_both.png"><img src="/data/icon_file_both.png" width="75%" height="75%"></a><br><br>staged-unstaged(modified)된 파일 표시</h4></td>
+		   		<a href="https://raw.githubusercontent.com/CAU-OSS-project-practice/OSS-file-manager/develop/data/icon_file_both.png"><img src="/data/icon_file_both.png" width="100%" height="100%"></a><br><br>staged-unstaged(modified)된 파일 표시</h4></td>
 		</tr>
 </tbody>
 </table>
@@ -212,7 +212,7 @@ untracked - staged 된 파일 ex) git rm --cached 명령어 실행 시에는 unt
 		<tr>
 			<td width="50%">
 	   			<h4 align="center">
-		   		<a href="https://raw.githubusercontent.com/CAU-OSS-project-practice/OSS-file-manager/develop/data/execution_image/git_restore_after.png"><img src="/data/execution_image/git_restore_after.png" width="75%" height="75%"></a><br><br>Git restore 작동 전(modified된 파일 표시)</h4></td>
+		   		<a href="https://raw.githubusercontent.com/CAU-OSS-project-practice/OSS-file-manager/develop/data/execution_image/git_restore_after.png"><img src="/data/execution_image/git_restore_after.png" width="100%" height="100%"></a><br><br>Git restore 작동 전(modified된 파일 표시)</h4></td>
 			<td width="50%">
 				<h4 align="center">
 				<a href = "https://raw.githubusercontent.com/CAU-OSS-project-practice/OSS-file-manager/develop/data/execution_image/git_restore_before.png"><img src="/data/execution_image/git_restore_before.png" width="100%" height="100%">
@@ -240,7 +240,7 @@ untracked - staged 된 파일 ex) git rm --cached 명령어 실행 시에는 unt
 			</td>
 			<td width="50%">
 	   			<h4 align="center">
-		   		<a href="https://raw.githubusercontent.com/CAU-OSS-project-practice/OSS-file-manager/develop/data/execution_image/git_restore_staged_after.png"><img src="/data/execution_image/git_restore_staged_after.png" width="75%" height="75%"></a><br><br>git restore --staged staged된 파일을 modified 상태로 되돌림</h4></td>
+		   		<a href="https://raw.githubusercontent.com/CAU-OSS-project-practice/OSS-file-manager/develop/data/execution_image/git_restore_staged_after.png"><img src="/data/execution_image/git_restore_staged_after.png" width="100%" height="100%"></a><br><br>git restore --staged staged된 파일을 modified 상태로 되돌림</h4></td>
 		</tr>
 </tbody>
 </table>
@@ -262,7 +262,7 @@ untracked - staged 된 파일 ex) git rm --cached 명령어 실행 시에는 unt
 			</td>
 			<td width="50%">
 	   			<h4 align="center">
-		   		<a href="https://raw.githubusercontent.com/CAU-OSS-project-practice/OSS-file-manager/develop/data/execution_image/rm_after.png"><img src="/data/execution_image/rm_after.png" width="75%" height="75%"></a><br><br>git rm after(디렉토리에서 삭제 및 삭제된 사실이 staging됨) </h4></td>
+		   		<a href="https://raw.githubusercontent.com/CAU-OSS-project-practice/OSS-file-manager/develop/data/execution_image/rm_after.png"><img src="/data/execution_image/rm_after.png" width="100%" height="100%"></a><br><br>git rm after(디렉토리에서 삭제 및 삭제된 사실이 staging됨) </h4></td>
 		</tr>
 </tbody>
 </table>
@@ -284,7 +284,7 @@ untracked - staged 된 파일 ex) git rm --cached 명령어 실행 시에는 unt
 			</td>
 			<td width="50%">
 	   			<h4 align="center">
-		   		<a href="https://raw.githubusercontent.com/CAU-OSS-project-practice/OSS-file-manager/develop/data/execution_image/rm_cached_after.png"><img src="/data/execution_image/rm_cached_after.png" width="75%" height="75%"></a><br><br>git rm --cached after -> 실제 디렉토리에서 삭제되진 않았지만 git repository에서 삭제됨(untracked)됨</h4></td>
+		   		<a href="https://raw.githubusercontent.com/CAU-OSS-project-practice/OSS-file-manager/develop/data/execution_image/rm_cached_after.png"><img src="/data/execution_image/rm_cached_after.png" width="100%" height="100%"></a><br><br>git rm --cached after -> 실제 디렉토리에서 삭제되진 않았지만 git repository에서 삭제됨(untracked)됨</h4></td>
 		</tr>
 </tbody>
 </table>
