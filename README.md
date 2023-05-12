@@ -211,14 +211,14 @@ untracked - staged 된 파일 ex) git rm --cached 명령어 실행 시에는 unt
 		</tr>
 		<tr>
 			<td width="50%">
+	   			<h4 align="center">
+		   		<a href="https://raw.githubusercontent.com/CAU-OSS-project-practice/OSS-file-manager/develop/data/execution_image/git_restore_after.png"><img src="/data/execution_image/git_restore_after.png" width="75%" height="75%"></a><br><br>Git restore 작동 전(modified된 파일 표시)</h4></td>
+			<td width="50%">
 				<h4 align="center">
 				<a href = "https://raw.githubusercontent.com/CAU-OSS-project-practice/OSS-file-manager/develop/data/execution_image/git_restore_before.png"><img src="/data/execution_image/git_restore_before.png" width="100%" height="100%">
-					</a><br><br>Git restore 작동 전(modified된 파일 표시)
+					</a><br><br>git restore 작동 후(commit전 상태로 되돌아옴)
 				</h4>
 			</td>
-			<td width="50%">
-	   			<h4 align="center">
-		   		<a href="https://raw.githubusercontent.com/CAU-OSS-project-practice/OSS-file-manager/develop/data/execution_image/git_restore_after.png"><img src="/data/execution_image/git_restore_after.png" width="75%" height="75%"></a><br><br>git restore 작동 후(commit전 상태로 되돌아옴)</h4></td>
 		</tr>
 </tbody>
 </table>
