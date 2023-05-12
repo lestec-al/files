@@ -1,13 +1,10 @@
-
 # Python-file-explorer(with git) develop by OSS-TEAM-13
-<p align="center"><img src="/image/모두의 창고3.PNG"></p>
 
 <p align="center">
 <a href="https://fixed-borogovia-5fe.notion.site/OSS-Team-13-4df2df4655c645a8a7e49e15abbffa3c">
 <img src="https://img.shields.io/badge/NOTION-team_page-green?&style=for-the-badge&logo=notion">
 </a>
 </p>
-
 
 </p>
 <p align="center">
@@ -17,28 +14,28 @@
 	<a href="https://github.com/osamhack2021/WEB_APP_IOT_ModuChangGo_Chang-keeper/blob/main/LICENSE"><img alt="GitHub license" src="https://img.shields.io/github/license/osamhack2021/WEB_APP_IOT_ModuChangGo_Chang-keeper"></a>
 </p>
 
-
 ## 목차
--  [프로젝트 소개](#프로젝트-소개)  
--  [설치 안내](#설치-안내)
--  [기능 설계 및 설명](#기능-설계-및-설명)   
--  [팀 정보 (Team Information)](#팀-정보-team-information)
--  [협업 과정](#협업과정)
--  [저작권 및 사용권 정보(Copyleft / End User License)](#저작권-및-사용권-정보-copyleft--end-user-license)
+
+- [프로젝트 소개](#프로젝트-소개)
+- [설치 안내](#설치-안내)
+- [기능 설계 및 설명](#기능-설계-및-설명)
+- [팀 정보 (Team Information)](#팀-정보-team-information)
+- [협업 과정](#협업과정)
+- [저작권 및 사용권 정보(Copyleft / End User License)](#저작권-및-사용권-정보-copyleft--end-user-license)
 
 ## 프로젝트 소개
 
-이 프로젝트는 파일 브라우징에 Git에 관련한 기능을 넣어 확장시킨 git file browser 프로젝트입니다.
+이 프로젝트는 파일 브라우징에 Git에 관련한 기능을 넣어 확장시킨 git file browser 프로젝트입니다. <br/>
 기본적으로 파일 브라우징 기능을 제공하고 아래의 기능을 제공합니다
-- git init 
+
+- git init
 - git add
 - git commit
 - git rm / git rm --cached
 - git restore / git restore --staged
 - git rm
 
-이런 기능뿐 아니라 Git status에 따른 파일 상태(4가지)를 이미지로 표시시켜줍니다!
-
+이런 기능뿐 아니라 Git status에 따른 파일 상태(4가지)를 이미지로 표시합니다!
 
 ## 설치 안내
 
@@ -49,8 +46,8 @@ Python 3.8+
 pip (package installer for Python)
 platform : mac OS
 ```
-설치 순서 
 
+- 설치 순서
 
 ```bash\
 git clone https://github.com/CAU-OSS-project-practice/file-manager.git
@@ -58,23 +55,23 @@ cd file-manager
 pip install -r requirements.txt
 python3 files_new.py
 ```
-tkinter 라이브러리 오류 또는 파이썬 버전 충돌 시 가상환경에서 동작
+
+- tkinter 라이브러리 오류 또는 파이썬 버전 충돌 시 가상환경에서 동작
 
 ```bash
 python -m venv .venv # .venv 생성
 source .venv/bin/activate # 가상환경 실행
 ```
 
-가상환경 비활성화
+- 가상환경 비활성화
+
 ```bash
 deactivate
 ```
 
-## Service Flow
-<p align="center"><img src="/image/ui/flowChart.png"></p>
-
 ## 기능 설계 및 설명
->모든 사진은 클릭 시 확대 된 이미지로 확인할 수 있습니다.😀
+
+> 모든 사진은 클릭 시 확대 된 이미지로 확인할 수 있습니다.😀
 
 <table><tbody>
 		<tr>
@@ -101,7 +98,6 @@ deactivate
 </tbody>
 </table>
 
-
 <table><tbody>
 		<tr>
 			<td colspan=2>
@@ -123,7 +119,6 @@ deactivate
 		</tr>
 </tbody>
 </table>
-
 
 <table><tbody>
 		<tr>
@@ -152,14 +147,15 @@ deactivate
 		</tr>
 </tbody>
 </table>
-Stage를 4가지로 나눴습니다. 
+Stage를 4가지로 나눴습니다.
 
-1. Staged 
+1. Staged
 2. unstaged(modified)
-3. committed(unmodified) 
-4. staged - unstaged(staging된 상태에서 파일을 변경한 경우)) 
+3. committed(unmodified)
+4. staged - unstaged(staging된 상태에서 파일을 변경한 경우))
 
 untracked - staged 된 파일 ex) git rm --cached 명령어 실행 시에는 untracked를 우선순위로 동작하게 만들었습니다.
+
 <table><tbody>
 		<tr>
 			<td colspan=2>
@@ -181,7 +177,6 @@ untracked - staged 된 파일 ex) git rm --cached 명령어 실행 시에는 unt
 		</tr>
 </tbody>
 </table>
-
 
 <table><tbody>
 		<tr>
@@ -205,7 +200,6 @@ untracked - staged 된 파일 ex) git rm --cached 명령어 실행 시에는 unt
 </tbody>
 </table>
 
-
 <table><tbody>
 		<tr>
 			<td colspan=2>
@@ -227,7 +221,6 @@ untracked - staged 된 파일 ex) git rm --cached 명령어 실행 시에는 unt
 		</tr>
 </tbody>
 </table>
-
 
 <table><tbody>
 		<tr>
@@ -251,7 +244,6 @@ untracked - staged 된 파일 ex) git rm --cached 명령어 실행 시에는 unt
 </tbody>
 </table>
 
-
 <table><tbody>
 		<tr>
 			<td colspan=2>
@@ -274,8 +266,8 @@ untracked - staged 된 파일 ex) git rm --cached 명령어 실행 시에는 unt
 </tbody>
 </table>
 
-
 ## 팀 정보 (Team Information)
+
 <table width="788">
 <thead>
 <tr>
@@ -334,11 +326,14 @@ untracked - staged 된 파일 ex) git rm --cached 명령어 실행 시에는 unt
 </table>
 
 ## 협업과정
+
 Tools used for the collaborative development
+
 - [notion](https://bit.ly/3O3sl87)
 - [github](https://github.com/CAU-OSS-project-practice/OSS-file-manager)
 
 ## 저작권 및 사용권 정보 (Copyleft / End User License)
- * [MIT](https://github.com/osamhack2021/WEB_APP_IOT_ModuChangGo_Chang-keeper/blob/main/LICENSE)
+
+- [MIT](https://github.com/osamhack2021/WEB_APP_IOT_ModuChangGo_Chang-keeper/blob/main/LICENSE)
 
 <p align="center"><img src="/image/모두의 창고4.PNG"></p>
