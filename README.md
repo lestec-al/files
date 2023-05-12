@@ -4,7 +4,6 @@
 <a href="https://fixed-borogovia-5fe.notion.site/OSS-Team-13-4df2df4655c645a8a7e49e15abbffa3c">
 <img src="https://img.shields.io/badge/NOTION-team_page-green?&style=for-the-badge&logo=notion">
 </a>
-
 </p>
 
 ## 목차
@@ -320,44 +319,54 @@ untracked - staged 된 파일 ex) git rm --cached 명령어 실행 시에는 unt
 <tr>
 <th width="100" align="center">사진</th>
 <th width="100" align="center">성명</th>
-<th width="150" align="left">담당</th>
+<th width="150" align="center">담당</th>
 <th width="100" align="center">깃허브</th>
 <th width="175" align="center">이메일</th>
 </tr> 
 </thead>
+
 <tbody>
 <tr>
-<td width="100" align="center"><img src="/image/박규한.jpg" width="60" height="60"></td>
-<td width="100" align="center">박규한</td>
-<td width="150">백엔드 개발<br>서버 환경 구축<br>데이터베이스 설계</td>
 <td width="100" align="center">
-	<a href="https://github.com/rbgksqkr">
+  <a href="https://github.com/dn7638/dn7638/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=dn7638/dn7638" />
+</a>
+  </td>
+<td width="100" align="center">최우형</td>
+<td width="150" align="center">git flow<br>git status에 따른 상태관리<br>.git 서브디렉토리 제어<br>테스트케이스 작성<br></td>
+<td width="100" align="center">
+	<a href="https://github.com/dn7638">
+		<img src="http://img.shields.io/badge/dn7638-655ced?style=social&logo=github"/>
+	</a>
+</td>
+<td width="175" align="center">
+	<a href="mailto:dn7638@cau.ac.kr"><img src="https://img.shields.io/static/v1?label=&message=dn7638@cau.ac.kr&color=orange&style=flat-square&logo=gmail"></a>
+	</td>
+</tr>
+<tr>
+<td width="100" align="center"><a href="https://github.com/rbgksqkr/rbgksqkr/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=rbgksqkr/rbgksqkr" />
+</a>
+</a></td>
+<td width="100" align="center">박규한</td>
+<td width="300" align="center">git init<br>git add<br>git commit<br>git mv<br></td>
+</td>
+<td width="100" align="center">
+  	<a href="https://github.com/rbgksqkr">
 		<img src="http://img.shields.io/badge/rbgksqkr-655ced?style=social&logo=github"/>
 	</a>
 </td>
 <td width="175" align="center">
-	<a href="mailto:rbgks1937@gmail.com"><img src="https://img.shields.io/static/v1?label=&message=rbgks1937@gmail.com&color=orange&style=flat-square&logo=gmail"></a>
-	</td>
-</tr>
-<tr>
-<td width="100" align="center"><img src="/image/김태한.jpg" width="60" height="60"></td>
-<td width="100" align="center">최우형</td>
-<td width="300">앱 개발<br>서버/프런트 간 통신 구현<br>서버 테스트<br></td>
-</td>
-<td width="100" align="center">
-	<a href="https://github.com/TaehanKim00">
-		<img src="http://img.shields.io/badge/TaehanKim00-655ced?style=social&logo=github"/>
-	</a>
-</td>
-<td width="175" align="center">
-	<a href="mailto:tk5582lm@gmail.com"><img src="https://img.shields.io/static/v1?label=&message=tk5582lm@gmail.com&color=green&style=flat-square&logo=gmail"></a>
+	<a href="mailto:rbgks1937@gmail.com"><img src="https://img.shields.io/static/v1?label=&message=rbgks1937@gmail.com&color=green&style=flat-square&logo=gmail"></a>
 	</td>
 </tr>
 
 <tr>
-<td width="100" align="center"><img src="/image/조명근.PNG" width="60" height="60"></td>
+<td width="100" align="center"><a href="https://github.com/realisshomyang/PS/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=realisshomyang/PS" />
+</a></td>
 <td width="100" align="center">조명근</td>
-<td width="300">아두이노 개발<br>문서화 작업<br></td>
+<td width="300" align="center">git rm<br>git rm --cached<br>git restore<br>git restore --staged<br></td>
 </td>
 <td width="100" align="center">
 	<a href="https://github.com/realisshomyang">
