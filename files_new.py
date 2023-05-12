@@ -1,4 +1,14 @@
-import os, stat, re, sys, platform, subprocess, string, shutil, configparser, tkinter as tk
+import os
+import stat
+import pygit2
+import re
+import sys
+import platform
+import subprocess
+import string
+import shutil
+import configparser
+import tkinter as tk
 from tkinter import ttk, simpledialog
 from tkinter.messagebox import askyesno
 from tkinter import filedialog
@@ -6,7 +16,217 @@ from pathlib import Path
 from ftplib import FTP
 from send2trash import send2trash
 
+# git status dictionary
+git_status_dict = {
+    -1: "NOT_GIT_REPOSITORY",
+    0: "UNMODIFIED",
+    1: "STAGED",
+    2: "STAGED",
+    4: "GIT_STATUS_INDEX_DELETED",
+    8: "GIT_STATUS_INDEX_RENAMED",
+    16: "GIT_STATUS_INDEX_TYPECHANGE",
+    128: "UNTRACKED",
+    132: "UNTRACKED",
+    256: "UNSTAGED",
+    257: "UNSTAGED-STAGED",
+    258: "UNSTAGED-STAGED",
+    512: "GIT_STATUS_WT_DELETED",
+    1024: "GIT_STATUS_WT_RENAMED",
+    2048: "GIT_STATUS_WT_TYPECHANGE",
+    4096: "GIT_STATUS_WT_UNREADABLE",
+    16384: "GIT_STATUS_IGNORED",
+    32768: "GIT_STATUS_CONFLICTED"
+}
+
+# icons for status [default, unstaged, staged, both]
+icon_status_dict = {
+    -1: 0,
+    0: 0,
+    1: 2,
+    2: 2,
+    4: 0,
+    8: 0,
+    16: 0,
+    128: 1,
+    132: 1,
+    256: 1,
+    257: 3,
+    258: 3,
+    512: 0,
+    1024: 0,
+    2048: 0,
+    4096: 0,
+    16384: 0,
+    32768: 0
+}
+
+
 # Interface
+def git_restore():
+    if check_git_repo(last_path):
+        repo = pygit2.Repository(last_path)
+        head_commit = repo.head.peel(pygit2.Commit)
+        head_tree = head_commit.tree
+        relative_path = get_relative_repo_path(
+            last_path, repo) + g_current_item
+        tree_entry = head_tree[relative_path]
+        blob_oid = tree_entry.oid
+        blob = repo[blob_oid]
+        file_content = blob.data
+        tmp_path = last_path + "/" + g_current_item
+        with open(tmp_path, "wb") as f:
+            f.write(file_content)
+    update_files(last_path)
+
+
+def git_restore_staged():
+    if check_git_repo(last_path):
+        repo = pygit2.Repository(last_path)
+        index = repo.index
+        index.read()
+        relative_path = get_relative_repo_path(
+            last_path, repo) + g_current_item
+        index.remove(relative_path)
+        try:
+            obj = repo.revparse_single(
+                'HEAD').tree[relative_path]  # Get object from db
+            index.add(pygit2.IndexEntry(relative_path,
+                                        obj.id, obj.filemode))  # Add to inde
+            index.write()
+        except KeyError:
+            git_rm_cached()
+    update_files(last_path)
+
+
+def git_rm_cached():
+    if check_git_repo(last_path):
+        try:
+            repo = pygit2.Repository(last_path)
+            repo.index.remove(get_relative_repo_path(
+                last_path, repo)+g_current_item)
+            repo.index.write()
+        except KeyError as e:
+            print("Failed to remove file: ", e)
+    update_files(last_path)
+
+
+def git_rm():
+    if check_git_repo(last_path):
+        try:
+            repo = pygit2.Repository(last_path)
+            tmp_path = last_path + "/" + g_current_item
+            git_rm_cached()
+            os.remove(tmp_path)
+            repo.index.write()
+        except Exception as e:
+            print("Failed to remove file: ", e)
+    update_files(last_path)
+
+
+def git_init():
+    # non-bare repository init
+    if not check_git_repo(last_path):
+        pygit2.init_repository(f'{last_path}/.git', False)
+    update_files(last_path)
+
+
+def git_add():
+    if check_git_repo(last_path):
+        repository = pygit2.Repository(last_path)
+    index = repository.index
+
+    if g_current_item != None:
+        path = get_relative_repo_path(last_path, repository) + g_current_item
+    else:
+        path = None
+
+    if path != None:
+        index.add(path)
+    else:
+        index.add_all()
+    index.write()
+    update_files(last_path)
+
+
+def git_commit(commit_message):
+    if check_git_repo(last_path):
+        repository = pygit2.Repository(last_path)
+    index = repository.index
+    config = repository.config
+    for name in config.get_multivar('user.name'):
+        user_name = name
+    for email in config.get_multivar('user.email'):
+        user_email = email
+    author = pygit2.Signature(user_name, user_email)
+    committer = pygit2.Signature(user_name, user_email)
+    tree = index.write_tree()
+    ref = repository.head.name
+    parents = [repository.head.target]
+
+    repository.create_commit(
+        ref,
+        author, committer, commit_message,
+        tree,
+        parents
+    )
+    update_files(last_path)
+
+
+def git_mv(new_file_name):
+    if check_git_repo(last_path):
+        repository = pygit2.Repository(last_path)
+        index = repository.index
+        old_file_name = g_current_item
+        old_path = f'{last_path}/{old_file_name}'
+        new_path = f'{last_path}/{new_file_name}'
+        index.remove(old_file_name)
+        os.rename(old_path, new_path)
+        index.add(new_file_name)
+        index.write()
+
+        update_files(last_path)
+
+
+def update_file_git_status(path, file_name):
+    if check_git_repo(path):
+        repository = pygit2.Repository(path)
+        status = repository.status_file(file_name)
+    else:
+        return 0
+    return status
+
+
+# cur_directory_path 현재 접근한 디렉토리정보(아마 last_path), repo 객체를 넣으면 하위폴더에 대한
+# 상대 경로를 반환함. 만약 .git 폴더가 있는 폴더면 반환값은 '' 이며 하위 폴더의 경우 상대경로 + '/'를 반환
+# 전달 받은 relative_path와 파일명을 결합하여 사용
+def get_relative_repo_path(cur_directory_path, repo):
+    repo_dir = cur_directory_path
+    repo_dir = repo_dir[(len(repo.path) - 5):]
+    if not repo_dir:
+        return ''
+    else:
+        return repo_dir + '/'
+
+
+def check_git_repo(path):
+    try:
+        # 디렉토리가 Git 저장소인지 확인 레포가 만들어지면 init 불가능
+        repo = pygit2.Repository(path)
+    except pygit2.GitError:
+        return False
+    return True
+
+
+def update_git_repo(path):
+    try:
+        # 디렉토리가 Git 저장소인지 확인 레포가 만들어지면 init 불가능
+        repo = pygit2.Repository(path)
+
+    except pygit2.GitError:
+        return False, pygit2.Repository()
+
+    return True, repo
+
 
 def sort_name_reverse():
     global sort
@@ -68,7 +288,7 @@ def scan_disks_add_buttons():
             disk = letters[letter_c]
             if os.path.exists(f"{disk}:{slash}"):
                 tk.Button(frame_b, text=disk.lower(), font=("Arial", 14), relief="flat", bg="white", fg="black",
-                    command=lambda disk=disk:update_files(f"{disk}:{slash}")).grid(column=column, row=1)
+                          command=lambda disk=disk: update_files(f"{disk}:{slash}")).grid(column=column, row=1)
                 column += 1
             letter_c += 1
     if sys.platform == "linux":
@@ -77,7 +297,8 @@ def scan_disks_add_buttons():
         if os.path.exists(f"/media/{os_user}/"):
             for l_disk in os.listdir(f"/media/{os_user}/"):
                 tk.Button(frame_b, text=l_disk[0].lower(), font=("Arial", 14), relief="flat", bg="white", fg="black",
-                    command=lambda l_disk=l_disk:update_files(f"/media/{os_user}/{l_disk}")).grid(column=column, row=1)
+                          command=lambda l_disk=l_disk: update_files(f"/media/{os_user}/{l_disk}")).grid(column=column,
+                                                                                                         row=1)
                 column += 1
 
 
@@ -89,10 +310,82 @@ def up_down_focus():
             tree.selection_set(item)
             tree.focus(item)
             tree.see(item)
-        except:pass
+        except:
+            pass
 
 
 def select():
+    global g_current_item
+    for x in buttons:
+        x.config(state="normal")
+    try:
+        select_row = tree.focus()
+        row_data = tree.item(select_row)
+        g_current_item = row_data["text"]
+        if not tree.selection():
+            g_current_item = ''
+            for x in buttons:
+                if check_git_repo(last_path):
+                    if x == add_button:
+                        continue
+                    else:
+                        x.config(state="disabled")
+                else:
+                    if x == init_button:
+                        continue
+                    else:
+                        x.config(state="disabled")
+
+        current_git_status = row_data["values"][1]
+        folder_status = row_data["values"][0]
+        if check_git_repo(last_path):
+            if folder_status == 'dir':
+                for x in buttons:
+                    if x != add_button:
+                        x.config(state="disabled")
+            else:
+                try:
+                    if current_git_status == "STAGED":
+                        for x in buttons:
+                            if x == commit_button or x == restore_staged_button or x == rm_cached_button or x == mv_button:
+                                continue
+                            else:
+                                x.config(state="disabled")
+
+                    elif current_git_status == "UNMODIFIED":
+                        for x in buttons:
+                            if x == rm_button or x == rm_cached_button or x == mv_button or x == commit_button:
+                                continue
+                            else:
+                                x.config(state="disabled")
+                    elif current_git_status == "UNSTAGED":
+                        for x in buttons:
+                            if x == add_button or x == rm_button or x == rm_cached_button or x == mv_button or x == restore_button or x == commit_button:
+                                continue
+                            else:
+                                x.config(state="disabled")
+
+                    elif current_git_status == "UNTRACKED":
+                        for x in buttons:
+                            if x == add_button:
+                                continue
+                            else:
+                                x.config(state="disabled")
+                    elif current_git_status == "UNSTAGED-STAGED":
+                        init_button.config(state="disabled")
+                    else:
+                        print(None)
+                except:
+                    print("Invalid Git status code:", current_git_status)
+        else:
+            for x in buttons:
+                if x == init_button:
+                    continue
+                else:
+                    x.config(state="disabled")
+
+    except IndexError:
+        g_current_item = None
     """Enable some menu items"""
     if len(tree.selection()) > 0:
         right_menu.entryconfig("Open", state="normal")
@@ -119,7 +412,7 @@ def remove_selection(menu_only=False):
 def click():
     stop = False
     for i in tree.selection():
-        path = tree.item(i)["values"][1]
+        path = tree.item(i)["values"][2]
         if tree.item(i)["values"][0] == "dir":
             if stop == False:
                 update_files(path)
@@ -132,7 +425,9 @@ def click():
                     opener = "open" if sys.platform == "darwin" else "xdg-open"
                     subprocess.call([opener, path])
 
+
 # Operations
+
 
 def new(goal: str):
     try:
@@ -143,7 +438,8 @@ def new(goal: str):
         elif goal == "file":
             info_text = "Enter file name"
         while test == False and cancel == False:
-            name_dir = simpledialog.askstring(title="Files", prompt=info_text, parent=tree_frame)
+            name_dir = simpledialog.askstring(
+                title="Files", prompt=info_text, parent=tree_frame)
             if name_dir is not None:
                 test = True
                 for f in os.listdir(last_path):
@@ -188,7 +484,8 @@ def copy():
 
 def paste():
     if sys.platform == "win32":
-        clipboard = window.selection_get(selection="CLIPBOARD").replace("/", slash).split("\n")
+        clipboard = window.selection_get(
+            selection="CLIPBOARD").replace("/", slash).split("\n")
     else:
         clipboard = non_win_clipboard.replace("'", "").split(",")
 
@@ -225,11 +522,13 @@ def delete():
             del_path = tree.item(i)["values"][1]
             if os.path.exists(del_path):
                 del_list.append(del_path)
-        answer = askyesno(title="Files", message=f"Delete {len(tree.selection())} objects in trash?")
+        answer = askyesno(
+            title="Files", message=f"Delete {len(tree.selection())} objects in trash?")
         if answer:
             for di in del_list:
                 send2trash(di)
-    except:pass
+    except:
+        pass
     update_files(entry.get())
 
 
@@ -242,7 +541,8 @@ def rename():
             test = False
             while test == False:
                 test = True
-                new_name = simpledialog.askstring(title="Files", prompt=info_text, parent=tree_frame, initialvalue=e_path[1])
+                new_name = simpledialog.askstring(
+                    title="Files", prompt=info_text, parent=tree_frame, initialvalue=e_path[1])
                 if new_name is not None:
                     for f in os.listdir(entry.get()):
                         if f.lower() == new_name.lower() and new_name.lower() != e_path[1].lower():
@@ -260,15 +560,14 @@ def update_files(orig_dirname: str):
             byte_size = var
         else:
             byte_size = os.stat(var).st_size
-        #
         if byte_size >= 1000000000000:
-            size = str(round(byte_size/1000000000000, 2)) + " TB"
+            size = str(round(byte_size / 1000000000000, 2)) + " TB"
         elif byte_size >= 1000000000:
-            size = str(round(byte_size/1000000000, 2)) + " GB"
+            size = str(round(byte_size / 1000000000, 2)) + " GB"
         elif byte_size >= 1000000:
-            size = str(round(byte_size/1000000, 2)) + " MB"
+            size = str(round(byte_size / 1000000, 2)) + " MB"
         elif byte_size >= 1000:
-            size = str(round(byte_size/1000, 2)) + " KB"
+            size = str(round(byte_size / 1000, 2)) + " KB"
         elif byte_size < 1000:
             size = str(byte_size) + " B"
         return size, byte_size
@@ -291,15 +590,17 @@ def update_files(orig_dirname: str):
                 try:
                     if ":" in x[1]:
                         ftp_split = x[1].split(":", 1)
-                        ftp.connect(ftp_split[0],int(ftp_split[1]))
+                        ftp.connect(ftp_split[0], int(ftp_split[1]))
                         url_ftp = f"ftp://{ftp_split[0]}:{ftp_split[1]}"
                     else:
                         ftp.connect(x[1])
                         url_ftp = f"ftp://{x[1]}"
                     ftp.login()
                     #
-                    right_menu.add_command(label="Copy to folder", command=copy_from_ftp, state="disable")
-                    right_menu.entryconfig("Show hidden files", state="disable")
+                    right_menu.add_command(
+                        label="Copy to folder", command=copy_from_ftp, state="disable")
+                    right_menu.entryconfig(
+                        "Show hidden files", state="disable")
                     right_menu.entryconfig("New file", state="disable")
                     right_menu.entryconfig("New catalog", state="disable")
                 except:
@@ -331,71 +632,119 @@ def update_files(orig_dirname: str):
         files_list, dirs_list = [], []
         if ftp == None:
             files = os.scandir(dirname)
+            git_repo = pygit2.Repository()
+            is_repo_exist, git_repo = update_git_repo(dirname)
+
             for f in files:
                 f_stat = f.stat()
                 size = convert_size(f_stat.st_size)
+
                 if f.is_dir():
+                    # 오브젝트가 폴더이면 다음과 같은 정보들을 삽입
+                    if is_repo_exist:  # if true -> cant init
+                        git_status = 0  # status 0 of file is current state
+                    else:  # if not exist -> can init, and flag is -1
+                        git_status = -1
+
                     if hidden == False:
                         if sys.platform == "win32":
                             if not f.is_symlink() and not bool(f_stat.st_file_attributes & stat.FILE_ATTRIBUTE_HIDDEN):
-                                dirs_list.append([f.name, "dir", f.path, folder_icon])
+                                dirs_list.append(
+                                    [f.name, "dir", f.path, folder_icon_list[icon_status_dict[git_status]], 0,
+                                     git_status_dict[git_status]])
                         else:
                             if not f.name.startswith("."):
-                                dirs_list.append([f.name, "dir", f.path, folder_icon])
+                                dirs_list.append(
+                                    [f.name, "dir", f.path, folder_icon_list[icon_status_dict[git_status]], 0,
+                                     git_status_dict[git_status]])
                     else:
                         if sys.platform == "win32":
                             if bool(f_stat.st_file_attributes & stat.FILE_ATTRIBUTE_HIDDEN):
-                                dirs_list.append([f.name, "dir", f.path, folder_hidden_icon])
+                                dirs_list.append(
+                                    [f.name, "dir", f.path, folder_hidden_icon, 0, git_status_dict[git_status]])
                             else:
                                 if f.is_symlink():
-                                    dirs_list.append([f.name, "dir", f.path, folder_hidden_icon])
+                                    dirs_list.append(
+                                        [f.name, "dir", f.path, folder_hidden_icon, 0, git_status_dict[git_status]])
                                 else:
-                                    dirs_list.append([f.name, "dir", f.path, folder_icon])
+                                    dirs_list.append(
+                                        [f.name, "dir", f.path, folder_icon_list[icon_status_dict[git_status]], 0,
+                                         git_status_dict[git_status]])
                         else:
                             if f.name.startswith("."):
-                                dirs_list.append([f.name, "dir", f.path, folder_hidden_icon])
+                                dirs_list.append(
+                                    [f.name, "dir", f.path, folder_hidden_icon, 0, git_status_dict[git_status]])
                             else:
-                                dirs_list.append([f.name, "dir", f.path, folder_icon])
+                                dirs_list.append(
+                                    [f.name, "dir", f.path, folder_icon_list[icon_status_dict[git_status]], 0,
+                                     git_status_dict[git_status]])
                 if f.is_file():
+                    # 오브젝트가 파일이면 아래와 같은 정보들을 삽입
+                    if is_repo_exist:  # if true -> cant init
+                        repo_dir = dirname
+                        repo_dir = repo_dir[(len(git_repo.path) - 5):]
+                        if not repo_dir:
+                            git_status = git_repo.status_file(f.name)
+                        else:
+                            git_status = git_repo.status_file(
+                                repo_dir + '/' + f.name)
+
+                    else:  # if not exist -> can init, and flag is
+                        git_status = -1
+
                     if hidden == False:
                         if sys.platform == "win32":
                             if not bool(f_stat.st_file_attributes & stat.FILE_ATTRIBUTE_HIDDEN):
-                                files_list.append([f.name, size[0], f.path, file_icon, size[1]])
+                                files_list.append(
+                                    [f.name, size[0], f.path, file_icon, size[1], git_status_dict[git_status]])
                         else:
                             if not f.name.startswith("."):
-                                files_list.append([f.name, size[0], f.path, file_icon, size[1]])
+                                files_list.append(
+                                    [f.name, size[0], f.path, file_icon_list[icon_status_dict[git_status]], size[1],
+                                     git_status_dict[git_status]])
                     else:
                         if sys.platform == "win32":
                             if bool(f_stat.st_file_attributes & stat.FILE_ATTRIBUTE_HIDDEN):
-                                files_list.append([f.name, size[0], f.path, file_hidden_icon, size[1]])
+                                files_list.append(
+                                    [f.name, size[0], f.path, file_hidden_icon, size[1], git_status_dict[git_status]])
                             else:
-                                files_list.append([f.name, size[0], f.path, file_icon, size[1]])
+                                files_list.append(
+                                    [f.name, size[0], f.path, file_icon_list[icon_status_dict[git_status]], size[1],
+                                     git_status_dict[git_status]])
                         else:
                             if f.name.startswith("."):
-                                files_list.append([f.name, size[0], f.path, file_hidden_icon, size[1]])
+                                files_list.append(
+                                    [f.name, size[0], f.path, file_hidden_icon, size[1], git_status_dict[git_status]])
                             else:
-                                files_list.append([f.name, size[0], f.path, file_icon, size[1]])
+                                files_list.append(
+                                    [f.name, size[0], f.path, file_icon_list[icon_status_dict[git_status]], size[1],
+                                     git_status_dict[git_status]])
         # FTP
         else:
             ftp.cwd(dirname)
             try:
                 for f in ftp.mlsd():
                     if f[1]["type"] == "dir":
-                        dirs_list.append([f[0], "dir", f"{orig_dirname}/{f[0]}", folder_icon])
+                        dirs_list.append(
+                            [f[0], "dir", f"{orig_dirname}/{f[0]}", folder_icon])
                     elif f[1]["type"] == "file":
                         size = convert_size(int(f[1]["size"]))
-                        files_list.append([f[0], size[0], f"{orig_dirname}/{f[0]}", file_icon, size[1]])
+                        files_list.append(
+                            [f[0], size[0], f"{orig_dirname}/{f[0]}", file_icon, size[1]])
             except:
                 ftp.voidcmd('TYPE I')
                 for f in ftp.nlst():
                     try:
                         if "." in f and not f.startswith("."):
                             size = convert_size(ftp.size(f))
-                            files_list.append([f, size[0], f"{orig_dirname}/{f}", file_icon, size[1]])    
+                            files_list.append(
+                                [f, size[0], f"{orig_dirname}/{f}", file_icon, size[1]])
                         else:
-                            dirs_list.append([f, "dir", f"{orig_dirname}/{f}", folder_icon])
+                            dirs_list.append(
+                                [f, "dir", f"{orig_dirname}/{f}", folder_icon])
                     except:
-                        dirs_list.append([f, "dir", f"{orig_dirname}/{f}", folder_icon])
+                        dirs_list.append(
+                            [f, "dir", f"{orig_dirname}/{f}", folder_icon])
         # Sorting
         if sort == "size":
             if reverse == False:
@@ -417,11 +766,15 @@ def update_files(orig_dirname: str):
         entry.delete(0, "end")
         # Add new data
         count = 0
+
+        # [f.name, "dir", f.path, folder_icon, git_status])
         for i in dirs_list:
-            tree.insert("", tk.END, text=i[0], values=[f"{i[1]}", i[2]], open=False, image=i[3])
+            tree.insert("", tk.END, text=i[0], values=[
+                f"{i[1]}", i[5], i[2]], open=False, image=i[3])
             count += 1
         for i in files_list:
-            tree.insert("", tk.END, text=i[0], values=[f"{i[1]}", i[2]], open=False, image=i[3])
+            tree.insert("", tk.END, text=i[0], values=[
+                f"{i[1]}", i[5], i[2]], open=False, image=i[3])
             count += 1
         #
         if ftp == None:
@@ -431,7 +784,7 @@ def update_files(orig_dirname: str):
             last_path = ftp.pwd()
             entry.insert("end", f"{url_ftp}{ftp.pwd()}")
         #
-        label["text"]=f"   {str(count)} objects"
+        label["text"] = f"   {str(count)} objects"
         # Set title = folder name
         if ftp == None:
             if re.match(r"\w:\\$", dirname):
@@ -477,14 +830,16 @@ def copy_from_ftp():
 
 
 # Fix graphic on Win 10
-if sys.platform == "win32"and platform.release() == "10":
+if sys.platform == "win32" and platform.release() == "10":
     from ctypes import windll
+
     windll.shcore.SetProcessDpiAwareness(1)
 
 # Ini config home path, showing hidden files + other variables
 config = configparser.ConfigParser()
 config.read("files.ini")
-home_path = str(Path.home()) if config["USER SETTINGS"]["home_path"] == "" else config["USER SETTINGS"]["home_path"]
+home_path = str(Path.home(
+)) if config["USER SETTINGS"]["home_path"] == "" else config["USER SETTINGS"]["home_path"]
 hidden = True if config["USER SETTINGS"]["show_hidden_files"] == "True" else False
 sort = "size" if config["USER SETTINGS"]["sort"] == "size" else "name"
 reverse = False
@@ -505,37 +860,197 @@ frame_up = tk.Frame(window, border=1, bg="white")
 frame_up.pack(fill="x", side="top")
 
 # Top of window
-folder_icon = tk.PhotoImage(file="data/icon_folder.png")
+folder_icon_list = [tk.PhotoImage(file="data/icon_folder.png"), tk.PhotoImage(file="data/icon_folder_unstaged.png"),
+                    tk.PhotoImage(file="data/icon_folder_staged.png"), tk.PhotoImage(file="data/icon_folder_both.png")]
+file_icon_list = [tk.PhotoImage(file="data/icon_file.png"), tk.PhotoImage(file="data/icon_file_unstaged.png"),
+                  tk.PhotoImage(file="data/icon_file_staged.png"), tk.PhotoImage(file="data/icon_file_both.png")]
 file_icon = tk.PhotoImage(file="data/icon_file.png")
+folder_icon = tk.PhotoImage(file="data/icon_folder.png")
 folder_hidden_icon = tk.PhotoImage(file="data/icon_folder_hidden.png")
 file_hidden_icon = tk.PhotoImage(file="data/icon_file_hidden.png")
 home_icon = tk.PhotoImage(file="data/icon_home.png")
 up_icon = tk.PhotoImage(file="data/icon_up.png")
 frame_b = tk.Frame(frame_up, border=2, relief="groove", bg="white")
 frame_b.pack(side="left")
-tk.Button(frame_b, image=up_icon, width=25, height=32, relief="flat", bg="white", fg="black", command=move_up).grid(column=0, row=1)
-tk.Button(frame_b, image=home_icon, width=25, height=32, relief="flat", bg="white", fg="black", command=lambda:update_files(home_path)).grid(column=1, row=1)
-entry = tk.Entry(frame_up, font=("Arial", 12), justify="left", highlightcolor="white", highlightthickness=0, relief="groove", border=2)
-entry.pack(side="right",fill="both", expand=1)
-label = tk.Label(window, font=("Arial", 12), anchor="w", bg="white", foreground="grey", border=2)
-label.pack(side="bottom",fill="both")
+tk.Button(frame_b, image=up_icon, width=25, height=32, relief="flat",
+          bg="white", fg="black", command=move_up).grid(column=0, row=1)
+tk.Button(frame_b, image=home_icon, width=25, height=32, relief="flat", bg="white",
+          fg="black", command=lambda: update_files(home_path)).grid(column=1, row=1)
+
+
+# error type을 파라미터로 받고 type에 따라 error_text 띄우기
+def open_error_window(error_type):
+    error_window = tk.Toplevel(window)
+    error_window.title('error')
+    error_window.geometry("500x50")
+    error_window.geometry("+100+200")
+
+    error_text = {
+        'init': 'git init 할 수 없는 디렉토리입니다',
+        'add': '추가할 파일이 없습니다',
+        'commit': 'commit 할 수 있는 파일이 없습니다'
+    }
+    label = tk.Label(
+        error_window, text=error_text[error_type])
+    label.pack()
+    button = tk.Button(error_window, text="확인",
+                       command=lambda: (error_window.destroy()))
+    button.pack()
+
+
+def confirm_staged_files():
+    if check_git_repo(last_path):
+        repository = pygit2.Repository(last_path)
+    status = repository.status()
+    staged_list = []
+    for file_name, flag in status.items():
+        if git_status_dict[flag] == "STAGED" or git_status_dict[flag] == "UNSTAGED-STAGED":
+            staged_list.append(file_name)
+
+    if not staged_list:
+        open_error_window('commit')
+        return
+
+    confirm_window = tk.Toplevel(window)
+    confirm_window.title('staging files')
+    confirm_window.geometry("500x200")
+    confirm_window.geometry("+100+100")
+
+    label = tk.Label(
+        confirm_window, text="commit할 파일을 확인해 주세요 !")
+    label.pack()
+
+    confirm_frame = tk.Frame(confirm_window)
+    confirm_frame.pack()
+
+    listNodes = tk.Listbox(confirm_frame, width=30,
+                           height=8, font=("Helvetica", 15))
+    listNodes.pack(side="left", fill="y")
+
+    scrollbar = tk.Scrollbar(confirm_frame, orient="vertical")
+    scrollbar.config(command=listNodes.yview)
+    scrollbar.pack(side="right", fill="y")
+
+    listNodes.config(yscrollcommand=scrollbar.set)
+    for file in staged_list:
+        listNodes.insert(tk.END, file)
+
+    button = tk.Button(confirm_window, text="확인 완료",
+                       command=lambda: (open_git_commit_window(), confirm_window.destroy()))
+    button.pack()
+
+
+def open_git_commit_window():
+    input_window = tk.Toplevel(window)
+    input_window.title('commit message')
+    input_window.geometry("500x100")
+    input_window.geometry("+100+200")
+
+    label = tk.Label(
+        input_window, text="commit message를 입력해주세요 !")
+    label.pack()
+    input_entry = tk.Entry(input_window, width=30)
+    input_entry.pack()
+    input_entry.focus_set()
+    button = tk.Button(input_window, text="commit",
+                       command=lambda: (git_commit(input_entry.get()), input_window.destroy()))
+    button.pack()
+
+
+def open_git_mv_window():
+    input_window = tk.Toplevel(window)
+    input_window.title('파일명 변경')
+    input_window.geometry("500x100")
+    input_window.geometry("+100+200")
+
+    label = tk.Label(
+        input_window, text="변경할 이름을 입력해주세요 !")
+    label.pack()
+    input_entry = tk.Entry(input_window, width=30)
+    input_entry.pack()
+    input_entry.focus_set()
+    button = tk.Button(input_window, text="rename",
+                       command=lambda: (git_mv(input_entry.get()), input_window.destroy()))
+    button.pack()
+
+
+# git buttons
+frame_down = tk.Frame(window, border=1)
+frame_down.pack(fill="x", side="bottom")
+frame_c = tk.Frame(frame_down, relief="groove", bg="white")
+frame_c.pack(side="bottom")
+buttons = []
+# init button
+init_button = tk.Button(frame_c, text='init', width=5, height=1, relief="flat", bg="black",
+                        fg="black", command=lambda: git_init())
+init_button.grid(column=1, row=0)
+buttons.append(init_button)
+# add button
+add_button = tk.Button(frame_c, text='add', width=5, height=1, relief="flat", bg="black",
+                       fg="black", command=lambda: git_add())
+add_button.grid(column=2, row=0)
+buttons.append(add_button)
+# commit button
+commit_button = tk.Button(frame_c, text='commit', width=5, height=1, relief="flat", bg="black",
+                          fg="black", command=lambda: confirm_staged_files())
+commit_button.grid(column=3, row=0)
+buttons.append(commit_button)
+# git_rm button
+rm_button = tk.Button(frame_c, text='rm', width=5, height=1, relief="flat", bg="black",
+                      fg="black", command=lambda: git_rm())
+rm_button.grid(column=4, row=0)
+buttons.append(rm_button)
+# git_rm_cached button
+rm_cached_button = tk.Button(frame_c, text='rm --cached', width=8, height=1, relief="flat", bg="black",
+                             fg="black", command=lambda: git_rm_cached())
+rm_cached_button.grid(column=5, row=0)
+buttons.append(rm_cached_button)
+# git_restore button
+restore_button = tk.Button(frame_c, text='restore', width=6, height=1, relief="flat", bg="black",
+                           fg="black", command=lambda: git_restore())
+restore_button.grid(column=6, row=0)
+buttons.append(restore_button)
+# git_restore --staged button
+restore_staged_button = tk.Button(frame_c, text='restore --staged', width=10, height=1, relief="flat", bg="black",
+                                  fg="black", command=lambda: git_restore_staged())
+restore_staged_button.grid(column=7, row=0)
+buttons.append(restore_staged_button)
+# git_mv button
+mv_button = tk.Button(frame_c, text='mv', width=6, height=1, relief="flat", bg="black",
+                      fg="black", command=lambda: open_git_mv_window())
+mv_button.grid(column=8, row=0)
+buttons.append(mv_button)
+
+entry = tk.Entry(frame_up, font=("Arial", 12), justify="left",
+                 highlightcolor="white", highlightthickness=0, relief="groove", border=2)
+entry.pack(side="right", fill="both", expand=1)
+label = tk.Label(window, font=("Arial", 12), anchor="w",
+                 bg="white", foreground="grey", border=2)
+label.pack(side="bottom", fill="both")
+
+# Git Status Icon file
+git_temp_icon = tk.PhotoImage(file="data/git_logo.png")
 
 # Tree view
 tree_frame = tk.Frame(window, border=1, relief="flat", bg="white")
 tree_frame.pack(expand=1, fill="both")
-tree = ttk.Treeview(tree_frame, columns=(["#1"]), selectmode="extended", show="tree headings", style="mystyle.Treeview")
+tree = ttk.Treeview(tree_frame, columns=(
+    ["#1", "#2"]), selectmode="extended", show="tree headings", style="mystyle.Treeview")
 tree.heading("#0", text="   Name ↑", anchor="w", command=sort_name_reverse)
 tree.heading("#1", text="Size", anchor="w", command=sort_size_reverse)
+tree.heading("#2", text="Git_status", anchor="w")  # 새로운 git status 칼럼 헤더 추가
 tree.column("#0", anchor="w")
 tree.column("#1", anchor="e", stretch=False, width=120)
+tree.column("#2", anchor="center", width=80)  # 새로운 git status 칼럼
 tree.pack(side="left", expand=1, fill="both")
 style = ttk.Style()
 style.configure("Treeview", rowheight=40, font=("Arial", 12))
 style.configure("Treeview.Heading", font=("Arial", 12), foreground="grey")
-style.layout("mystyle.Treeview", [("mystyle.Treeview.treearea", {"sticky":"nswe"})])
+style.layout("mystyle.Treeview", [
+    ("mystyle.Treeview.treearea", {"sticky": "nswe"})])
 scrollbar = ttk.Scrollbar(tree_frame, orient="vertical", command=tree.yview)
 tree.configure(yscroll=scrollbar.set)
-scrollbar.pack(side="right",fill="y")
+scrollbar.pack(side="right", fill="y")
 
 # On/off hidden files checkbutton on start
 hidden_menu = tk.IntVar()
@@ -549,32 +1064,37 @@ right_menu = tk.Menu(tree_frame, tearoff=0, font=("Arial", 12))
 right_menu.add_command(label="Open", command=click, state="disabled")
 right_menu.add_command(label="Copy", command=copy, state="disabled")
 right_menu.add_command(label="Rename", command=rename, state="disabled")
-right_menu.add_command(label="Delete in trash", command=delete, state="disabled")
+right_menu.add_command(label="Delete in trash",
+                       command=delete, state="disabled")
 right_menu.add_separator()
 right_menu.add_command(label="Paste", command=paste, state="disabled")
 right_menu.add_separator()
-right_menu.add_command(label="New file", command=lambda:new("file"), state="normal")
-right_menu.add_command(label="New catalog", command=lambda:new("dir"), state="normal")
+right_menu.add_command(
+    label="New file", command=lambda: new("file"), state="normal")
+right_menu.add_command(label="New catalog",
+                       command=lambda: new("dir"), state="normal")
 right_menu.add_separator()
-right_menu.add_checkbutton(label="Show hidden files", onvalue=1, offvalue=0, variable=hidden_menu, command=show_hide)
-right_menu.bind("<FocusOut>", lambda event:right_menu.unpost())# Click elsewhere - close right click menu
+right_menu.add_checkbutton(label="Show hidden files", onvalue=1,
+                           offvalue=0, variable=hidden_menu, command=show_hide)
+# Click elsewhere - close right click menu
+right_menu.bind("<FocusOut>", lambda event: right_menu.unpost())
 scan_disks_add_buttons()
 update_files(home_path)
 tree.focus_set()
 
 # Keyboard, mouse buttons
-tree.bind("<<TreeviewSelect>>", lambda event:select())
-tree.bind("<Double-Button-1>", lambda event:click())
-tree.bind("<Button-1>", lambda event:remove_selection())
-tree.bind("<Return>", lambda event:click())
-tree.bind("<BackSpace>", lambda event:move_up())
+tree.bind("<<TreeviewSelect>>", lambda event: select())
+tree.bind("<Double-Button-1>", lambda event: click())
+tree.bind("<Button-1>", lambda event: remove_selection())
+tree.bind("<Return>", lambda event: click())
+tree.bind("<BackSpace>", lambda event: move_up())
 tree.bind("<Button-3>", open_right_menu)
-tree.bind("<Up>", lambda event:up_down_focus())
-tree.bind("<Down>", lambda event:up_down_focus())
-tree.bind("<Delete>", lambda event:delete())
+tree.bind("<Up>", lambda event: up_down_focus())
+tree.bind("<Down>", lambda event: up_down_focus())
+tree.bind("<Delete>", lambda event: delete())
 tree.bind("<Control-c>", lambda event: copy())
-tree.bind("<Control-v>", lambda event: paste() if right_menu.entrycget(index=5, option="state") == "normal" else None)
-entry.bind("<Return>", lambda event:update_files(entry.get()))
-entry.bind("<KP_Enter>", lambda event:update_files(entry.get()))
-
+tree.bind("<Control-v>", lambda event: paste()
+          if right_menu.entrycget(index=5, option="state") == "normal" else None)
+entry.bind("<Return>", lambda event: update_files(entry.get()))
+entry.bind("<KP_Enter>", lambda event: update_files(entry.get()))
 window.mainloop()
