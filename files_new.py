@@ -127,6 +127,7 @@ def git_init():
     # non-bare repository init
     if not check_git_repo(last_path):
         pygit2.init_repository(f'{last_path}/.git', False)
+    update_files(last_path)
 
 
 def git_add():
@@ -327,7 +328,7 @@ def select():
         if not tree.selection():
             g_current_item = ''
             for x in buttons:
-                if x == add_button or x == init_button and (not check_git_repo(last_path)):
+                if  x == init_button and (not check_git_repo(last_path)):
                     continue
                 else:
                     x.config(state="disabled")
