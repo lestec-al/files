@@ -6,14 +6,6 @@
 </a>
 </p>
 
-</p>
-<p align="center">
-	<a href="https://github.com/osamhack2021/WEB_APP_IOT_ModuChangGo_Chang-keeper/graphs/contributors"><img alt="GitHub contributors" src="https://img.shields.io/github/contributors/osamhack2021/WEB_APP_IOT_ModuChangGo_Chang-keeper?color=success"></a>
-	  <a href="https://github.com/osamhack2021/WEB_APP_IOT_ModuChangGo_Chang-keeper/graphs/commit-activity">
-      <img src="https://img.shields.io/github/commit-activity/m/osamhack2021/WEB_APP_IOT_ModuChangGo_Chang-keeper" alt="Commit per month"></a>
-	<a href="https://github.com/osamhack2021/WEB_APP_IOT_ModuChangGo_Chang-keeper/blob/main/LICENSE"><img alt="GitHub license" src="https://img.shields.io/github/license/osamhack2021/WEB_APP_IOT_ModuChangGo_Chang-keeper"></a>
-</p>
-
 ## 목차
 
 - [프로젝트 소개](#프로젝트-소개)
@@ -28,12 +20,12 @@
 이 프로젝트는 파일 브라우징에 Git에 관련한 기능을 넣어 확장시킨 git file browser 프로젝트입니다. <br/>
 기본적으로 파일 브라우징 기능을 제공하고 아래의 기능을 제공합니다
 
-- git init
-- git add
-- git commit
-- git rm / git rm --cached
-- git restore / git restore --staged
-- git rm
+- `git init`
+- `git add`
+- `git commit`
+- `git rm ` && `git rm --cached`
+- `git restore` && `git restore --staged`
+- `git mv`
 
 이런 기능뿐 아니라 Git status에 따른 파일 상태(4가지)를 이미지로 표시합니다!
 
@@ -50,8 +42,8 @@ platform : mac OS
 - 설치 순서
 
 ```bash\
-git clone https://github.com/CAU-OSS-project-practice/file-manager.git
-cd file-manager
+git clone https://github.com/CAU-OSS-project-practice/OSS-file-manager.git
+cd OSS-file-manager
 pip install -r requirements.txt
 python3 files_new.py
 ```
