@@ -1,45 +1,344 @@
-# Python file explorer
 
-Tkinter version (files_new.py) works on Windows, Linux (should work on MacOS).
-For Windows 10, available in "Releases" (download "files.zip", unpack and run files.exe)
+# Python-file-explorer(with git) develop by OSS-TEAM-13
+<p align="center"><img src="/image/모두의 창고3.PNG"></p>
 
-<img title="Screenshot from Windows 10" src="https://github.com/lestec-al/files/raw/main/data/pic_new_win.png" width="541" height="366"/>
-<img title="Screenshot from Linux Ubuntu" src="https://github.com/lestec-al/files/raw/main/data/pic_new_linux.png" width="541" height="366"/>
-
-Command line version (files_cl.py) works on Windows, Linux (should work on MacOS)
-
-<img title="Screenshot from Windows 10" src="https://github.com/lestec-al/files/raw/main/data/pic_cl_win.png" width="541" height="366"/>
-<img title="Screenshot from Linux Ubuntu" src="https://github.com/lestec-al/files/raw/main/data/pic_cl_linux.png" width="541" height="366"/>
-
-# Other versions
-
-Test Kivy version (files_kivy.py) works on Windows, Linux (should work on MacOS), Android (after compilation via buildozer).
-For Android, available in "Releases" (download "files.apk" and install on device)
-
-<img title="Screenshot from Windows 10" src="https://github.com/lestec-al/files/raw/main/data/pic_kivy_win.png" width="541" height="366"/>
-
-Obsolete PySimpleGUI version (files_old.py) works on Linux (should work on MacOS).
-
-<img title="Screenshot from Linux Ubuntu" src="https://github.com/lestec-al/files/raw/main/data/pic_old_linux.png" width="541" height="366"/>
+<p align="center">
+<a href="https://fixed-borogovia-5fe.notion.site/OSS-Team-13-4df2df4655c645a8a7e49e15abbffa3c">
+<img src="https://img.shields.io/badge/NOTION-team_page-green?&style=for-the-badge&logo=notion">
+</a>
+</p>
 
 
-# Install and run as Python script
-- install: Python (v3.9 or higher)
-- depending on the version install: Tkinter or Kivy (+KivyMD) or PySimpleGUI
-- install Send2Trash (needed for Tkinter, PySimpleGUI versions)
-- download or clone this repo and in the project folder run via command line "python files_new.py" (files_cl.py, files_kivy.py, files_old.py)
+</p>
+<p align="center">
+	<a href="https://github.com/osamhack2021/WEB_APP_IOT_ModuChangGo_Chang-keeper/graphs/contributors"><img alt="GitHub contributors" src="https://img.shields.io/github/contributors/osamhack2021/WEB_APP_IOT_ModuChangGo_Chang-keeper?color=success"></a>
+	  <a href="https://github.com/osamhack2021/WEB_APP_IOT_ModuChangGo_Chang-keeper/graphs/commit-activity">
+      <img src="https://img.shields.io/github/commit-activity/m/osamhack2021/WEB_APP_IOT_ModuChangGo_Chang-keeper" alt="Commit per month"></a>
+	<a href="https://github.com/osamhack2021/WEB_APP_IOT_ModuChangGo_Chang-keeper/blob/main/LICENSE"><img alt="GitHub license" src="https://img.shields.io/github/license/osamhack2021/WEB_APP_IOT_ModuChangGo_Chang-keeper"></a>
+</p>
 
 
-# Features
-- connect to ftp servers (e.g. ftp://ftp.us.debian.org) and download files from there (tkinter, command line)
-- copy/paste to/from another file manager (windows, tkinter, command line)
-- catalog, files creation (tkinter, kivy, command line)
-- open files by default program (tkinter, command line)
-- local disks buttons (tkinter)
-- keyboard navigation, copy/paste support (arrows, enter, backspace, ctrl-c/ctrl-v, tkinter)
-- select multiple files/catalogs by holding Ctrl and clicking with the mouse (tkinter)
-- copy, paste, rename, delete to trash (in command line ver: remove to trash, delete permanently)
-- sorts by name and size
-- shows hidden files
-- resizability
-- the command line version has navigation by typing short commands
+## 목차
+-  [프로젝트 소개](#프로젝트-소개)  
+-  [설치 안내](#설치-안내)
+-  [기능 설계 및 설명](#기능-설계-및-설명)   
+-  [팀 정보 (Team Information)](#팀-정보-team-information)
+-  [협업 과정](#협업과정)
+-  [저작권 및 사용권 정보(Copyleft / End User License)](#저작권-및-사용권-정보-copyleft--end-user-license)
+
+## 프로젝트 소개
+
+이 프로젝트는 파일 브라우징에 Git에 관련한 기능을 넣어 확장시킨 git file browser 프로젝트입니다.
+기본적으로 파일 브라우징 기능을 제공하고 아래의 기능을 제공합니다
+- git init 
+- git add
+- git commit
+- git rm / git rm --cached
+- git restore / git restore --staged
+- git rm
+
+이런 기능뿐 아니라 Git status에 따른 파일 상태(4가지)를 이미지로 표시시켜줍니다!
+
+
+## 설치 안내
+
+### Needs for running
+
+```bash
+Python 3.8+
+pip (package installer for Python)
+platform : mac OS
+```
+설치 순서 
+
+
+```bash\
+git clone https://github.com/CAU-OSS-project-practice/file-manager.git
+cd file-manager
+pip install -r requirements.txt
+python3 files_new.py
+```
+tkinter 라이브러리 오류 또는 파이썬 버전 충돌 시 가상환경에서 동작
+
+```bash
+python -m venv .venv # .venv 생성
+source .venv/bin/activate # 가상환경 실행
+```
+
+가상환경 비활성화
+```bash
+deactivate
+```
+
+## Service Flow
+<p align="center"><img src="/image/ui/flowChart.png"></p>
+
+## 기능 설계 및 설명
+>모든 사진은 클릭 시 확대 된 이미지로 확인할 수 있습니다.😀
+
+<table><tbody>
+		<tr>
+			<td colspan=3>
+				<br>
+				<b>파일 브라우저 기능 </b><br>
+				<br>
+			</td>
+		</tr>
+		<tr>
+			<td width="33%">
+				<h4 align="center">
+				<a href = "https://raw.githubusercontent.com/osamhack2021/WEB_APP_IOT_ModuChangGo_Chang-keeper/edit/image/ui/web_login.png"><img src="/image/ui/web_login.png" width="75%" height="75%">
+					</a><br><br> 파일 탐색은 루트 디렉토리에서 시작
+				</h4>
+			</td>
+			<td width="33%">
+	   			<h4 align="center">
+		   		<a href="https://raw.githubusercontent.com/osamhack2021/WEB_APP_IOT_ModuChangGo_Chang-keeper/edit/image/ui/app_login.png"><img src="/image/ui/app_login.png" width="75%" height="75%"></a><br><br>현재 디렉토리에 포함된 모든 파일과 디렉토리는 아이콘, 이름, 확장자로 표현 </h4></td>
+            <td width="33%">
+	   			<h4 align="center">
+		   		<a href="https://raw.githubusercontent.com/osamhack2021/WEB_APP_IOT_ModuChangGo_Chang-keeper/edit/image/ui/app_login.png"><img src="/image/ui/app_login.png" width="75%" height="75%"></a><br><br>더블 클릭을 통해 브라우징 가능 </h4></td>
+		</tr>
+</tbody>
+</table>
+
+
+<table><tbody>
+		<tr>
+			<td colspan=2>
+				<br>
+				<b>Git init 기능 </b><br>
+				<br>
+			</td>
+		</tr>
+		<tr>
+			<td width="50%">
+				<h4 align="center">
+				<a href = "https://raw.githubusercontent.com/osamhack2021/WEB_APP_IOT_ModuChangGo_Chang-keeper/edit/image/ui/web_login.png"><img src="/image/ui/web_login.png" width="75%" height="75%">
+					</a><br><br>Git repository가 아닌 디렉토리인 경우 -> init 버튼 활성화
+				</h4>
+			</td>
+			<td width="50%">
+	   			<h4 align="center">
+		   		<a href="https://raw.githubusercontent.com/osamhack2021/WEB_APP_IOT_ModuChangGo_Chang-keeper/edit/image/ui/app_login.png"><img src="/image/ui/app_login.png" width="75%" height="75%"></a><br><br>이미 Git repository인 디렉토리의 경우 -> init 버튼 비활성화</h4></td>
+		</tr>
+</tbody>
+</table>
+
+
+<table><tbody>
+		<tr>
+			<td colspan=4>
+				<br>
+				<b>Git status에 따른 파일 상태 표시</b><br>
+				<br>
+			</td>
+		</tr>
+		<tr>
+			<td width="25%">
+				<h4 align="center">
+				<a href = "https://raw.githubusercontent.com/osamhack2021/WEB_APP_IOT_ModuChangGo_Chang-keeper/edit/image/ui/web_history.png"><img src="/image/ui/web_storages_detail_page.png" width="100%" height="100%">
+					</a><br><br>staging된 파일 표시
+				</h4>
+			</td>
+			<td width="25%">
+	   			<h4 align="center">
+		   		<a href="https://raw.githubusercontent.com/osamhack2021/WEB_APP_IOT_ModuChangGo_Chang-keeper/edit/image/ui/app_storages_detail_page.png"><img src="/image/ui/app_storages_detail_page.png" width="75%" height="75%"></a><br><br>창고 내 물품 재고확인 앱</h4></td>
+                <td width="25%">
+	   			<h4 align="center">
+		   		<a href="https://raw.githubusercontent.com/osamhack2021/WEB_APP_IOT_ModuChangGo_Chang-keeper/edit/image/ui/app_storages_detail_page.png"><img src="/image/ui/app_storages_detail_page.png" width="75%" height="75%"></a><br><br>창고 내 물품 재고확인 앱</h4></td>
+                <td width="25%">
+	   			<h4 align="center">
+		   		<a href="https://raw.githubusercontent.com/osamhack2021/WEB_APP_IOT_ModuChangGo_Chang-keeper/edit/image/ui/app_storages_detail_page.png"><img src="/image/ui/app_storages_detail_page.png" width="75%" height="75%"></a><br><br>창고 내 물품 재고확인 앱</h4></td>
+		</tr>
+</tbody>
+</table>
+Stage를 4가지로 나눴습니다. 
+
+1. Staged 
+2. unstaged(modified)
+3. committed(unmodified) 
+4. staged - unstaged(staging된 상태에서 파일을 변경한 경우)) 
+
+untracked - staged 된 파일 ex) git rm --cached 명령어 실행 시에는 untracked를 우선순위로 동작하게 만들었습니다.
+<table><tbody>
+		<tr>
+			<td colspan=2>
+				<br>
+				<b>Git add 기능</b><br>
+				<br>
+			</td>
+		</tr>
+		<tr>
+			<td width="65%">
+				<h4 align="center">
+				<a href = "https://raw.githubusercontent.com/osamhack2021/WEB_APP_IOT_ModuChangGo_Chang-keeper/edit/image/ui/web_viewStorage.png"><img src="/image/ui/web_viewStorage.png" width="100%" height="100%">
+					</a><br><br> 한 파일 선택시 그 파일만 add 가능
+				</h4>
+			</td>
+			<td width="35%">
+	   			<h4 align="center">
+		   		<a href="https://raw.githubusercontent.com/osamhack2021/WEB_APP_IOT_ModuChangGo_Chang-keeper/edit/image/ui/app_storages_page.png"><img src="/image/ui/app_storages_page.png" width="75%" height="75%"></a><br><br>선택된 파일이 없을 시에는 git add . 동작</h4></td>
+		</tr>
+</tbody>
+</table>
+
+
+<table><tbody>
+		<tr>
+			<td colspan=2>
+				<br>
+				<b>Git commit 기능</b><br>
+				<br>
+			</td>
+		</tr>
+		<tr>
+			<td width="65%">
+				<h4 align="center">
+				<a href = "https://raw.githubusercontent.com/osamhack2021/WEB_APP_IOT_ModuChangGo_Chang-keeper/edit/image/ui/web_history.png"><img src="/image/ui/web_storages_detail_page.png" width="100%" height="100%">
+					</a><br>커밋 메뉴 클릭 시 staging된 change를 보여줌. <br>
+				</h4>
+			</td>
+			<td width="35%">
+	   			<h4 align="center">
+		   		<a href="https://raw.githubusercontent.com/osamhack2021/WEB_APP_IOT_ModuChangGo_Chang-keeper/edit/image/ui/app_storages_detail_page.png"><img src="/image/ui/app_storages_detail_page.png" width="75%" height="75%"></a><br><br>커밋을 확인하면 repo에 커밋 적용 및 staged -> committed로 change</h4></td>
+		</tr>
+</tbody>
+</table>
+
+
+<table><tbody>
+		<tr>
+			<td colspan=2>
+				<br>
+				<b>Git restore / Git restore --staged 기능</b><br>
+				<br>
+			</td>
+		</tr>
+		<tr>
+			<td width="65%">
+				<h4 align="center">
+				<a href = "https://raw.githubusercontent.com/osamhack2021/WEB_APP_IOT_ModuChangGo_Chang-keeper/edit/image/ui/web_history.png"><img src="/image/ui/web_history.png" width="100%" height="100%">
+					</a><br><br>Git restore 작동 modified된 파일을 committed상태로 되돌림
+				</h4>
+			</td>
+			<td width="35%">
+	   			<h4 align="center">
+		   		<a href="https://raw.githubusercontent.com/osamhack2021/WEB_APP_IOT_ModuChangGo_Chang-keeper/edit/image/ui/app_history.png"><img src="/image/ui/app_history.png" width="75%" height="75%"></a><br><br>git restore --staged staged된 파일을 modified 상태로 되돌림</h4></td>
+		</tr>
+</tbody>
+</table>
+
+
+<table><tbody>
+		<tr>
+			<td colspan=2>
+				<br>
+				<b>Git rm / Git rm --cached 기능</b><br>
+				<br>
+			</td>
+		</tr>
+		<tr>
+			<td width="65%">
+				<h4 align="center">
+				<a href = "https://raw.githubusercontent.com/osamhack2021/WEB_APP_IOT_ModuChangGo_Chang-keeper/edit/image/ui/web_history.png"><img src="/image/ui/web_history.png" width="100%" height="100%">
+					</a><br><br>git rm -> 실제 디렉토리에서 삭제
+				</h4>
+			</td>
+			<td width="35%">
+	   			<h4 align="center">
+		   		<a href="https://raw.githubusercontent.com/osamhack2021/WEB_APP_IOT_ModuChangGo_Chang-keeper/edit/image/ui/app_history.png"><img src="/image/ui/app_history.png" width="75%" height="75%"></a><br><br>git rm --cached -> 실제 디렉토리에서 삭제되진 않았지만 git repository에서 삭제됨(untracked)됨</h4></td>
+		</tr>
+</tbody>
+</table>
+
+
+<table><tbody>
+		<tr>
+			<td colspan=2>
+				<br>
+				<b>Git mv 기능</b><br>
+				<br>
+			</td>
+		</tr>
+		<tr>
+			<td width="65%">
+				<h4 align="center">
+				<a href = "https://raw.githubusercontent.com/osamhack2021/WEB_APP_IOT_ModuChangGo_Chang-keeper/edit/image/ui/web_history.png"><img src="/image/ui/web_history.png" width="100%" height="100%">
+					</a><br><br>파일 이름 변경
+				</h4>
+			</td>
+			<td width="35%">
+	   			<h4 align="center">
+		   		<a href="https://raw.githubusercontent.com/osamhack2021/WEB_APP_IOT_ModuChangGo_Chang-keeper/edit/image/ui/app_history.png"><img src="/image/ui/app_history.png" width="75%" height="75%"></a><br><br>staging 표시</h4></td>
+		</tr>
+</tbody>
+</table>
+
+
+## 팀 정보 (Team Information)
+<table width="788">
+<thead>
+<tr>
+<th width="100" align="center">사진</th>
+<th width="100" align="center">성명</th>
+<th width="150" align="left">담당</th>
+<th width="100" align="center">깃허브</th>
+<th width="175" align="center">이메일</th>
+</tr> 
+</thead>
+<tbody>
+<tr>
+<td width="100" align="center"><img src="/image/박규한.jpg" width="60" height="60"></td>
+<td width="100" align="center">박규한</td>
+<td width="150">백엔드 개발<br>서버 환경 구축<br>데이터베이스 설계</td>
+<td width="100" align="center">
+	<a href="https://github.com/rbgksqkr">
+		<img src="http://img.shields.io/badge/rbgksqkr-655ced?style=social&logo=github"/>
+	</a>
+</td>
+<td width="175" align="center">
+	<a href="mailto:rbgks1937@gmail.com"><img src="https://img.shields.io/static/v1?label=&message=rbgks1937@gmail.com&color=orange&style=flat-square&logo=gmail"></a>
+	</td>
+</tr>
+<tr>
+<td width="100" align="center"><img src="/image/김태한.jpg" width="60" height="60"></td>
+<td width="100" align="center">최우형</td>
+<td width="300">앱 개발<br>서버/프런트 간 통신 구현<br>서버 테스트<br></td>
+</td>
+<td width="100" align="center">
+	<a href="https://github.com/TaehanKim00">
+		<img src="http://img.shields.io/badge/TaehanKim00-655ced?style=social&logo=github"/>
+	</a>
+</td>
+<td width="175" align="center">
+	<a href="mailto:tk5582lm@gmail.com"><img src="https://img.shields.io/static/v1?label=&message=tk5582lm@gmail.com&color=green&style=flat-square&logo=gmail"></a>
+	</td>
+</tr>
+
+<tr>
+<td width="100" align="center"><img src="/image/조명근.PNG" width="60" height="60"></td>
+<td width="100" align="center">조명근</td>
+<td width="300">아두이노 개발<br>문서화 작업<br></td>
+</td>
+<td width="100" align="center">
+	<a href="https://github.com/realisshomyang">
+		<img src="http://img.shields.io/badge/realisshomyang-655ced?style=social&logo=github"/>
+	</a>
+</td>
+<td width="175" align="center">
+	<a href="mailto:mgmg612@gmail.com"><img src="https://img.shields.io/static/v1?label=&message=mgmg612@gmail.com&color=green&style=flat-square&logo=gmail"></a>
+	</td>
+</tr>
+</tr>
+</tbody>
+</table>
+
+## 협업과정
+Tools used for the collaborative development
+- [notion](https://bit.ly/3O3sl87)
+- [github](https://github.com/CAU-OSS-project-practice/OSS-file-manager)
+
+## 저작권 및 사용권 정보 (Copyleft / End User License)
+ * [MIT](https://github.com/osamhack2021/WEB_APP_IOT_ModuChangGo_Chang-keeper/blob/main/LICENSE)
+
+<p align="center"><img src="/image/모두의 창고4.PNG"></p>
