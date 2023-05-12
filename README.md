@@ -255,15 +255,16 @@ untracked - staged 된 파일 ex) git rm --cached 명령어 실행 시에는 unt
 			</td>
 		</tr>
 		<tr>
-			<td width="65%">
+			<td width="50%">
 				<h4 align="center">
-				<a href = "https://raw.githubusercontent.com/osamhack2021/WEB_APP_IOT_ModuChangGo_Chang-keeper/edit/image/ui/web_history.png"><img src="/image/ui/web_history.png" width="100%" height="100%">
-					</a><br><br>파일 이름 변경
+  <img width="804" alt="git_mv_open_mv_window" src="https://github.com/rbgksqkr/react/assets/63959171/eb0b1047-049b-484a-9a06-e3807984fe8d">
+          <br><br>변경할 파일 이름 작성
 				</h4>
 			</td>
-			<td width="35%">
+			<td width="50%">
 	   			<h4 align="center">
-		   		<a href="https://raw.githubusercontent.com/osamhack2021/WEB_APP_IOT_ModuChangGo_Chang-keeper/edit/image/ui/app_history.png"><img src="/image/ui/app_history.png" width="75%" height="75%"></a><br><br>staging 표시</h4></td>
+<img width="804" alt="git_mv_rename" src="https://github.com/rbgksqkr/react/assets/63959171/30fd2f03-2777-455e-80df-dfcda1f428c0">
+            <br><br>파일 이름 변경</h4></td>
 		</tr>
 </tbody>
 </table>
