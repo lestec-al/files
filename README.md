@@ -77,16 +77,16 @@ deactivate
 		<tr>
 			<td width="33%">
 				<h4 align="center">
-				<a href = "https://raw.githubusercontent.com/osamhack2021/WEB_APP_IOT_ModuChangGo_Chang-keeper/edit/image/ui/web_login.png"><img src="/image/ui/web_login.png" width="75%" height="75%">
+				<a href = "https://raw.githubusercontent.com/osamhack2021/WEB_APP_IOT_ModuChangGo_Chang-keeper/edit/image/ui/web_login.png"><img src="/data/execution_image/rootdir.png" width="75%" height="75%">
 					</a><br><br> 파일 탐색은 루트 디렉토리에서 시작
 				</h4>
 			</td>
 			<td width="33%">
 	   			<h4 align="center">
-		   		<a href="https://raw.githubusercontent.com/osamhack2021/WEB_APP_IOT_ModuChangGo_Chang-keeper/edit/image/ui/app_login.png"><img src="/image/ui/app_login.png" width="75%" height="75%"></a><br><br>현재 디렉토리에 포함된 모든 파일과 디렉토리는 아이콘, 이름, 확장자로 표현 </h4></td>
+		   		<a href="https://raw.githubusercontent.com/osamhack2021/WEB_APP_IOT_ModuChangGo_Chang-keeper/edit/image/ui/app_login.png"><img src="/data/execution_image/in folder.png" width="75%" height="75%"></a><br><br>현재 디렉토리에 포함된 모든 파일과 디렉토리는 아이콘, 이름, 확장자로 표현 </h4></td>
             <td width="33%">
 	   			<h4 align="center">
-		   		<a href="https://raw.githubusercontent.com/osamhack2021/WEB_APP_IOT_ModuChangGo_Chang-keeper/edit/image/ui/app_login.png"><img src="/image/ui/app_login.png" width="75%" height="75%"></a><br><br>더블 클릭을 통해 브라우징 가능 </h4></td>
+		   		<a href="https://raw.githubusercontent.com/osamhack2021/WEB_APP_IOT_ModuChangGo_Chang-keeper/edit/image/ui/app_login.png"><img src="/data/execution_image/double-click.gif" width="75%" height="75%"></a><br><br>더블 클릭을 통해 브라우징 가능 </h4></td>
 		</tr>
 </tbody>
 </table>
@@ -125,19 +125,19 @@ deactivate
 		<tr>
 			<td width="25%">
 				<h4 align="center">
-				<a href = "https://raw.githubusercontent.com/osamhack2021/WEB_APP_IOT_ModuChangGo_Chang-keeper/edit/image/ui/web_history.png"><img src="/image/ui/web_storages_detail_page.png" width="100%" height="100%">
+				<a href = "https://raw.githubusercontent.com/CAU-OSS-project-practice/OSS-file-manager/develop/data/icon_file_staged.png"><img src="/data/icon_file_staged.png" width="100%" height="100%">
 					</a><br><br>staging된 파일 표시
 				</h4>
 			</td>
 			<td width="25%">
 	   			<h4 align="center">
-		   		<a href="https://raw.githubusercontent.com/osamhack2021/WEB_APP_IOT_ModuChangGo_Chang-keeper/edit/image/ui/app_storages_detail_page.png"><img src="/image/ui/app_storages_detail_page.png" width="75%" height="75%"></a><br><br>창고 내 물품 재고확인 앱</h4></td>
+		   		<a href="https://github.com/CAU-OSS-project-practice/OSS-file-manager/blob/develop/data/icon_file_unstaged.png?raw=true"><img src="/data/icon_file_unstaged.png" width="75%" height="75%"></a><br>unstaged(modified)된 파일 표시<br></h4></td>
                 <td width="25%">
 	   			<h4 align="center">
-		   		<a href="https://raw.githubusercontent.com/osamhack2021/WEB_APP_IOT_ModuChangGo_Chang-keeper/edit/image/ui/app_storages_detail_page.png"><img src="/image/ui/app_storages_detail_page.png" width="75%" height="75%"></a><br><br>창고 내 물품 재고확인 앱</h4></td>
+		   		<a href="https://raw.githubusercontent.com/CAU-OSS-project-practice/OSS-file-manager/develop/data/icon_file.png"><img src="/data/icon_file.png" width="75%" height="75%"></a><br><br>committed(unmodified)된 파일 표시</h4></td>
                 <td width="25%">
 	   			<h4 align="center">
-		   		<a href="https://raw.githubusercontent.com/osamhack2021/WEB_APP_IOT_ModuChangGo_Chang-keeper/edit/image/ui/app_storages_detail_page.png"><img src="/image/ui/app_storages_detail_page.png" width="75%" height="75%"></a><br><br>창고 내 물품 재고확인 앱</h4></td>
+		   		<a href="https://raw.githubusercontent.com/CAU-OSS-project-practice/OSS-file-manager/develop/data/icon_file_both.png"><img src="/data/icon_file_both.png" width="75%" height="75%"></a><br><br>staged-unstaged(modified)된 파일 표시</h4></td>
 		</tr>
 </tbody>
 </table>
@@ -146,7 +146,7 @@ Stage를 4가지로 나눴습니다.
 1. Staged
 2. unstaged(modified)
 3. committed(unmodified)
-4. staged - unstaged(staging된 상태에서 파일을 변경한 경우))
+4. staged - unstaged(staging된 상태에서 파일을 변경한 경우)
 
 untracked - staged 된 파일 ex) git rm --cached 명령어 실행 시에는 untracked를 우선순위로 동작하게 만들었습니다.
 
@@ -206,20 +206,20 @@ untracked - staged 된 파일 ex) git rm --cached 명령어 실행 시에는 unt
 		<tr>
 			<td colspan=2>
 				<br>
-				<b>Git restore / Git restore --staged 기능</b><br>
+				<b>Git restore 기능</b><br>
 				<br>
 			</td>
 		</tr>
 		<tr>
 			<td width="65%">
 				<h4 align="center">
-				<a href = "https://raw.githubusercontent.com/osamhack2021/WEB_APP_IOT_ModuChangGo_Chang-keeper/edit/image/ui/web_history.png"><img src="/image/ui/web_history.png" width="100%" height="100%">
-					</a><br><br>Git restore 작동 modified된 파일을 committed상태로 되돌림
+				<a href = "https://raw.githubusercontent.com/osamhack2021/WEB_APP_IOT_ModuChangGo_Chang-keeper/edit/image/ui/web_history.png"><img src="/data/execution_image/git_restore_before.png" width="100%" height="100%">
+					</a><br><br>Git restore 작동 전
 				</h4>
 			</td>
 			<td width="35%">
 	   			<h4 align="center">
-		   		<a href="https://raw.githubusercontent.com/osamhack2021/WEB_APP_IOT_ModuChangGo_Chang-keeper/edit/image/ui/app_history.png"><img src="/image/ui/app_history.png" width="75%" height="75%"></a><br><br>git restore --staged staged된 파일을 modified 상태로 되돌림</h4></td>
+		   		<a href="https://raw.githubusercontent.com/osamhack2021/WEB_APP_IOT_ModuChangGo_Chang-keeper/edit/image/ui/app_history.png"><img src="/data/execution_image/git_restore_after.png" width="75%" height="75%"></a><br><br>git restore 작동 후</h4></td>
 		</tr>
 </tbody>
 </table>
@@ -228,20 +228,64 @@ untracked - staged 된 파일 ex) git rm --cached 명령어 실행 시에는 unt
 		<tr>
 			<td colspan=2>
 				<br>
-				<b>Git rm / Git rm --cached 기능</b><br>
+				<b>Git restore --staged 기능</b><br>
 				<br>
 			</td>
 		</tr>
 		<tr>
 			<td width="65%">
 				<h4 align="center">
-				<a href = "https://raw.githubusercontent.com/osamhack2021/WEB_APP_IOT_ModuChangGo_Chang-keeper/edit/image/ui/web_history.png"><img src="/image/ui/web_history.png" width="100%" height="100%">
-					</a><br><br>git rm -> 실제 디렉토리에서 삭제
+				<a href = "https://raw.githubusercontent.com/osamhack2021/WEB_APP_IOT_ModuChangGo_Chang-keeper/edit/image/ui/web_history.png"><img src="/data/execution_image/git_restore_staged_before.png" width="100%" height="100%">
+					</a><br><br>Git restore 작동 modified된 파일을 committed상태로 되돌림
 				</h4>
 			</td>
 			<td width="35%">
 	   			<h4 align="center">
-		   		<a href="https://raw.githubusercontent.com/osamhack2021/WEB_APP_IOT_ModuChangGo_Chang-keeper/edit/image/ui/app_history.png"><img src="/image/ui/app_history.png" width="75%" height="75%"></a><br><br>git rm --cached -> 실제 디렉토리에서 삭제되진 않았지만 git repository에서 삭제됨(untracked)됨</h4></td>
+		   		<a href="https://raw.githubusercontent.com/osamhack2021/WEB_APP_IOT_ModuChangGo_Chang-keeper/edit/image/ui/app_history.png"><img src="/data/execution_image/git_restore_staged_after.png" width="75%" height="75%"></a><br><br>git restore --staged staged된 파일을 modified 상태로 되돌림</h4></td>
+		</tr>
+</tbody>
+</table>
+
+<table><tbody>
+		<tr>
+			<td colspan=2>
+				<br>
+				<b>Git rm 기능</b><br>
+				<br>
+			</td>
+		</tr>
+		<tr>
+			<td width="65%">
+				<h4 align="center">
+				<a href = "https://raw.githubusercontent.com/osamhack2021/WEB_APP_IOT_ModuChangGo_Chang-keeper/edit/image/ui/web_history.png"><img src="/data/execution_image/rm_after.png" width="100%" height="100%">
+					</a><br><br>git rm before
+				</h4>
+			</td>
+			<td width="35%">
+	   			<h4 align="center">
+		   		<a href="https://raw.githubusercontent.com/osamhack2021/WEB_APP_IOT_ModuChangGo_Chang-keeper/edit/image/ui/app_history.png"><img src="/data/execution_image/rm_after.png" width="75%" height="75%"></a><br><br>git rm --cached after </h4></td>
+		</tr>
+</tbody>
+</table>
+
+<table><tbody>
+		<tr>
+			<td colspan=2>
+				<br>
+				<b>Git rm --cached 기능</b><br>
+				<br>
+			</td>
+		</tr>
+		<tr>
+			<td width="65%">
+				<h4 align="center">
+				<a href = "https://raw.githubusercontent.com/osamhack2021/WEB_APP_IOT_ModuChangGo_Chang-keeper/edit/image/ui/web_history.png"><img src="/data/execution_image/rm _cached_before.png" width="100%" height="100%">
+					</a><br><br>git rm --cached before
+				</h4>
+			</td>
+			<td width="35%">
+	   			<h4 align="center">
+		   		<a href="https://raw.githubusercontent.com/osamhack2021/WEB_APP_IOT_ModuChangGo_Chang-keeper/edit/image/ui/app_history.png"><img src="/data/execution_image/rm_cached_after.png" width="75%" height="75%"></a><br><br>git rm --cached after -> 실제 디렉토리에서 삭제되진 않았지만 git repository에서 삭제됨(untracked)됨</h4></td>
 		</tr>
 </tbody>
 </table>
@@ -336,7 +380,3 @@ Tools used for the collaborative development
 - [github](https://github.com/CAU-OSS-project-practice/OSS-file-manager)
 
 ## 저작권 및 사용권 정보 (Copyleft / End User License)
-
-- [MIT](https://github.com/osamhack2021/WEB_APP_IOT_ModuChangGo_Chang-keeper/blob/main/LICENSE)
-
-<p align="center"><img src="/image/모두의 창고4.PNG"></p>
