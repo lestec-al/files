@@ -328,10 +328,17 @@ def select():
         if not tree.selection():
             g_current_item = ''
             for x in buttons:
-                if  x == init_button and (not check_git_repo(last_path)):
-                    continue
-                else:
-                    x.config(state="disabled")
+                if check_git_repo(last_path):
+                    if x == add_button :
+                        continue
+                    else:
+                        x.config(state="disabled")
+                else :
+                    if  x == init_button :
+                        continue
+                    else:
+                        x.config(state= "disabled")
+
         current_git_status = row_data["values"][1]
         folder_status = row_data["values"][0]
         if check_git_repo(last_path):
