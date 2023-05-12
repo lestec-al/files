@@ -87,7 +87,7 @@ def git_restore_staged():
         relative_path = get_relative_repo_path(
             last_path, repo) + g_current_item
         index.remove(relative_path)
-        try :
+        try:
             obj = repo.revparse_single(
                 'HEAD').tree[relative_path]  # Get object from db
             index.add(pygit2.IndexEntry(relative_path,
@@ -133,10 +133,9 @@ def git_init():
 def git_add():
     if check_git_repo(last_path):
         repository = pygit2.Repository(last_path)
-    print(g_current_item)
     index = repository.index
-    
-    if g_current_item != None :
+
+    if g_current_item != None:
         path = get_relative_repo_path(last_path, repository) + g_current_item
     else:
         path = None
@@ -214,7 +213,6 @@ def check_git_repo(path):
         # 디렉토리가 Git 저장소인지 확인 레포가 만들어지면 init 불가능
         repo = pygit2.Repository(path)
     except pygit2.GitError:
-        print("This directory is not a valid Git repository.")
         return False
     return True
 
@@ -225,7 +223,6 @@ def update_git_repo(path):
         repo = pygit2.Repository(path)
 
     except pygit2.GitError:
-        print("This directory is not a valid Git repository.")
         return False, pygit2.Repository()
 
     return True, repo
@@ -329,41 +326,41 @@ def select():
             g_current_item = ''
             for x in buttons:
                 if check_git_repo(last_path):
-                    if x == add_button :
+                    if x == add_button:
                         continue
                     else:
                         x.config(state="disabled")
-                else :
-                    if  x == init_button :
+                else:
+                    if x == init_button:
                         continue
                     else:
-                        x.config(state= "disabled")
+                        x.config(state="disabled")
 
         current_git_status = row_data["values"][1]
         folder_status = row_data["values"][0]
         if check_git_repo(last_path):
             if folder_status == 'dir':
-                    for x in buttons:
-                        if x != add_button:
-                            x.config(state="disabled")
-            else:                
-                try : 
+                for x in buttons:
+                    if x != add_button:
+                        x.config(state="disabled")
+            else:
+                try:
                     if current_git_status == "STAGED":
                         for x in buttons:
-                            if x == commit_button or x==restore_staged_button or x== rm_cached_button or x==mv_button :
+                            if x == commit_button or x == restore_staged_button or x == rm_cached_button or x == mv_button:
                                 continue
                             else:
                                 x.config(state="disabled")
 
                     elif current_git_status == "UNMODIFIED":
                         for x in buttons:
-                            if x == rm_button or x == rm_cached_button or x == mv_button or  x == commit_button:
+                            if x == rm_button or x == rm_cached_button or x == mv_button or x == commit_button:
                                 continue
                             else:
-                                x.config(state= "disabled")
+                                x.config(state="disabled")
                     elif current_git_status == "UNSTAGED":
-                        for x in buttons :
-                            if x == add_button or x == rm_button or x == rm_cached_button or x == mv_button or x==restore_button or x==commit_button :
+                        for x in buttons:
+                            if x == add_button or x == rm_button or x == rm_cached_button or x == mv_button or x == restore_button or x == commit_button:
                                 continue
                             else:
                                 x.config(state="disabled")
@@ -373,9 +370,9 @@ def select():
                             if x == add_button:
                                 continue
                             else:
-                                x.config(state = "disabled")
+                                x.config(state="disabled")
                     elif current_git_status == "UNSTAGED-STAGED":
-                        init_button.config(state= "disabled")
+                        init_button.config(state="disabled")
                     else:
                         print(None)
                 except:
@@ -637,7 +634,6 @@ def update_files(orig_dirname: str):
             files = os.scandir(dirname)
             git_repo = pygit2.Repository()
             is_repo_exist, git_repo = update_git_repo(dirname)
-            print(is_repo_exist, git_repo)
 
             for f in files:
                 f_stat = f.stat()
