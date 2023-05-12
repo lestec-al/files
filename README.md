@@ -101,13 +101,14 @@ deactivate
 		<tr>
 			<td width="50%">
 				<h4 align="center">
-				<a href = "https://raw.githubusercontent.com/osamhack2021/WEB_APP_IOT_ModuChangGo_Chang-keeper/edit/image/ui/web_login.png"><img src="/image/ui/web_login.png" width="75%" height="75%">
+<img width="804" alt="git_init_not_git_repo" src="https://github.com/rbgksqkr/react/assets/63959171/ce081f1c-5bf2-4e15-9b47-510bc62a891c">
 					</a><br><br>Git repository가 아닌 디렉토리인 경우 -> init 버튼 활성화
 				</h4>
 			</td>
 			<td width="50%">
 	   			<h4 align="center">
-		   		<a href="https://raw.githubusercontent.com/osamhack2021/WEB_APP_IOT_ModuChangGo_Chang-keeper/edit/image/ui/app_login.png"><img src="/image/ui/app_login.png" width="75%" height="75%"></a><br><br>이미 Git repository인 디렉토리의 경우 -> init 버튼 비활성화</h4></td>
+                      <img width="804" alt="git_init_git_repo" src="https://github.com/rbgksqkr/react/assets/63959171/709a75ea-e70f-43dd-8165-0cbb3f49b41d">
+            </a><br><br>이미 Git repository인 디렉토리의 경우 -> init 버튼 비활성화</h4></td>
 		</tr>
 </tbody>
 </table>
@@ -157,15 +158,22 @@ untracked - staged 된 파일 ex) git rm --cached 명령어 실행 시에는 unt
 			</td>
 		</tr>
 		<tr>
-			<td width="65%">
+			<td width="33%">
 				<h4 align="center">
-				<a href = "https://raw.githubusercontent.com/osamhack2021/WEB_APP_IOT_ModuChangGo_Chang-keeper/edit/image/ui/web_viewStorage.png"><img src="/image/ui/web_viewStorage.png" width="100%" height="100%">
-					</a><br><br> 한 파일 선택시 그 파일만 add 가능
+          <img width="804" alt="git_add_before" src="https://github.com/rbgksqkr/react/assets/63959171/514aaa4d-1245-4c3c-9b55-1f34f023e8d5">
+					<br><br> 파일 선택 전 
 				</h4>
 			</td>
-			<td width="35%">
+			<td width="33%">
+				<h4 align="center">
+				<img width="804" alt="git_add_one" src="https://github.com/rbgksqkr/react/assets/63959171/6938733f-a031-4093-8bd8-feaff368b5f9">
+					<br><br> 한 파일 선택시 그 파일만 add 가능
+				</h4>
+			</td>
+			<td width="33%">
 	   			<h4 align="center">
-		   		<a href="https://raw.githubusercontent.com/osamhack2021/WEB_APP_IOT_ModuChangGo_Chang-keeper/edit/image/ui/app_storages_page.png"><img src="/image/ui/app_storages_page.png" width="75%" height="75%"></a><br><br>선택된 파일이 없을 시에는 git add . 동작</h4></td>
+		   		<img width="804" alt="git_add_all" src="https://github.com/rbgksqkr/react/assets/63959171/b8b24523-a693-466e-8962-4a3d4f41daae">
+            <br><br>선택된 파일이 없을 시에는 git add . 동작</h4></td>
 		</tr>
 </tbody>
 </table>
