@@ -872,40 +872,60 @@ frame_right_branch.pack(fill="both", side="left")
 frame_right_history = tk.Frame(frame_right, border=1, bg="white")
 frame_right_history.pack(fill="both", side="right")
 
-frame_right_branch_list = tk.Frame(frame_right_branch, border=1, bg="yellow",width=300,height=500)
-frame_right_branch_list.grid(column= 0, row=0)
-frame_right_branch_button = tk.Frame(frame_right_branch, border=1, bg="red",width= 300, height= 200)
+frame_right_branch_list = tk.Frame(
+    frame_right_branch, border=1, bg="yellow", width=300, height=500)
+frame_right_branch_list.grid(column=0, row=0)
+frame_right_branch_button = tk.Frame(
+    frame_right_branch, border=1, bg="red", width=300, height=200)
 frame_right_branch_button.grid(column=0, row=1)
 
-frame_right_history_graph = tk.Frame(frame_right_history, border=1, bg="green", width=300, height=500)
-frame_right_history_graph.grid(column= 0 , row=0)
-frame_right_history_detail = tk.Frame(frame_right_history, border=1, bg="blue", width=300, height=200)
-frame_right_history_detail.grid(column= 0 ,row=1)
+frame_right_history_graph = tk.Frame(
+    frame_right_history, border=1, bg="green", width=300, height=500)
+frame_right_history_graph.grid(column=0, row=0)
+frame_right_history_detail = tk.Frame(
+    frame_right_history, border=1, bg="blue", width=300, height=200)
+frame_right_history_detail.grid(column=0, row=1)
 
-#Frame_right_branch_butoon
+
+def checkout_branch():
+    if check_git_repo(last_path):
+        repo = pygit2.Repository(last_path)
+        branch = repo.branches.get('testBranch')
+        print("branch:", branch)
+        print("branch:", branch.target)
+        # 브랜치로 전환
+        # repo.checkout(branch.target.hex)
+        repo.checkout(branch)
+        # # 전환된 브랜치 확인
+        current_branch = repo.head.shorthand
+        print(f"current_branch: {current_branch}")
+        update_files(last_path)
+
+
+# Frame_right_branch_butoon
 branch_buttons = []
 create_button = tk.Button(frame_right_branch_button, text='create', width=4, height=1, relief="flat", bg="black",
-                        fg="black", command=lambda: update_files(last_path))
+                          fg="black", command=lambda: update_files(last_path))
 create_button.grid(column=0, row=0)
 branch_buttons.append(create_button)
 delete_button = tk.Button(frame_right_branch_button, text='delete', width=4, height=1, relief="flat", bg="black",
-                        fg="black", command=lambda: update_files(last_path))
+                          fg="black", command=lambda: update_files(last_path))
 delete_button.grid(column=1, row=0)
 branch_buttons.append(delete_button)
 rename_button = tk.Button(frame_right_branch_button, text='rename', width=4, height=1, relief="flat", bg="black",
-                        fg="black", command=lambda: update_files(last_path))
+                          fg="black", command=lambda: update_files(last_path))
 rename_button.grid(column=2, row=0)
 branch_buttons.append(rename_button)
 checkout_button = tk.Button(frame_right_branch_button, text='checkout', width=4, height=1, relief="flat", bg="black",
-                        fg="black", command=lambda: update_files(last_path))
+                            fg="black", command=lambda: checkout_branch())
 checkout_button.grid(column=3, row=0)
 branch_buttons.append(checkout_button)
 merge_button = tk.Button(frame_right_branch_button, text='merge', width=4, height=1, relief="flat", bg="black",
-                        fg="black", command=lambda: update_files(last_path))
+                         fg="black", command=lambda: update_files(last_path))
 merge_button.grid(column=4, row=0)
 branch_buttons.append(merge_button)
-emessage_label = tk.Label(frame_right_branch_button, text= "hi")
-emessage_label.grid(column=0, row=1)
+# emessage_label = tk.Label(frame_right_branch_button, text= "hi")
+# emessage_label.grid(column=0, row=1)
 # Top of window
 folder_icon_list = [tk.PhotoImage(file="data/icon_folder.png"), tk.PhotoImage(file="data/icon_folder_unstaged.png"),
                     tk.PhotoImage(file="data/icon_folder_staged.png"), tk.PhotoImage(file="data/icon_folder_both.png")]
