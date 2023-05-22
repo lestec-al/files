@@ -890,22 +890,32 @@ frame_right_history_detail.grid(column=0, row=1)
 def checkout_branch():
     if check_git_repo(last_path):
         repo = pygit2.Repository(last_path)
-        branch = repo.branches.get('testBranch')
-        print("branch:", branch)
-        print("branch:", branch.target)
-        # 브랜치로 전환
-        # repo.checkout(branch.target.hex)
-        repo.checkout(branch)
-        # # 전환된 브랜치 확인
-        current_branch = repo.head.shorthand
-        print(f"current_branch: {current_branch}")
-        update_files(last_path)
+        # TODO : 사용자에게 입력받은 브랜치로 checkout 구현 예정
+        # branch = repo.branches.get('testBranch')
+        # repo.checkout(branch)
+        # 전환된 브랜치 확인
+        # current_branch = repo.head.shorthand
+        # update_files(last_path)
+        branches_list = list(repo.branches)
+        print(branches_list)
+
+
+def create_branch():
+    if check_git_repo(last_path):
+        repo = pygit2.Repository(last_path)
+        current_commit_id = repo.head.target
+        print(repo.get(current_commit_id))
+        # TODO : 사용자에게 입력받은 브랜치로 checkout 구현 예정
+        # new_branch_name = 'new-branch'
+        # new_branch = repo.create_branch(
+        #     new_branch_name, repo.get(current_commit_id))
+        # print(new_branch)
 
 
 # Frame_right_branch_butoon
 branch_buttons = []
 create_button = tk.Button(frame_right_branch_button, text='create', width=4, height=1, relief="flat", bg="black",
-                          fg="black", command=lambda: update_files(last_path))
+                          fg="black", command=lambda: create_branch())
 create_button.grid(column=0, row=0)
 branch_buttons.append(create_button)
 delete_button = tk.Button(frame_right_branch_button, text='delete', width=4, height=1, relief="flat", bg="black",
