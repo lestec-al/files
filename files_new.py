@@ -872,7 +872,6 @@ frame_right_branch.pack(fill="both", side="left")
 frame_right_history = tk.Frame(frame_right, border=1, bg="white")
 frame_right_history.pack(fill="both", side="right")
 
-
 frame_right_branch_list = tk.Frame(
     frame_right_branch, border=1, bg="yellow", width=300, height=500)
 frame_right_branch_list.pack(side="top")
