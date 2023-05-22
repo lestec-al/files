@@ -59,7 +59,33 @@ icon_status_dict = {
     16384: 0,
     32768: 0
 }
+def open_git_branch_list():
+    input_window = tk.Toplevel(window)
+    input_window.title('branch list for merge')
+    input_window.geometry("500x150")
+    input_window.geometry("+100+200")
+    if check_git_repo(last_path):
+        repository = pygit2.Repository(last_path)  # 저장소 경로 설정
+        current_branch = repository.head.shorthand  # 현재 브랜치 확인
+        branches_list = list(repository.branches.local)
+        branches_list.remove(current_branch)
+        global branch_combobox1
+        branch_combobox1 = ttk.Combobox(input_window, values=branches_list)
+        branch_combobox1.pack(fill=tk.BOTH)
+        branch_combobox1.set("choose branch to merge")
+        to_label = ttk.Label(input_window, text="to")
+        to_label.pack(pady=5)
+        branch_label2 = ttk.Label(input_window, text=current_branch)
+        branch_label2.pack(fill=tk.BOTH)
+        # Create a confirmation button
+        selected_branch = branch_combobox1.get()
+        confirm_button = ttk.Button(input_window, text="Merge", command=merge_selected_branch)
+        confirm_button.pack(pady=10)
 
+def merge_selected_branch():
+    print('hi')
+
+#Git branch Actions
 
 # Interface
 def git_restore():
@@ -866,7 +892,6 @@ frame_right.pack(fill="both", side="right")
 
 frame_up = tk.Frame(frame_left, border=1, bg="white")
 frame_up.pack(fill="x", side="top")
-
 frame_right_branch = tk.Frame(frame_right, border =1,bg="white")
 frame_right_branch.pack(fill="both", side="left")
 frame_right_history = tk.Frame(frame_right, border=1, bg="white")
@@ -900,7 +925,7 @@ checkout_button = tk.Button(frame_right_branch_button, text='checkout', width=4,
 checkout_button.grid(column=3, row=0)
 branch_buttons.append(checkout_button)
 merge_button = tk.Button(frame_right_branch_button, text='merge', width=4, height=1, relief="flat", bg="black",
-                        fg="black", command=lambda: update_files(last_path))
+                        fg="black", command=lambda: open_git_branch_list())
 merge_button.grid(column=4, row=0)
 branch_buttons.append(merge_button)
 # Top of window
