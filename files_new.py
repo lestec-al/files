@@ -905,11 +905,19 @@ def create_branch():
         repo = pygit2.Repository(last_path)
         current_commit_id = repo.head.target
         print(repo.get(current_commit_id))
-        # TODO : 사용자에게 입력받은 브랜치로 checkout 구현 예정
+        # TODO : 사용자에게 입력받은 브랜치로 create 구현 예정
         # new_branch_name = 'new-branch'
         # new_branch = repo.create_branch(
         #     new_branch_name, repo.get(current_commit_id))
         # print(new_branch)
+
+
+def delete_branch():
+    if check_git_repo(last_path):
+        repo = pygit2.Repository(last_path)
+        # TODO : 사용자에게 입력받은 브랜치로 delete 구현 예정
+        repo.branches.delete('new-branch')
+        print('삭제')
 
 
 # Frame_right_branch_butoon
@@ -919,7 +927,7 @@ create_button = tk.Button(frame_right_branch_button, text='create', width=4, hei
 create_button.grid(column=0, row=0)
 branch_buttons.append(create_button)
 delete_button = tk.Button(frame_right_branch_button, text='delete', width=4, height=1, relief="flat", bg="black",
-                          fg="black", command=lambda: update_files(last_path))
+                          fg="black", command=lambda: delete_branch())
 delete_button.grid(column=1, row=0)
 branch_buttons.append(delete_button)
 rename_button = tk.Button(frame_right_branch_button, text='rename', width=4, height=1, relief="flat", bg="black",
