@@ -860,7 +860,7 @@ window.minsize(width=800, height=500)
 frame_left = tk.Frame(window, border=1, bg="white")
 frame_left.pack(fill="both", side="left", expand=True)
 
-frame_right = tk.Frame(window, border=1, bg="white")
+frame_right = tk.Frame(window,  bg="white")
 frame_right.pack(fill="both", side="right")
 
 
@@ -872,13 +872,13 @@ frame_right_branch.pack(fill="both", side="left")
 frame_right_history = tk.Frame(frame_right, border=1, bg="white")
 frame_right_history.pack(fill="both", side="right")
 
+
 frame_right_branch_list = tk.Frame(
     frame_right_branch, border=1, bg="yellow", width=300, height=500)
-frame_right_branch_list.grid(column=0, row=0)
+frame_right_branch_list.pack(side="top")
 frame_right_branch_button = tk.Frame(
-    frame_right_branch, border=1, bg="red", width=300, height=200)
-frame_right_branch_button.grid(column=0, row=1)
-
+    frame_right_branch, border=1, bg="white", width=300, height=100)
+frame_right_branch_button.pack(side="bottom")
 frame_right_history_graph = tk.Frame(
     frame_right_history, border=1, bg="green", width=300, height=500)
 frame_right_history_graph.grid(column=0, row=0)
@@ -955,8 +955,7 @@ merge_button = tk.Button(frame_right_branch_button, text='merge', width=4, heigh
                          fg="black", command=lambda: update_files(last_path))
 merge_button.grid(column=4, row=0)
 branch_buttons.append(merge_button)
-# emessage_label = tk.Label(frame_right_branch_button, text= "hi")
-# emessage_label.grid(column=0, row=1)
+
 # Top of window
 folder_icon_list = [tk.PhotoImage(file="data/icon_folder.png"), tk.PhotoImage(file="data/icon_folder_unstaged.png"),
                     tk.PhotoImage(file="data/icon_folder_staged.png"), tk.PhotoImage(file="data/icon_folder_both.png")]
