@@ -856,8 +856,30 @@ window = tk.Tk()
 window.resizable(True, True)
 window.iconphoto(True, tk.PhotoImage(file="data/icon.png"))
 window.minsize(width=800, height=500)
-frame_up = tk.Frame(window, border=1, bg="white")
+
+frame_left = tk.Frame(window, border=1, bg="white")
+frame_left.pack(fill="both", side="left", expand=True)
+
+frame_right = tk.Frame(window, border=1, bg="white")
+frame_right.pack(fill="both", side="right")
+
+frame_up = tk.Frame(frame_left, border=1, bg="white")
 frame_up.pack(fill="x", side="top")
+
+frame_right_branch = tk.Frame(frame_right, border=1, bg="white")
+frame_right_branch.pack(fill="both", side="left")
+frame_right_history = tk.Frame(frame_right, border=1, bg="white")
+frame_right_history.pack(fill="both", side="right")
+
+frame_right_branch_list = tk.Frame(frame_right_branch, border=1, bg="yellow", width=25, height=32)
+frame_right_branch_list.pack(fill="both", side="top")
+frame_right_branch_button = tk.Frame(frame_right_branch, border=1, bg="red", width=25, height=32)
+frame_right_branch_button.pack(fill="both", side="bottom")
+
+frame_right_history_graph = tk.Frame(frame_right_history, border=1, bg="green", width=25, height=32)
+frame_right_history_graph.pack(fill="both", side="top")
+frame_right_history_detail = tk.Frame(frame_right_history, border=1, bg="blue", width=25, height=32)
+frame_right_history_detail.pack(fill="both", side="bottom")
 
 # Top of window
 folder_icon_list = [tk.PhotoImage(file="data/icon_folder.png"), tk.PhotoImage(file="data/icon_folder_unstaged.png"),
@@ -975,7 +997,7 @@ def open_git_mv_window():
 
 
 # git buttons
-frame_down = tk.Frame(window, border=1)
+frame_down = tk.Frame(frame_left, border=1)
 frame_down.pack(fill="x", side="bottom")
 frame_c = tk.Frame(frame_down, relief="groove", bg="white")
 frame_c.pack(side="bottom")
@@ -1024,7 +1046,7 @@ buttons.append(mv_button)
 entry = tk.Entry(frame_up, font=("Arial", 12), justify="left",
                  highlightcolor="white", highlightthickness=0, relief="groove", border=2)
 entry.pack(side="right", fill="both", expand=1)
-label = tk.Label(window, font=("Arial", 12), anchor="w",
+label = tk.Label(frame_left, font=("Arial", 12), anchor="w",
                  bg="white", foreground="grey", border=2)
 label.pack(side="bottom", fill="both")
 
@@ -1032,7 +1054,7 @@ label.pack(side="bottom", fill="both")
 git_temp_icon = tk.PhotoImage(file="data/git_logo.png")
 
 # Tree view
-tree_frame = tk.Frame(window, border=1, relief="flat", bg="white")
+tree_frame = tk.Frame(frame_left, border=1, relief="flat", bg="white")
 tree_frame.pack(expand=1, fill="both")
 tree = ttk.Treeview(tree_frame, columns=(
     ["#1", "#2"]), selectmode="extended", show="tree headings", style="mystyle.Treeview")
