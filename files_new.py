@@ -873,7 +873,7 @@ frame_right_history = tk.Frame(frame_right, border=1, bg="white")
 frame_right_history.pack(fill="both", side="right")
 
 frame_right_branch_list = tk.Frame(
-    frame_right_branch, border=1, bg="yellow", width=300, height=500)
+    frame_right_branch, border=1, bg="red", width=300, height=500)
 frame_right_branch_list.pack(side="top")
 frame_right_branch_button = tk.Frame(
     frame_right_branch, border=1, bg="white", width=300, height=100)
@@ -884,6 +884,8 @@ frame_right_history_graph.grid(column=0, row=0)
 frame_right_history_detail = tk.Frame(
     frame_right_history, border=1, bg="blue", width=300, height=200)
 frame_right_history_detail.grid(column=0, row=1)
+
+frame_right_branch_list
 
 
 def checkout_branch():
@@ -899,11 +901,25 @@ def checkout_branch():
         print(branches_list)
 
 
+def get_selected_branch(listbox):
+    items = listbox.curselection()
+    if items:
+        return listbox.get(items)
+    else:
+        print("not selected")
+
+
 def create_branch():
     if check_git_repo(last_path):
         repo = pygit2.Repository(last_path)
         current_commit_id = repo.head.target
         print(repo.get(current_commit_id))
+        branches = list(repo.branches.local)
+        listbox = tk.Listbox(frame_right_branch_list)
+        listbox.pack()
+        for branch in branches:
+            listbox.insert(tk.END, branch)
+
         # TODO : 사용자에게 입력받은 브랜치로 create 구현 예정
         # new_branch_name = 'new-branch'
         # new_branch = repo.create_branch(
