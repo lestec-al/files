@@ -1,5 +1,6 @@
 import os
 import stat
+from tkinter import font
 import pygit2
 import re
 import sys
@@ -875,11 +876,11 @@ frame_right_history = tk.Frame(frame_right, border=1, bg="white")
 frame_right_history.pack(fill="both", side="right")
 
 frame_right_branch_list = tk.Frame(
-    frame_right_branch, border=1, bg="red", width=300, height=500)
-frame_right_branch_list.pack(side="top")
+    frame_right_branch, border=1, bg="#3c3c3c", width=300, height=500)
+frame_right_branch_list.pack(side="top", fill="x")
 frame_right_branch_button = tk.Frame(
-    frame_right_branch, border=1, bg="white", width=300, height=100)
-frame_right_branch_button.pack(side="bottom")
+    frame_right_branch, bg="white", width=300, height=100)
+frame_right_branch_button.pack(side="top")
 frame_right_history_graph = tk.Frame(
     frame_right_history, border=1, bg="green", width=300, height=500)
 frame_right_history_graph.grid(column=0, row=0)
@@ -887,7 +888,11 @@ frame_right_history_detail = tk.Frame(
     frame_right_history, border=1, bg="blue", width=300, height=200)
 frame_right_history_detail.grid(column=0, row=1)
 
-branch_listbox = tk.Listbox(frame_right_branch_list)
+branch_label = tk.Label(
+    frame_right_branch_list, text="브랜치 목록")
+branch_label.pack(fill="x")
+my_font = font.Font(size=18)
+branch_listbox = tk.Listbox(frame_right_branch_list, font=my_font)
 branch_listbox.pack()
 
 
