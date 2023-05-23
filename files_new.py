@@ -815,6 +815,8 @@ def update_files(orig_dirname: str):
                     tree.see(item)
                     break
 
+        get_branch_list()
+
     except Exception as e:
         tk.messagebox.showerror(title="Error", message=str(e))
 
@@ -885,7 +887,19 @@ frame_right_history_detail = tk.Frame(
     frame_right_history, border=1, bg="blue", width=300, height=200)
 frame_right_history_detail.grid(column=0, row=1)
 
-frame_right_branch_list
+branch_listbox = tk.Listbox(frame_right_branch_list)
+branch_listbox.pack()
+
+
+def get_branch_list():
+    if check_git_repo(last_path):
+        repo = pygit2.Repository(last_path)
+        branches = list(repo.branches.local)
+        branch_listbox.delete(0, tk.END)
+        for branch in branches:
+            branch_listbox.insert(tk.END, branch)
+    else:
+        branch_listbox.delete(0, tk.END)
 
 
 def checkout_branch():
@@ -914,12 +928,6 @@ def create_branch():
         repo = pygit2.Repository(last_path)
         current_commit_id = repo.head.target
         print(repo.get(current_commit_id))
-        branches = list(repo.branches.local)
-        listbox = tk.Listbox(frame_right_branch_list)
-        listbox.pack()
-        for branch in branches:
-            listbox.insert(tk.END, branch)
-
         # TODO : 사용자에게 입력받은 브랜치로 create 구현 예정
         # new_branch_name = 'new-branch'
         # new_branch = repo.create_branch(
