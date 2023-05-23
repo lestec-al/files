@@ -105,12 +105,27 @@ def merge_selected_branch():
         repo.reset(source_commit.id, pygit2.GIT_RESET_HARD)
         print("Fast-forward merge")
     else:
-        # 3-way merge
-        merge_commit_id = repo.merge(target_commit, source_commit)
-        if merge_commit_id is None:
-            print("Merge failed")
+        #merge_result = repo.merge(source_commit.id)
+        index = repo.merge_commits(target_commit.id,source_commit.id)
+        conflicts = index.conflicts
+        if conflicts:
+            for conflict in index.conflicts:
+                path = conflict[0]  # Conflict file path
+                print("File:", path)
         else:
-            print("Merge commit created: {}".format(merge_commit_id))
+            # 머지 성공 시, 머지 커밋 생성
+            committer = pygit2.Signature('Your Name', 'youremail@example.com')
+            merge_commit = repo.create_commit(
+                'HEAD',                          
+                committer,                       
+                committer,                       
+                'Merge branch {} into {}'.format(source_branch_name, target_branch_name),
+                index.write_tree(repo),
+            [target_branch.target, source_branch.target]
+            )
+            print('Merge commit created:', merge_commit)
+            repo.reset(merge_commit.hex, pygit2.GIT_RESET_HARD)
+
     
 
 #Git branch Actions
