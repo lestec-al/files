@@ -907,17 +907,31 @@ def get_branch_list():
         branch_listbox.delete(0, tk.END)
 
 
+def open_checkout_branch_window():
+    selected_branch = get_selected_branch()
+    if not check_git_repo(last_path) or not selected_branch:
+        return
+    checkout_window = tk.Toplevel(frame_right_branch_list)
+    checkout_window.title('checkout branch')
+    checkout_window.geometry("500x70")
+    checkout_window.geometry("+500+200")
+
+    label = tk.Label(
+        checkout_window, text=f"{selected_branch} branch로 checkout 하시겠습니까?")
+    label.pack()
+    button = tk.Button(checkout_window, text="확인",
+                       command=lambda: (checkout_branch(), checkout_window.destroy()))
+    button.pack()
+
+
 def checkout_branch():
     if check_git_repo(last_path):
         repo = pygit2.Repository(last_path)
-        # TODO : 사용자에게 입력받은 브랜치로 checkout 구현 예정
-        # branch = repo.branches.get('testBranch')
-        # repo.checkout(branch)
-        # 전환된 브랜치 확인
-        # current_branch = repo.head.shorthand
-        # update_files(last_path)
-        branches_list = list(repo.branches)
-        print(branches_list)
+        selected_branch = get_selected_branch()
+        if selected_branch:
+            target_branch = repo.branches.get(selected_branch)
+            repo.checkout(target_branch)
+            update_files(last_path)
 
 
 def open_create_branch_window():
@@ -975,7 +989,6 @@ def open_delete_branch_window():
 def delete_branch():
     if check_git_repo(last_path):
         repo = pygit2.Repository(last_path)
-        # TODO : 사용자에게 입력받은 브랜치로 delete 구현 예정
         delete_branch = get_selected_branch()
         if delete_branch:
             repo.branches.delete(delete_branch)
@@ -1005,14 +1018,14 @@ delete_button = tk.Button(frame_right_branch_button, text='delete', width=4, hei
                           fg="black", command=lambda: open_delete_branch_window())
 delete_button.grid(column=1, row=0)
 branch_buttons.append(delete_button)
+checkout_button = tk.Button(frame_right_branch_button, text='checkout', width=4, height=1, relief="flat", bg="black",
+                            fg="black", command=lambda: open_checkout_branch_window())
+checkout_button.grid(column=2, row=0)
+branch_buttons.append(checkout_button)
 rename_button = tk.Button(frame_right_branch_button, text='rename', width=4, height=1, relief="flat", bg="black",
                           fg="black", command=lambda: rename_branch())
-rename_button.grid(column=2, row=0)
+rename_button.grid(column=3, row=0)
 branch_buttons.append(rename_button)
-checkout_button = tk.Button(frame_right_branch_button, text='checkout', width=4, height=1, relief="flat", bg="black",
-                            fg="black", command=lambda: checkout_branch())
-checkout_button.grid(column=3, row=0)
-branch_buttons.append(checkout_button)
 merge_button = tk.Button(frame_right_branch_button, text='merge', width=4, height=1, relief="flat", bg="black",
                          fg="black", command=lambda: update_files(last_path))
 merge_button.grid(column=4, row=0)
