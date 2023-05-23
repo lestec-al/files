@@ -920,14 +920,6 @@ def checkout_branch():
         print(branches_list)
 
 
-def get_selected_branch():
-    items = branch_listbox.curselection()
-    if items:
-        return branch_listbox.get(items)
-    else:
-        print("not selected")
-
-
 def open_create_branch_window():
     if not check_git_repo(last_path):
         return
@@ -951,21 +943,43 @@ def create_branch(new_branch_name):
     if check_git_repo(last_path):
         repo = pygit2.Repository(last_path)
         current_commit_id = repo.head.target
-        print(repo.get(current_commit_id))
-        # TODO : 사용자에게 입력받은 브랜치로 create 구현 예정
-        # new_branch_name = 'new-branch'
-        new_branch = repo.create_branch(
-            new_branch_name, repo.get(current_commit_id))
-        print(new_branch)
+        repo.create_branch(new_branch_name, repo.get(current_commit_id))
         update_files(last_path)
+
+
+def get_selected_branch():
+    items = branch_listbox.curselection()
+    if items:
+        return branch_listbox.get(items)
+    else:
+        return ''
+
+
+def open_delete_branch_window():
+    selected_branch = get_selected_branch()
+    if not check_git_repo(last_path) or not selected_branch:
+        return
+    delete_window = tk.Toplevel(frame_right_branch_list)
+    delete_window.title('delete branch')
+    delete_window.geometry("500x70")
+    delete_window.geometry("+500+200")
+
+    label = tk.Label(
+        delete_window, text=f"{selected_branch} branch를 삭제하시겠습니까?")
+    label.pack()
+    button = tk.Button(delete_window, text="확인",
+                       command=lambda: (delete_branch(), delete_window.destroy()))
+    button.pack()
 
 
 def delete_branch():
     if check_git_repo(last_path):
         repo = pygit2.Repository(last_path)
         # TODO : 사용자에게 입력받은 브랜치로 delete 구현 예정
-        # repo.branches.delete('new-branch')
-        # print('삭제')
+        delete_branch = get_selected_branch()
+        if delete_branch:
+            repo.branches.delete(delete_branch)
+            update_files(last_path)
 
 
 def rename_branch():
@@ -988,7 +1002,7 @@ create_button = tk.Button(frame_right_branch_button, text='create', width=4, hei
 create_button.grid(column=0, row=0)
 branch_buttons.append(create_button)
 delete_button = tk.Button(frame_right_branch_button, text='delete', width=4, height=1, relief="flat", bg="black",
-                          fg="black", command=lambda: delete_branch())
+                          fg="black", command=lambda: open_delete_branch_window())
 delete_button.grid(column=1, row=0)
 branch_buttons.append(delete_button)
 rename_button = tk.Button(frame_right_branch_button, text='rename', width=4, height=1, relief="flat", bg="black",
