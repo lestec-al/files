@@ -81,9 +81,37 @@ def open_git_branch_list():
         selected_branch = branch_combobox1.get()
         confirm_button = ttk.Button(input_window, text="Merge", command=merge_selected_branch)
         confirm_button.pack(pady=10)
-
 def merge_selected_branch():
-    print('hi')
+    # 현재 디렉토리를 기반으로 레포지토리 열기
+    repo = pygit2.Repository(last_path)
+    # 브랜치 이름
+    source_branch_name = branch_combobox1.get()
+    target_branch_name = repo.head.shorthand
+    # 브랜치 가져오기
+    source_branch = repo.branches.get(source_branch_name)
+    target_branch = repo.branches.get(target_branch_name)
+    # 소스 브랜치의 커밋 가져오기
+    source_commit = repo[source_branch.target]
+    # 마스터 브랜치의 커밋 가져오기
+    target_commit = repo[target_branch.target]
+    # Merge 분석
+    result, _ = repo.merge_analysis(source_commit.id)
+
+    if result & pygit2.GIT_MERGE_ANALYSIS_UP_TO_DATE:
+        print("Already up to date")
+    elif result & pygit2.GIT_MERGE_ANALYSIS_FASTFORWARD:
+        # Fast-forward merge
+        target_branch.set_target(source_commit.id)
+        repo.reset(source_commit.id, pygit2.GIT_RESET_HARD)
+        print("Fast-forward merge")
+    else:
+        # 3-way merge
+        merge_commit_id = repo.merge(target_commit, source_commit)
+        if merge_commit_id is None:
+            print("Merge failed")
+        else:
+            print("Merge commit created: {}".format(merge_commit_id))
+    
 
 #Git branch Actions
 
