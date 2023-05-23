@@ -920,24 +920,44 @@ def checkout_branch():
         print(branches_list)
 
 
-def get_selected_branch(listbox):
-    items = listbox.curselection()
+def get_selected_branch():
+    items = branch_listbox.curselection()
     if items:
-        return listbox.get(items)
+        return branch_listbox.get(items)
     else:
         print("not selected")
 
 
-def create_branch():
+def open_create_branch_window():
+    if not check_git_repo(last_path):
+        return
+    input_window = tk.Toplevel(frame_right_branch_list)
+    input_window.title('create branch')
+    input_window.geometry("500x100")
+    input_window.geometry("+500+200")
+
+    label = tk.Label(
+        input_window, text="생성할 브랜치명을 작성해주세요 !")
+    label.pack()
+    input_entry = tk.Entry(input_window, width=30)
+    input_entry.pack()
+    input_entry.focus_set()
+    button = tk.Button(input_window, text="create",
+                       command=lambda: (create_branch(input_entry.get()), input_window.destroy()))
+    button.pack()
+
+
+def create_branch(new_branch_name):
     if check_git_repo(last_path):
         repo = pygit2.Repository(last_path)
         current_commit_id = repo.head.target
         print(repo.get(current_commit_id))
         # TODO : 사용자에게 입력받은 브랜치로 create 구현 예정
         # new_branch_name = 'new-branch'
-        # new_branch = repo.create_branch(
-        #     new_branch_name, repo.get(current_commit_id))
-        # print(new_branch)
+        new_branch = repo.create_branch(
+            new_branch_name, repo.get(current_commit_id))
+        print(new_branch)
+        update_files(last_path)
 
 
 def delete_branch():
@@ -964,7 +984,7 @@ def rename_branch():
 # Frame_right_branch_butoon
 branch_buttons = []
 create_button = tk.Button(frame_right_branch_button, text='create', width=4, height=1, relief="flat", bg="black",
-                          fg="black", command=lambda: create_branch())
+                          fg="black", command=lambda: open_create_branch_window())
 create_button.grid(column=0, row=0)
 branch_buttons.append(create_button)
 delete_button = tk.Button(frame_right_branch_button, text='delete', width=4, height=1, relief="flat", bg="black",
