@@ -912,8 +912,8 @@ def open_checkout_branch_window():
     if not check_git_repo(last_path) or not selected_branch:
         return
     checkout_window = tk.Toplevel(frame_right_branch_list)
-    checkout_window.title('checkout branch')
-    checkout_window.geometry("500x70")
+    checkout_window.title(f'checkout [{selected_branch}] branch')
+    checkout_window.geometry("500x60")
     checkout_window.geometry("+500+200")
 
     label = tk.Label(
@@ -925,13 +925,15 @@ def open_checkout_branch_window():
 
 
 def checkout_branch():
-    if check_git_repo(last_path):
+    try:
         repo = pygit2.Repository(last_path)
         selected_branch = get_selected_branch()
         if selected_branch:
             target_branch = repo.branches.get(selected_branch)
             repo.checkout(target_branch)
             update_files(last_path)
+    except:
+        open_error_window('checkout')
 
 
 def open_create_branch_window():
@@ -943,12 +945,12 @@ def open_create_branch_window():
     input_window.geometry("+500+200")
 
     label = tk.Label(
-        input_window, text="생성할 브랜치명을 작성해주세요 !")
+        input_window, text="생성할 브랜치명을 입력해주세요 !")
     label.pack()
     input_entry = tk.Entry(input_window, width=30)
     input_entry.pack()
     input_entry.focus_set()
-    button = tk.Button(input_window, text="create",
+    button = tk.Button(input_window, text="확인",
                        command=lambda: (create_branch(input_entry.get()), input_window.destroy()))
     button.pack()
 
@@ -975,7 +977,7 @@ def open_delete_branch_window():
         return
     delete_window = tk.Toplevel(frame_right_branch_list)
     delete_window.title('delete branch')
-    delete_window.geometry("500x70")
+    delete_window.geometry("500x60")
     delete_window.geometry("+500+200")
 
     label = tk.Label(
@@ -995,17 +997,34 @@ def delete_branch():
             update_files(last_path)
 
 
-def rename_branch():
+def open_rename_branch_window():
+    selected_branch = get_selected_branch()
+    if not check_git_repo(last_path) or not selected_branch:
+        return
+    input_window = tk.Toplevel(frame_right_branch_list)
+    input_window.title(f'rename [{selected_branch}] branch')
+    input_window.geometry("500x100")
+    input_window.geometry("+500+200")
+
+    label = tk.Label(
+        input_window, text="변경할 브랜치명을 입력해주세요 !")
+    label.pack()
+    input_entry = tk.Entry(input_window, width=30)
+    input_entry.pack()
+    input_entry.focus_set()
+    button = tk.Button(input_window, text="확인",
+                       command=lambda: (rename_branch(input_entry.get()), input_window.destroy()))
+    button.pack()
+
+
+def rename_branch(new_name):
     if check_git_repo(last_path):
         repo = pygit2.Repository(last_path)
-        # TODO : 사용자에게 선택한 브랜치 rename 구현 예정
-        # TODO : 사용자가 선택한 브랜치 input
-        # TODO : 사용자가 변경할 브랜치 이름 input
-
-        # selected_branch_name = 'testBranch'
-        # new_name = 'rename-branch'
-        # selected_branch = repo.branches[selected_branch_name]
-        # selected_branch.rename(new_name)
+        selected_branch = get_selected_branch()
+        if selected_branch:
+            rename_branch = repo.branches[selected_branch]
+            rename_branch.rename(new_name)
+            update_files(last_path)
 
 
 # Frame_right_branch_butoon
@@ -1023,7 +1042,7 @@ checkout_button = tk.Button(frame_right_branch_button, text='checkout', width=4,
 checkout_button.grid(column=2, row=0)
 branch_buttons.append(checkout_button)
 rename_button = tk.Button(frame_right_branch_button, text='rename', width=4, height=1, relief="flat", bg="black",
-                          fg="black", command=lambda: rename_branch())
+                          fg="black", command=lambda: open_rename_branch_window())
 rename_button.grid(column=3, row=0)
 branch_buttons.append(rename_button)
 merge_button = tk.Button(frame_right_branch_button, text='merge', width=4, height=1, relief="flat", bg="black",
@@ -1055,12 +1074,13 @@ def open_error_window(error_type):
     error_window = tk.Toplevel(window)
     error_window.title('error')
     error_window.geometry("500x50")
-    error_window.geometry("+100+200")
+    error_window.geometry("+300+200")
 
     error_text = {
         'init': 'git init 할 수 없는 디렉토리입니다',
         'add': '추가할 파일이 없습니다',
-        'commit': 'commit 할 수 있는 파일이 없습니다'
+        'commit': 'commit 할 수 있는 파일이 없습니다',
+        'checkout': 'conflict 가 발생합니다'
     }
     label = tk.Label(
         error_window, text=error_text[error_type])
