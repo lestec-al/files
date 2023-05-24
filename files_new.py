@@ -86,12 +86,34 @@ def open_git_branch_list():
             input_window, text="Merge", command=merge_selected_branch)
         confirm_button.pack(pady=10)
 
+
 def destory_merge_window():
     input_window.destroy()
     succec_window.destroy()
 
+def destroy_all_merge_window():
+    input_window.destroy()
+    succec_window.destroy()
+    abort_succec_window.destroy()
+
 def git_abort():
-    print(abort)
+    repository = pygit2.Repository(last_path)
+    repository.reset(repository.head.target, pygit2.GIT_RESET_HARD)
+    global abort_succec_window
+    abort_succec_window = tk.Toplevel(window)
+    abort_succec_window.geometry("100x150")
+    abort_succec_window.geometry("+700+300")
+    confirm_button = tk.Button(abort_succec_window,text = "확인",command=destroy_all_merge_window)
+    try:
+        repository.reset(repository.head.target, pygit2.GIT_RESET_HARD)
+        tmp = "abort 성공"
+    except pygit2.GitError as e:
+        tmp = "Failed to abort merge:" + e
+    result_label = tk.Label(abort_succec_window, text=tmp, fg="green")
+    result_label.pack(side="top")
+    confirm_button.pack(side="bottom")
+
+    
 
 def merge_selected_branch():
     global succec_window
@@ -103,7 +125,8 @@ def merge_selected_branch():
     result_label.pack()
     button_frame = tk.Frame(succec_window)
     button_frame.pack(side=tk.BOTTOM)
-    confirm_button = tk.Button(button_frame, text="확인",command=destory_merge_window)
+    confirm_button = tk.Button(
+        button_frame, text="확인", command=destory_merge_window)
     confirm_button.pack(side=tk.LEFT)
     # 현재 디렉토리를 기반으로 레포지토리 열기
     repo = pygit2.Repository(last_path)
@@ -123,25 +146,27 @@ def merge_selected_branch():
     if result & pygit2.GIT_MERGE_ANALYSIS_UP_TO_DATE:
         result_label.config(text="Already up to date")
         print("Already up to date")
-        
+
     elif result & pygit2.GIT_MERGE_ANALYSIS_FASTFORWARD:
         # Fast-forward merge
         target_branch.set_target(source_commit.id)
         repo.reset(source_commit.id, pygit2.GIT_RESET_HARD)
-        #result_label.config(text="Fast-forward merged" + "commit id : "source_commit.id)
+        # result_label.config(text="Fast-forward merged" + "commit id : "source_commit.id)
         print("Fast-forward merge")
     else:
         index = repo.merge_commits(target_commit.id, source_commit.id)
         conflicts = index.conflicts
         if conflicts:
-            abort_button = tk.Button(button_frame, text="abort",command=git_abort)
+            abort_button = tk.Button(
+                button_frame, text="abort", command=git_abort)
             abort_button.pack(side=tk.RIGHT)
             repo.merge(source_commit.id)
             result_label.config(text="Conflict 발생", fg="red")
 
             for conflict in index.conflicts:
                 path = conflict[0]  # Conflict file path
-                conflict_label = tk.Label(succec_window, text="Conflict in file: {}".format(path.path), fg="red")
+                conflict_label = tk.Label(
+                    succec_window, text="Conflict in file: {}".format(path.path), fg="red")
                 conflict_label.pack()  # 충돌 라벨을 윈도우에 추가
                 print("Conflict in file:", path)
                 print("File:", path)
