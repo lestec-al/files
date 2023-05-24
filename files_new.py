@@ -894,9 +894,11 @@ branch_label.pack(fill="x")
 my_font = font.Font(size=18)
 branch_listbox = tk.Listbox(frame_right_branch_list, font=my_font)
 branch_listbox.pack()
-
+branch_listbox.bind("<Double-Button-1>", lambda event: checkout_branch())
 
 # local branch 목록 frame_right_branch_list에 띄우기
+
+
 def get_branch_list():
     if check_git_repo(last_path):
         repo = pygit2.Repository(last_path)
@@ -917,6 +919,8 @@ def get_selected_branch():
         return branch_listbox.get(items)
     else:
         return ''
+
+# branch delete, checkout 중복제거
 
 
 def open_label_window(command_type):
@@ -950,26 +954,47 @@ def open_label_window(command_type):
 
     button.pack()
     label_window.bind('<Escape>', lambda event: label_window.destroy())
+    label_window.bind('<Return>', lambda event: button.invoke())
 
 
-def open_create_branch_window():
-    if not check_git_repo(last_path):
+# branch create, rename 중복제거
+def open_input_window(command_type):
+    selected_branch = get_selected_branch()
+    if command_type == 'create':
+        selected_branch = ' '
+    if not check_git_repo(last_path) or not selected_branch:
         return
+
+    title_text = {
+        'create': f'create new branch',
+        'rename': f'rename [{selected_branch}] branch',
+    }
+    label_text = {
+        'create': f'생성할 브랜치명을 입력해주세요 !',
+        'rename': f'변경할 브랜치명을 입력해주세요 !',
+    }
+    command = {
+        'create': create_branch,
+        'rename': rename_branch,
+    }
+
     input_window = tk.Toplevel(frame_right_branch_list)
-    input_window.title('create branch')
+    input_window.title(title_text[command_type])
     input_window.geometry("500x100")
     input_window.geometry("+500+200")
 
     label = tk.Label(
-        input_window, text="생성할 브랜치명을 입력해주세요 !")
+        input_window, text=label_text[command_type])
     label.pack()
     input_entry = tk.Entry(input_window, width=30)
     input_entry.pack()
     input_entry.focus_set()
     button = tk.Button(input_window, text="확인",
-                       command=lambda: (create_branch(input_entry.get()), input_window.destroy()))
+                       command=lambda: (command[command_type](input_entry.get()), input_window.destroy()))
+
     button.pack()
     input_window.bind('<Escape>', lambda event: input_window.destroy())
+    input_window.bind('<Return>', lambda event: button.invoke())
 
 
 def create_branch(new_branch_name):
@@ -982,7 +1007,6 @@ def create_branch(new_branch_name):
 
 def delete_branch():
     if check_git_repo(last_path):
-        print("delete????")
         repo = pygit2.Repository(last_path)
         delete_branch = get_selected_branch()
         if delete_branch:
@@ -1002,27 +1026,6 @@ def checkout_branch():
         open_error_window('checkout')
 
 
-def open_rename_branch_window():
-    selected_branch = get_selected_branch()
-    if not check_git_repo(last_path) or not selected_branch:
-        return
-    input_window = tk.Toplevel(frame_right_branch_list)
-    input_window.title(f'rename [{selected_branch}] branch')
-    input_window.geometry("500x100")
-    input_window.geometry("+500+200")
-
-    label = tk.Label(
-        input_window, text="변경할 브랜치명을 입력해주세요 !")
-    label.pack()
-    input_entry = tk.Entry(input_window, width=30)
-    input_entry.pack()
-    input_entry.focus_set()
-    button = tk.Button(input_window, text="확인",
-                       command=lambda: (rename_branch(input_entry.get()), input_window.destroy()))
-    button.pack()
-    input_window.bind('<Escape>', lambda event: input_window.destroy())
-
-
 def rename_branch(new_name):
     if check_git_repo(last_path):
         repo = pygit2.Repository(last_path)
@@ -1036,7 +1039,7 @@ def rename_branch(new_name):
 # Frame_right_branch_butoon
 branch_buttons = []
 create_button = tk.Button(frame_right_branch_button, text='create', width=4, height=1, relief="flat", bg="black",
-                          fg="black", command=lambda: open_create_branch_window())
+                          fg="black", command=lambda: open_input_window('create'))
 create_button.grid(column=0, row=0)
 branch_buttons.append(create_button)
 delete_button = tk.Button(frame_right_branch_button, text='delete', width=4, height=1, relief="flat", bg="black",
@@ -1048,7 +1051,7 @@ checkout_button = tk.Button(frame_right_branch_button, text='checkout', width=4,
 checkout_button.grid(column=2, row=0)
 branch_buttons.append(checkout_button)
 rename_button = tk.Button(frame_right_branch_button, text='rename', width=4, height=1, relief="flat", bg="black",
-                          fg="black", command=lambda: open_rename_branch_window())
+                          fg="black", command=lambda: open_input_window('rename'))
 rename_button.grid(column=3, row=0)
 branch_buttons.append(rename_button)
 merge_button = tk.Button(frame_right_branch_button, text='merge', width=4, height=1, relief="flat", bg="black",
