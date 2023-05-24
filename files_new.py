@@ -1,5 +1,6 @@
 import os
 import stat
+from tkinter import font
 import pygit2
 import re
 import sys
@@ -942,6 +943,8 @@ def update_files(orig_dirname: str):
                     tree.see(item)
                     break
 
+        get_branch_list()
+
     except Exception as e:
         tk.messagebox.showerror(title="Error", message=str(e))
 
@@ -993,17 +996,18 @@ frame_right.pack(fill="both", side="right")
 
 frame_up = tk.Frame(frame_left, border=1, bg="white")
 frame_up.pack(fill="x", side="top")
+
 frame_right_branch = tk.Frame(frame_right, border=1, bg="white")
 frame_right_branch.pack(fill="both", side="left")
 frame_right_history = tk.Frame(frame_right, border=1, bg="white")
 frame_right_history.pack(fill="both", side="right")
 
 frame_right_branch_list = tk.Frame(
-    frame_right_branch, border=1, bg="yellow", width=300, height=500)
-frame_right_branch_list.pack(side="top")
+    frame_right_branch, border=1, bg="#3c3c3c", width=300, height=500)
+frame_right_branch_list.pack(side="top", fill="x")
 frame_right_branch_button = tk.Frame(
-    frame_right_branch, border=1, bg="white", width=300, height=100)
-frame_right_branch_button.pack(side="bottom")
+    frame_right_branch, bg="white", width=300, height=100)
+frame_right_branch_button.pack(side="top")
 frame_right_history_graph = tk.Frame(
     frame_right_history, border=1, bg="green", width=300, height=500)
 frame_right_history_graph.grid(column=0, row=0)
@@ -1011,28 +1015,177 @@ frame_right_history_detail = tk.Frame(
     frame_right_history, border=1, bg="blue", width=300, height=200)
 frame_right_history_detail.grid(column=0, row=1)
 
+branch_label = tk.Label(
+    frame_right_branch_list, text="브랜치 목록")
+branch_label.pack(fill="x")
+my_font = font.Font(size=18)
+branch_listbox = tk.Listbox(frame_right_branch_list, font=my_font)
+branch_listbox.pack()
+branch_listbox.bind("<Double-Button-1>", lambda event: checkout_branch())
+
+
+# branch 관련 이벤트(eventListner)
+
+# local branch 목록 frame_right_branch_list에 띄우기
+def get_branch_list():
+    if check_git_repo(last_path):
+        repo = pygit2.Repository(last_path)
+        branches = list(repo.branches.local)
+        branch_listbox.delete(0, tk.END)
+        for idx, branch in enumerate(branches):
+            branch_listbox.insert(tk.END, branch)
+            if branch == repo.head.shorthand:
+                branch_listbox.itemconfigure(idx, fg='#5CE75C')
+    else:
+        branch_listbox.delete(0, tk.END)
+
+
+# local branch 목록 중 선택된 브랜치 이름 가져오기
+def get_selected_branch():
+    items = branch_listbox.curselection()
+    if items:
+        return branch_listbox.get(items)
+    else:
+        return ''
+
+
+# branch delete, checkout를 label window로 중복제거
+def open_label_window(command_type):
+    selected_branch = get_selected_branch()
+    if not check_git_repo(last_path) or not selected_branch:
+        return
+
+    title_text = {
+        'delete': f'delete [{selected_branch}] branch',
+        'checkout': f'checkout [{selected_branch}] branch',
+    }
+    label_text = {
+        'delete': f'{selected_branch} branch를 삭제하시겠습니까?',
+        'checkout': f'{selected_branch} branch로 checkout 하시겠습니까?',
+    }
+    command = {
+        'delete': delete_branch,
+        'checkout': checkout_branch,
+    }
+
+    label_window = tk.Toplevel(frame_right_branch_list)
+    label_window.title(title_text[command_type])
+    label_window.geometry("500x60")
+    label_window.geometry("+500+200")
+
+    label = tk.Label(
+        label_window, text=label_text[command_type])
+    label.pack()
+    button = tk.Button(label_window, text="확인",
+                       command=lambda: (command[command_type](), label_window.destroy()))
+
+    button.pack()
+    label_window.bind('<Escape>', lambda event: label_window.destroy())
+    label_window.bind('<Return>', lambda event: button.invoke())
+
+
+# branch create, rename 를 input window 로 중복제거
+def open_input_window(command_type):
+    selected_branch = get_selected_branch()
+    if command_type == 'create':
+        selected_branch = ' '
+    if not check_git_repo(last_path) or not selected_branch:
+        return
+
+    title_text = {
+        'create': f'create new branch',
+        'rename': f'rename [{selected_branch}] branch',
+    }
+    label_text = {
+        'create': f'생성할 브랜치명을 입력해주세요 !',
+        'rename': f'변경할 브랜치명을 입력해주세요 !',
+    }
+    command = {
+        'create': create_branch,
+        'rename': rename_branch,
+    }
+
+    input_window = tk.Toplevel(frame_right_branch_list)
+    input_window.title(title_text[command_type])
+    input_window.geometry("500x100")
+    input_window.geometry("+500+200")
+
+    label = tk.Label(
+        input_window, text=label_text[command_type])
+    label.pack()
+    input_entry = tk.Entry(input_window, width=30)
+    input_entry.pack()
+    input_entry.focus_set()
+    button = tk.Button(input_window, text="확인",
+                       command=lambda: (command[command_type](input_entry.get()), input_window.destroy()))
+
+    button.pack()
+    input_window.bind('<Escape>', lambda event: input_window.destroy())
+    input_window.bind('<Return>', lambda event: button.invoke())
+
+
+def create_branch(new_branch_name):
+    if check_git_repo(last_path):
+        repo = pygit2.Repository(last_path)
+        current_commit_id = repo.head.target
+        repo.create_branch(new_branch_name, repo.get(current_commit_id))
+        update_files(last_path)
+
+
+def delete_branch():
+    if check_git_repo(last_path):
+        repo = pygit2.Repository(last_path)
+        delete_branch = get_selected_branch()
+        if delete_branch:
+            repo.branches.delete(delete_branch)
+            update_files(last_path)
+
+
+def checkout_branch():
+    try:
+        repo = pygit2.Repository(last_path)
+        selected_branch = get_selected_branch()
+        if selected_branch:
+            target_branch = repo.branches.get(selected_branch)
+            repo.checkout(target_branch)
+            update_files(last_path)
+    except:
+        open_error_window('checkout')
+
+
+def rename_branch(new_name):
+    if check_git_repo(last_path):
+        repo = pygit2.Repository(last_path)
+        selected_branch = get_selected_branch()
+        if selected_branch:
+            rename_branch = repo.branches[selected_branch]
+            rename_branch.rename(new_name)
+            update_files(last_path)
+
+
 # Frame_right_branch_butoon
 branch_buttons = []
 create_button = tk.Button(frame_right_branch_button, text='create', width=4, height=1, relief="flat", bg="black",
-                          fg="black", command=lambda: update_files(last_path))
+                          fg="black", command=lambda: open_input_window('create'))
 create_button.grid(column=0, row=0)
 branch_buttons.append(create_button)
 delete_button = tk.Button(frame_right_branch_button, text='delete', width=4, height=1, relief="flat", bg="black",
-                          fg="black", command=lambda: update_files(last_path))
+                          fg="black", command=lambda: open_label_window('delete'))
 delete_button.grid(column=1, row=0)
 branch_buttons.append(delete_button)
-rename_button = tk.Button(frame_right_branch_button, text='rename', width=4, height=1, relief="flat", bg="black",
-                          fg="black", command=lambda: update_files(last_path))
-rename_button.grid(column=2, row=0)
-branch_buttons.append(rename_button)
 checkout_button = tk.Button(frame_right_branch_button, text='checkout', width=4, height=1, relief="flat", bg="black",
-                            fg="black", command=lambda: update_files(last_path))
-checkout_button.grid(column=3, row=0)
+                            fg="black", command=lambda: open_label_window('checkout'))
+checkout_button.grid(column=2, row=0)
 branch_buttons.append(checkout_button)
+rename_button = tk.Button(frame_right_branch_button, text='rename', width=4, height=1, relief="flat", bg="black",
+                          fg="black", command=lambda: open_input_window('rename'))
+rename_button.grid(column=3, row=0)
+branch_buttons.append(rename_button)
 merge_button = tk.Button(frame_right_branch_button, text='merge', width=4, height=1, relief="flat", bg="black",
-                         fg="black", command=lambda: open_git_branch_list())
+                         fg="black", command=lambda: update_files(last_path))
 merge_button.grid(column=4, row=0)
 branch_buttons.append(merge_button)
+
 # Top of window
 folder_icon_list = [tk.PhotoImage(file="data/icon_folder.png"), tk.PhotoImage(file="data/icon_folder_unstaged.png"),
                     tk.PhotoImage(file="data/icon_folder_staged.png"), tk.PhotoImage(file="data/icon_folder_both.png")]
@@ -1057,12 +1210,13 @@ def open_error_window(error_type):
     error_window = tk.Toplevel(window)
     error_window.title('error')
     error_window.geometry("500x50")
-    error_window.geometry("+100+200")
+    error_window.geometry("+300+200")
 
     error_text = {
         'init': 'git init 할 수 없는 디렉토리입니다',
         'add': '추가할 파일이 없습니다',
-        'commit': 'commit 할 수 있는 파일이 없습니다'
+        'commit': 'commit 할 수 있는 파일이 없습니다',
+        'checkout': 'conflict 가 발생합니다'
     }
     label = tk.Label(
         error_window, text=error_text[error_type])
