@@ -901,8 +901,10 @@ def get_branch_list():
         repo = pygit2.Repository(last_path)
         branches = list(repo.branches.local)
         branch_listbox.delete(0, tk.END)
-        for branch in branches:
+        for idx, branch in enumerate(branches):
             branch_listbox.insert(tk.END, branch)
+            if branch == repo.head.shorthand:
+                branch_listbox.itemconfigure(idx, fg='red')
     else:
         branch_listbox.delete(0, tk.END)
 
