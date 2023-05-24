@@ -59,11 +59,14 @@ icon_status_dict = {
     16384: 0,
     32768: 0
 }
+
+
 def open_git_branch_list():
+    global input_window
     input_window = tk.Toplevel(window)
     input_window.title('branch list for merge')
     input_window.geometry("500x150")
-    input_window.geometry("+100+200")
+    input_window.geometry("+500+300")
     if check_git_repo(last_path):
         repository = pygit2.Repository(last_path)  # 저장소 경로 설정
         current_branch = repository.head.shorthand  # 현재 브랜치 확인
@@ -79,9 +82,24 @@ def open_git_branch_list():
         branch_label2.pack(fill=tk.BOTH)
         # Create a confirmation button
         selected_branch = branch_combobox1.get()
-        confirm_button = ttk.Button(input_window, text="Merge", command=merge_selected_branch)
+        confirm_button = ttk.Button(
+            input_window, text="Merge", command=merge_selected_branch)
         confirm_button.pack(pady=10)
+
+def destory_merge_window():
+    input_window.destroy()
+    succec_window.destroy()
+
 def merge_selected_branch():
+    global succec_window
+    succec_window = tk.Toplevel(window)
+    succec_window.geometry("300x150")
+    succec_window.geometry("+600+300")
+    # 성공 여부를 표시할 Label 생성
+    result_label = tk.Label(succec_window, text="앙", fg="green")
+    result_label.pack()
+    confirm_button = tk.Button(succec_window, text="확인",command=destory_merge_window)
+    confirm_button.pack()
     # 현재 디렉토리를 기반으로 레포지토리 열기
     repo = pygit2.Repository(last_path)
     # 브랜치 이름
@@ -98,37 +116,44 @@ def merge_selected_branch():
     result, _ = repo.merge_analysis(source_commit.id)
 
     if result & pygit2.GIT_MERGE_ANALYSIS_UP_TO_DATE:
+        result_label.config(text="Already up to date")
         print("Already up to date")
+        
     elif result & pygit2.GIT_MERGE_ANALYSIS_FASTFORWARD:
         # Fast-forward merge
         target_branch.set_target(source_commit.id)
         repo.reset(source_commit.id, pygit2.GIT_RESET_HARD)
+        #result_label.config(text="Fast-forward merged" + "commit id : "source_commit.id)
         print("Fast-forward merge")
     else:
-        #merge_result = repo.merge(source_commit.id)
-        index = repo.merge_commits(target_commit.id,source_commit.id)
+        # merge_result = repo.merge(source_commit.id)
+        index = repo.merge_commits(target_commit.id, source_commit.id)
         conflicts = index.conflicts
         if conflicts:
+            result_label.config(text="Conflict 발생", fg="red")
             for conflict in index.conflicts:
                 path = conflict[0]  # Conflict file path
+                conflict_label = tk.Label(succec_window, text="Conflict in file: {}".format(path), fg="red")
+                conflict_label.pack()  # 충돌 라벨을 윈도우에 추가
+                print("Conflict in file:", path)
                 print("File:", path)
         else:
             # 머지 성공 시, 머지 커밋 생성
             committer = pygit2.Signature('Your Name', 'youremail@example.com')
             merge_commit = repo.create_commit(
-                'HEAD',                          
-                committer,                       
-                committer,                       
-                'Merge branch {} into {}'.format(source_branch_name, target_branch_name),
+                'HEAD',
+                committer,
+                committer,
+                'Merge branch {} into {}'.format(
+                    source_branch_name, target_branch_name),
                 index.write_tree(repo),
-            [target_branch.target, source_branch.target]
+                [target_branch.target, source_branch.target]
             )
             print('Merge commit created:', merge_commit)
             repo.reset(merge_commit.hex, pygit2.GIT_RESET_HARD)
 
-    
 
-#Git branch Actions
+# Git branch Actions
 
 # Interface
 def git_restore():
@@ -935,40 +960,44 @@ frame_right.pack(fill="both", side="right")
 
 frame_up = tk.Frame(frame_left, border=1, bg="white")
 frame_up.pack(fill="x", side="top")
-frame_right_branch = tk.Frame(frame_right, border =1,bg="white")
+frame_right_branch = tk.Frame(frame_right, border=1, bg="white")
 frame_right_branch.pack(fill="both", side="left")
 frame_right_history = tk.Frame(frame_right, border=1, bg="white")
 frame_right_history.pack(fill="both", side="right")
 
-frame_right_branch_list = tk.Frame(frame_right_branch, border=1, bg="yellow",width=300,height=500)
+frame_right_branch_list = tk.Frame(
+    frame_right_branch, border=1, bg="yellow", width=300, height=500)
 frame_right_branch_list.pack(side="top")
-frame_right_branch_button = tk.Frame(frame_right_branch, border =1 ,bg="white",width= 300, height= 100)
+frame_right_branch_button = tk.Frame(
+    frame_right_branch, border=1, bg="white", width=300, height=100)
 frame_right_branch_button.pack(side="bottom")
-frame_right_history_graph = tk.Frame(frame_right_history, border=1, bg="green", width=300, height=500)
-frame_right_history_graph.grid(column= 0 , row=0)
-frame_right_history_detail = tk.Frame(frame_right_history, border=1, bg="blue", width=300, height=200)
-frame_right_history_detail.grid(column= 0 ,row=1)
+frame_right_history_graph = tk.Frame(
+    frame_right_history, border=1, bg="green", width=300, height=500)
+frame_right_history_graph.grid(column=0, row=0)
+frame_right_history_detail = tk.Frame(
+    frame_right_history, border=1, bg="blue", width=300, height=200)
+frame_right_history_detail.grid(column=0, row=1)
 
-#Frame_right_branch_butoon
+# Frame_right_branch_butoon
 branch_buttons = []
 create_button = tk.Button(frame_right_branch_button, text='create', width=4, height=1, relief="flat", bg="black",
-                        fg="black", command=lambda: update_files(last_path))
+                          fg="black", command=lambda: update_files(last_path))
 create_button.grid(column=0, row=0)
 branch_buttons.append(create_button)
 delete_button = tk.Button(frame_right_branch_button, text='delete', width=4, height=1, relief="flat", bg="black",
-                        fg="black", command=lambda: update_files(last_path))
+                          fg="black", command=lambda: update_files(last_path))
 delete_button.grid(column=1, row=0)
 branch_buttons.append(delete_button)
 rename_button = tk.Button(frame_right_branch_button, text='rename', width=4, height=1, relief="flat", bg="black",
-                        fg="black", command=lambda: update_files(last_path))
+                          fg="black", command=lambda: update_files(last_path))
 rename_button.grid(column=2, row=0)
 branch_buttons.append(rename_button)
 checkout_button = tk.Button(frame_right_branch_button, text='checkout', width=4, height=1, relief="flat", bg="black",
-                        fg="black", command=lambda: update_files(last_path))
+                            fg="black", command=lambda: update_files(last_path))
 checkout_button.grid(column=3, row=0)
 branch_buttons.append(checkout_button)
 merge_button = tk.Button(frame_right_branch_button, text='merge', width=4, height=1, relief="flat", bg="black",
-                        fg="black", command=lambda: open_git_branch_list())
+                         fg="black", command=lambda: open_git_branch_list())
 merge_button.grid(column=4, row=0)
 branch_buttons.append(merge_button)
 # Top of window
