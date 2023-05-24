@@ -896,9 +896,10 @@ branch_listbox = tk.Listbox(frame_right_branch_list, font=my_font)
 branch_listbox.pack()
 branch_listbox.bind("<Double-Button-1>", lambda event: checkout_branch())
 
+
+# branch 관련 이벤트(eventListner)
+
 # local branch 목록 frame_right_branch_list에 띄우기
-
-
 def get_branch_list():
     if check_git_repo(last_path):
         repo = pygit2.Repository(last_path)
@@ -920,9 +921,8 @@ def get_selected_branch():
     else:
         return ''
 
-# branch delete, checkout 중복제거
 
-
+# branch delete, checkout를 label window로 중복제거
 def open_label_window(command_type):
     selected_branch = get_selected_branch()
     if not check_git_repo(last_path) or not selected_branch:
@@ -957,7 +957,7 @@ def open_label_window(command_type):
     label_window.bind('<Return>', lambda event: button.invoke())
 
 
-# branch create, rename 중복제거
+# branch create, rename 를 input window 로 중복제거
 def open_input_window(command_type):
     selected_branch = get_selected_branch()
     if command_type == 'create':
