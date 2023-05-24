@@ -896,6 +896,7 @@ branch_listbox = tk.Listbox(frame_right_branch_list, font=my_font)
 branch_listbox.pack()
 
 
+# local branch 목록 frame_right_branch_list에 띄우기
 def get_branch_list():
     if check_git_repo(last_path):
         repo = pygit2.Repository(last_path)
@@ -904,38 +905,51 @@ def get_branch_list():
         for idx, branch in enumerate(branches):
             branch_listbox.insert(tk.END, branch)
             if branch == repo.head.shorthand:
-                branch_listbox.itemconfigure(idx, fg='red')
+                branch_listbox.itemconfigure(idx, fg='#5CE75C')
     else:
         branch_listbox.delete(0, tk.END)
 
 
-def open_checkout_branch_window():
+# local branch 목록 중 선택된 브랜치 이름 가져오기
+def get_selected_branch():
+    items = branch_listbox.curselection()
+    if items:
+        return branch_listbox.get(items)
+    else:
+        return ''
+
+
+def open_label_window(command_type):
     selected_branch = get_selected_branch()
     if not check_git_repo(last_path) or not selected_branch:
         return
-    checkout_window = tk.Toplevel(frame_right_branch_list)
-    checkout_window.title(f'checkout [{selected_branch}] branch')
-    checkout_window.geometry("500x60")
-    checkout_window.geometry("+500+200")
+
+    title_text = {
+        'delete': f'delete [{selected_branch}] branch',
+        'checkout': f'checkout [{selected_branch}] branch',
+    }
+    label_text = {
+        'delete': f'{selected_branch} branch를 삭제하시겠습니까?',
+        'checkout': f'{selected_branch} branch로 checkout 하시겠습니까?',
+    }
+    command = {
+        'delete': delete_branch,
+        'checkout': checkout_branch,
+    }
+
+    label_window = tk.Toplevel(frame_right_branch_list)
+    label_window.title(title_text[command_type])
+    label_window.geometry("500x60")
+    label_window.geometry("+500+200")
 
     label = tk.Label(
-        checkout_window, text=f"{selected_branch} branch로 checkout 하시겠습니까?")
+        label_window, text=label_text[command_type])
     label.pack()
-    button = tk.Button(checkout_window, text="확인",
-                       command=lambda: (checkout_branch(), checkout_window.destroy()))
+    button = tk.Button(label_window, text="확인",
+                       command=lambda: (command[command_type](), label_window.destroy()))
+
     button.pack()
-
-
-def checkout_branch():
-    try:
-        repo = pygit2.Repository(last_path)
-        selected_branch = get_selected_branch()
-        if selected_branch:
-            target_branch = repo.branches.get(selected_branch)
-            repo.checkout(target_branch)
-            update_files(last_path)
-    except:
-        open_error_window('checkout')
+    label_window.bind('<Escape>', lambda event: label_window.destroy())
 
 
 def open_create_branch_window():
@@ -955,6 +969,7 @@ def open_create_branch_window():
     button = tk.Button(input_window, text="확인",
                        command=lambda: (create_branch(input_entry.get()), input_window.destroy()))
     button.pack()
+    input_window.bind('<Escape>', lambda event: input_window.destroy())
 
 
 def create_branch(new_branch_name):
@@ -965,38 +980,26 @@ def create_branch(new_branch_name):
         update_files(last_path)
 
 
-def get_selected_branch():
-    items = branch_listbox.curselection()
-    if items:
-        return branch_listbox.get(items)
-    else:
-        return ''
-
-
-def open_delete_branch_window():
-    selected_branch = get_selected_branch()
-    if not check_git_repo(last_path) or not selected_branch:
-        return
-    delete_window = tk.Toplevel(frame_right_branch_list)
-    delete_window.title('delete branch')
-    delete_window.geometry("500x60")
-    delete_window.geometry("+500+200")
-
-    label = tk.Label(
-        delete_window, text=f"{selected_branch} branch를 삭제하시겠습니까?")
-    label.pack()
-    button = tk.Button(delete_window, text="확인",
-                       command=lambda: (delete_branch(), delete_window.destroy()))
-    button.pack()
-
-
 def delete_branch():
     if check_git_repo(last_path):
+        print("delete????")
         repo = pygit2.Repository(last_path)
         delete_branch = get_selected_branch()
         if delete_branch:
             repo.branches.delete(delete_branch)
             update_files(last_path)
+
+
+def checkout_branch():
+    try:
+        repo = pygit2.Repository(last_path)
+        selected_branch = get_selected_branch()
+        if selected_branch:
+            target_branch = repo.branches.get(selected_branch)
+            repo.checkout(target_branch)
+            update_files(last_path)
+    except:
+        open_error_window('checkout')
 
 
 def open_rename_branch_window():
@@ -1017,6 +1020,7 @@ def open_rename_branch_window():
     button = tk.Button(input_window, text="확인",
                        command=lambda: (rename_branch(input_entry.get()), input_window.destroy()))
     button.pack()
+    input_window.bind('<Escape>', lambda event: input_window.destroy())
 
 
 def rename_branch(new_name):
@@ -1036,11 +1040,11 @@ create_button = tk.Button(frame_right_branch_button, text='create', width=4, hei
 create_button.grid(column=0, row=0)
 branch_buttons.append(create_button)
 delete_button = tk.Button(frame_right_branch_button, text='delete', width=4, height=1, relief="flat", bg="black",
-                          fg="black", command=lambda: open_delete_branch_window())
+                          fg="black", command=lambda: open_label_window('delete'))
 delete_button.grid(column=1, row=0)
 branch_buttons.append(delete_button)
 checkout_button = tk.Button(frame_right_branch_button, text='checkout', width=4, height=1, relief="flat", bg="black",
-                            fg="black", command=lambda: open_checkout_branch_window())
+                            fg="black", command=lambda: open_label_window('checkout'))
 checkout_button.grid(column=2, row=0)
 branch_buttons.append(checkout_button)
 rename_button = tk.Button(frame_right_branch_button, text='rename', width=4, height=1, relief="flat", bg="black",
