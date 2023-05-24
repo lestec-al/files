@@ -90,6 +90,9 @@ def destory_merge_window():
     input_window.destroy()
     succec_window.destroy()
 
+def git_abort():
+    print(abort)
+
 def merge_selected_branch():
     global succec_window
     succec_window = tk.Toplevel(window)
@@ -98,8 +101,10 @@ def merge_selected_branch():
     # 성공 여부를 표시할 Label 생성
     result_label = tk.Label(succec_window, text="앙", fg="green")
     result_label.pack()
-    confirm_button = tk.Button(succec_window, text="확인",command=destory_merge_window)
-    confirm_button.pack()
+    button_frame = tk.Frame(succec_window)
+    button_frame.pack(side=tk.BOTTOM)
+    confirm_button = tk.Button(button_frame, text="확인",command=destory_merge_window)
+    confirm_button.pack(side=tk.LEFT)
     # 현재 디렉토리를 기반으로 레포지토리 열기
     repo = pygit2.Repository(last_path)
     # 브랜치 이름
@@ -126,14 +131,17 @@ def merge_selected_branch():
         #result_label.config(text="Fast-forward merged" + "commit id : "source_commit.id)
         print("Fast-forward merge")
     else:
-        # merge_result = repo.merge(source_commit.id)
         index = repo.merge_commits(target_commit.id, source_commit.id)
         conflicts = index.conflicts
         if conflicts:
+            abort_button = tk.Button(button_frame, text="abort",command=git_abort)
+            abort_button.pack(side=tk.RIGHT)
+            repo.merge(source_commit.id)
             result_label.config(text="Conflict 발생", fg="red")
+
             for conflict in index.conflicts:
                 path = conflict[0]  # Conflict file path
-                conflict_label = tk.Label(succec_window, text="Conflict in file: {}".format(path), fg="red")
+                conflict_label = tk.Label(succec_window, text="Conflict in file: {}".format(path.path), fg="red")
                 conflict_label.pack()  # 충돌 라벨을 윈도우에 추가
                 print("Conflict in file:", path)
                 print("File:", path)
