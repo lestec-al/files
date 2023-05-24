@@ -4,10 +4,6 @@ from tkinter import ttk
 import pygit2
 
 
-# Git 리포지토리 경로 / for test
-# repo_path = "/Users/wh/Documents/Zoom/OSS-file-manager"
-
-
 # 커밋 히스토리 그래프 생성 함수
 def draw_commit_history_ui(top_frame):
     ###########################################################################
@@ -49,6 +45,7 @@ def draw_commit_history_ui(top_frame):
     content_frame.pack(fill="both", expand=True)
     canvas.create_window((0, 0), window=content_frame, anchor="nw")
 
+    # 스크롤 기능 구현해야함! wh/할일
     def configure_canvas(event):
         canvas.configure(scrollregion=canvas.bbox("all"))
 
@@ -59,19 +56,19 @@ def draw_commit_history_ui(top_frame):
 
 def draw_commit_history(tree, canvas, repo_path):
     ###########################################################################
-    # LOGIG / tree, canvas, repo
+    # LOGIG / tree, canvas, repo -> clear + draw -> update
     ###########################################################################
-
-    # Git 리포지토리 열기 (레포 객체의 레퍼런스를 직접 받거나 path를 받을 수있음)
-    # repo_path = "/Users/wh/Documents/Zoom/OSS-file-manager"
 
     # tree, canvas 초기화
     for item in tree.get_children():
         tree.delete(item)
     canvas.delete("all")
 
+    # Git 리포지토리 열기 path를 전달받아 객체 생성
+    #
     try:
         repo = pygit2.Repository(repo_path)
+        walk_object = repo.walk(repo.head.target, pygit2.GIT_SORT_TOPOLOGICAL | pygit2.GIT_SORT_TIME)
     except pygit2.GitError:
         return
 
@@ -79,7 +76,7 @@ def draw_commit_history(tree, canvas, repo_path):
     row_height = 20
 
     commits = []  # 커밋 객체 리스트
-    for row, commit in enumerate(repo.walk(repo.head.target, pygit2.GIT_SORT_TOPOLOGICAL | pygit2.GIT_SORT_TIME)):
+    for row, commit in enumerate(walk_object):
         commits.append(commit)  # 커밋 ID를 행 번호로 등록
 
     parent_list = deque()
