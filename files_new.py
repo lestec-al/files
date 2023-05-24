@@ -1182,7 +1182,7 @@ rename_button = tk.Button(frame_right_branch_button, text='rename', width=4, hei
 rename_button.grid(column=3, row=0)
 branch_buttons.append(rename_button)
 merge_button = tk.Button(frame_right_branch_button, text='merge', width=4, height=1, relief="flat", bg="black",
-                         fg="black", command=lambda: update_files(last_path))
+                         fg="black", command=open_git_branch_list)
 merge_button.grid(column=4, row=0)
 branch_buttons.append(merge_button)
 
