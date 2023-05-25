@@ -16,6 +16,7 @@ from tkinter import filedialog
 from pathlib import Path
 from ftplib import FTP
 from send2trash import send2trash
+import history_graph
 
 # git status dictionary
 git_status_dict = {
@@ -231,7 +232,7 @@ def git_rm_cached():
         try:
             repo = pygit2.Repository(last_path)
             repo.index.remove(get_relative_repo_path(
-                last_path, repo)+g_current_item)
+                last_path, repo) + g_current_item)
             repo.index.write()
         except KeyError as e:
             print("Failed to remove file: ", e)
@@ -760,7 +761,6 @@ def update_files(orig_dirname: str):
         files_list, dirs_list = [], []
         if ftp == None:
             files = os.scandir(dirname)
-            git_repo = pygit2.Repository()
             is_repo_exist, git_repo = update_git_repo(dirname)
 
             for f in files:
@@ -944,6 +944,7 @@ def update_files(orig_dirname: str):
                     break
 
         get_branch_list()
+        history_graph.draw_commit_history(graph_tree, graph_canvas, last_path)
 
     except Exception as e:
         tk.messagebox.showerror(title="Error", message=str(e))
@@ -990,9 +991,8 @@ window.minsize(width=800, height=500)
 frame_left = tk.Frame(window, border=1, bg="white")
 frame_left.pack(fill="both", side="left", expand=True)
 
-frame_right = tk.Frame(window,  bg="white")
+frame_right = tk.Frame(window, bg="white")
 frame_right.pack(fill="both", side="right")
-
 
 frame_up = tk.Frame(frame_left, border=1, bg="white")
 frame_up.pack(fill="x", side="top")
@@ -1011,6 +1011,8 @@ frame_right_branch_button.pack(side="top")
 frame_right_history_graph = tk.Frame(
     frame_right_history, border=1, bg="green", width=300, height=500)
 frame_right_history_graph.grid(column=0, row=0)
+graph_tree, graph_canvas = history_graph.draw_commit_history_ui(frame_right_history_graph)
+
 frame_right_history_detail = tk.Frame(
     frame_right_history, border=1, bg="blue", width=300, height=200)
 frame_right_history_detail.grid(column=0, row=1)
@@ -1422,7 +1424,7 @@ tree.bind("<Down>", lambda event: up_down_focus())
 tree.bind("<Delete>", lambda event: delete())
 tree.bind("<Control-c>", lambda event: copy())
 tree.bind("<Control-v>", lambda event: paste()
-          if right_menu.entrycget(index=5, option="state") == "normal" else None)
+if right_menu.entrycget(index=5, option="state") == "normal" else None)
 entry.bind("<Return>", lambda event: update_files(entry.get()))
 entry.bind("<KP_Enter>", lambda event: update_files(entry.get()))
 window.mainloop()
