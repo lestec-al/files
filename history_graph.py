@@ -1,3 +1,4 @@
+import datetime
 import tkinter as tk
 from collections import deque
 from tkinter import ttk
@@ -25,9 +26,11 @@ def draw_commit_history_ui(top_frame):
     scrollbar_right.pack(side="right", fill="y")
 
     # Treeview 생성
-    tree = ttk.Treeview(right, columns=("#0"), selectmode="extended", show="tree headings")
-    tree.heading("#0", text="commit", anchor="w")
-    tree.column("#0", anchor="e", stretch=False, width=300)
+    tree = ttk.Treeview(right, columns=("#1"), selectmode="extended", show="tree headings")
+    tree.heading("#0", text="configuration", anchor="w")
+    tree.heading("#1", text="content", anchor="w")
+    tree.column("#0", anchor="e", stretch=False, width=100)
+    tree.column("#1", anchor="e", stretch=True)
     tree.pack(side="left", fill="y")
 
     # 캔버스
@@ -54,6 +57,21 @@ def draw_commit_history_ui(top_frame):
     return tree, canvas
 
 
+def handle_text_click(commit, tree):
+    for item in tree.get_children():
+        tree.delete(item)
+
+    commit_time = datetime.datetime.fromtimestamp(commit.commit_time)
+    formatted_time = commit_time.strftime("%Y-%m-%d %H:%M:%S")
+
+    tree.insert("", tk.END, text="ID", value=[str(commit.id)], open=False)
+    tree.insert("", tk.END, text="TIME", value=[formatted_time], open=False)
+    tree.insert("", tk.END, text="AUTHOR", value=[str(commit.author)], open=False)
+    tree.insert("", tk.END, text="MESSAGE", value=[str(commit.message)], open=False)
+    tree.insert("", tk.END, text="PARENT_ID", value=[str(commit.parent_ids)], open=False)
+    tree.insert("", tk.END, text="TREE_ID", value=[str(commit.tree_id)], open=False)
+
+
 def draw_commit_history(tree, canvas, repo_path):
     ###########################################################################
     # LOGIG / tree, canvas, repo -> clear + draw -> update
@@ -75,6 +93,9 @@ def draw_commit_history(tree, canvas, repo_path):
     # 각 행의 높이
     row_height = 20
 
+    # 좌측 여백
+    margin_left = 10
+
     commits = []  # 커밋 객체 리스트
     for row, commit in enumerate(walk_object):
         commits.append(commit)  # 커밋 ID를 행 번호로 등록
@@ -89,6 +110,7 @@ def draw_commit_history(tree, canvas, repo_path):
         elif i == 0:
             col = 0
             parent_list.append(str(commits[0].id)[0:7])
+
         alive_parent = len(parent_list)
         print("--------------loop-------------------------")
         print("현재 커밋 아이디 : ", commits[i].id)
@@ -102,11 +124,21 @@ def draw_commit_history(tree, canvas, repo_path):
         node_height = 15
         node_x = 60
         node_y = row_height + (row_height - node_height) // 2
-        canvas.create_rectangle(node_x * col, node_y * row, node_x * col + node_width, node_y * row + node_height,
+        canvas.create_rectangle(margin_left + node_x * col, node_y * row, margin_left + node_x * col + node_width,
+                                node_y * row + node_height,
                                 fill="lightblue",
                                 outline="black")
-        canvas.create_text(node_x * col + node_width // 2, node_y * row + node_height // 2,
-                           text=str(commits[i].id)[0:7])
+
+        text_id = canvas.create_text(margin_left + node_x * col + node_width // 2, node_y * row + node_height // 2,
+                                     text=str(commits[i].id)[0:7], font=("Helvetica", 10, "bold"), fill="black")
+        # 텍스트에 태그 할당
+        canvas.itemconfig(text_id, tags=str(i))
+        canvas.tag_bind(text_id, "<Button-1>",
+                        lambda event, c=commits[i], t=tree: handle_text_click(c, t))
+
+        # 처음 화면 생성시 첫번째 노드 정보 띄우기
+        if i == 0 :
+            handle_text_click(commits[i], tree)
 
         if i < len(commits) - 1:
             next_commit_id = str(commits[i + 1].id)[0:7]
@@ -175,17 +207,21 @@ def draw_commit_history(tree, canvas, repo_path):
             for x, y in branch_pair:
                 # branch pair row, x -> row + 1 , y 로 선긋기
                 # 좌표 정보 node_x * col, node_y * row
-                canvas.create_line(node_x * (x), node_y * row, node_x * (y), node_y * (row + 1), fill="black")
+                canvas.create_line(margin_left + node_x * x, node_y * row, margin_left + node_x * y, node_y * (row + 1),
+                                   fill="black")
         else:
             if len(commits[i].parents) == 2:
                 for j in range(col + 1):
-                    canvas.create_line(node_x * j, node_y * row, node_x * j, node_y * (row + 1), fill="black")
+                    canvas.create_line(margin_left + node_x * j, node_y * row, margin_left + node_x * j,
+                                       node_y * (row + 1), fill="black")
                 for j in range(col, alive_parent):
-                    canvas.create_line(node_x * j, node_y * row, node_x * (j + 1), node_y * (row + 1), fill="black")
+                    canvas.create_line(margin_left + node_x * j, node_y * row, margin_left + node_x * (j + 1),
+                                       node_y * (row + 1), fill="black")
             elif len(commits[i].parents) == 1:
                 for j in range(alive_parent):
-                    canvas.create_line(node_x * j, node_y * row, node_x * j, node_y * (row + 1), fill="black")
+                    canvas.create_line(margin_left + node_x * j, node_y * row, margin_left + node_x * j,
+                                       node_y * (row + 1), fill="black")
 
         # 커밋 데이터를 행마다 그리기
-        tree.insert("", tk.END, text=str(commits[i].id)[0:5], values=[
-            row], open=False)
+        # tree.insert("", tk.END, text=str(commits[i].id)[0:7], values=[
+        #    row], open=False)
