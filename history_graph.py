@@ -137,7 +137,7 @@ def draw_commit_history(tree, canvas, repo_path):
                         lambda event, c=commits[i], t=tree: handle_text_click(c, t))
 
         # 처음 화면 생성시 첫번째 노드 정보 띄우기
-        if i == 0 :
+        if i == 0:
             handle_text_click(commits[i], tree)
 
         if i < len(commits) - 1:
@@ -162,35 +162,54 @@ def draw_commit_history(tree, canvas, repo_path):
         next_col = str()
         check_next = 0
         temp_cnt = 0
+
+        #col보다 큰 위치에서 브랜치 분기로 인한 parent_list 감소시 증가
+        col_cnt = 0
+
+        #parent_list_str = []
+        #for j in commits[i].parent_ids:
+        #    parent_list_str.append(str(j)[0:7])
+
         if i < len(commits) - 1:
             next_col = parent_list.index(str(commits[i + 1].id)[0:7])
+
         for j in range(len(parent_list)):
-            if len(commits[i].parents) == 2:
+            if len(commits[i].parents) >= 2:
                 if parent_list[j] == next_commit_id:
                     # 여기 페어에 연결
                     if j == parent_list.index(str(commits[i].parent_ids[0])[0:7]) + 1:
                         branch_pair.append([col, next_col])
                         temp_cnt += 1
-                        print("???")
+
+                        print("a, 페런트 2개이상, 다음연결될게 다음 커밋, 진짜부모 인덱스 + 1 일경우")
                     else:
                         branch_pair.append([j - temp_cnt, next_col])
+                        print("b, 페런트 2개이상, 다음연결될게 다음 커밋, 진짜부모 인덱스 + 1 X")
                     check_next += 1
+                    if j > next_col:
+                        col_cnt += 1
                 else:
                     if parent_list[j] == str(commits[i].parent_ids[1])[0:7]:
+                        print("c, 페런트 2개이상, 다음연결될게 다음 커밋 X, 다음 연결될게 가짜부모일대")
                         temp_cnt += 1
                         branch_pair.append([j - temp_cnt, j])
                     else:
-                        branch_pair.append([j - temp_cnt, j - temp_cnt])
+                        branch_pair.append([j - temp_cnt, j - col_cnt])
+
+                        print("d,페런트 2개이상, 다음연결될게 다음 커밋 X, 다음 연결될게 가짜부모 X")
                     # 그냥 일직선
             else:
                 if parent_list[j] == next_commit_id:
+                    print("e, 페런트 1개, 다음 연결될게 다음 커밋")
                     branch_pair.append([j, next_col])
                     check_next += 1
                 else:
                     if check_next > 1:
                         branch_pair.append([j, j - check_next + 1])
+                        print("f, 페런트 1개, 다음연결될게 당므 커밋이 아님, 그런데 하나이상 합쳐졌다면")
                     else:
                         branch_pair.append([j, j])
+                        print("g, 페런트 1개, 다음연결될게 당므 커밋이 아님, 그런데 하나이상 합쳐지지않음")
                     # 그냥 일직선
         temp_index = 0
         count = 0
@@ -210,7 +229,7 @@ def draw_commit_history(tree, canvas, repo_path):
                 canvas.create_line(margin_left + node_x * x, node_y * row, margin_left + node_x * y, node_y * (row + 1),
                                    fill="black")
         else:
-            if len(commits[i].parents) == 2:
+            if len(commits[i].parents) >= 2:
                 for j in range(col + 1):
                     canvas.create_line(margin_left + node_x * j, node_y * row, margin_left + node_x * j,
                                        node_y * (row + 1), fill="black")
