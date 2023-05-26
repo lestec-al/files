@@ -332,7 +332,7 @@ def select():
                     else:
                         x.config(state="disabled")
                 else:
-                    if x == init_button:
+                    if x == init_button or x == clone_button:
                         continue
                     else:
                         x.config(state="disabled")
@@ -1175,6 +1175,32 @@ def open_git_mv_window():
     button.pack()
 
 
+def open_git_clone_window():
+    input_window = tk.Toplevel(window)
+    input_window.title('git clone')
+    input_window.geometry("500x100")
+    input_window.geometry("+100+200")
+
+    label = tk.Label(
+        input_window, text="clone 받을 repository URL을 입력해주세요 !")
+    label.pack()
+    input_entry = tk.Entry(input_window, width=30)
+    input_entry.pack()
+    input_entry.focus_set()
+    button = tk.Button(input_window, text="clone",
+                       command=lambda: (git_clone(input_entry.get()), input_window.destroy()))
+    button.pack()
+
+
+def git_clone(repo_url):
+    array = repo_url.split('/')
+    repo_name = array[-1][:-4]
+    repo_path = f"{last_path}/{repo_name}"
+    # public repository의 URL과 로컬 저장소 경로를 지정하여 Repository 객체 생성
+    repo = pygit2.clone_repository(repo_url, repo_path)
+    update_files(last_path)
+
+
 # git buttons
 frame_down = tk.Frame(frame_left, border=1)
 frame_down.pack(fill="x", side="bottom")
@@ -1221,6 +1247,11 @@ mv_button = tk.Button(frame_c, text='mv', width=6, height=1, relief="flat", bg="
                       fg="black", command=lambda: open_git_mv_window())
 mv_button.grid(column=8, row=0)
 buttons.append(mv_button)
+# git_clone button
+clone_button = tk.Button(frame_c, text='clone', width=6, height=1, relief="flat", bg="black",
+                         fg="black", command=lambda: open_git_clone_window())
+clone_button.grid(column=8, row=0)
+buttons.append(clone_button)
 
 entry = tk.Entry(frame_up, font=("Arial", 12), justify="left",
                  highlightcolor="white", highlightthickness=0, relief="groove", border=2)
