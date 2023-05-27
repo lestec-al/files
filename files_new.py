@@ -16,6 +16,7 @@ from tkinter import filedialog
 from pathlib import Path
 from ftplib import FTP
 from send2trash import send2trash
+import requests
 
 # git status dictionary
 git_status_dict = {
@@ -1036,6 +1037,32 @@ def rename_branch(new_name):
             update_files(last_path)
 
 
+# public repository clone
+def git_clone(repo_url):
+    try:
+        array = repo_url.split('/')
+        repo_name = array[-1][:-4]
+        repo_path = f"{last_path}/{repo_name}"
+        pygit2.clone_repository(repo_url, repo_path)
+        update_files(last_path)
+    except:
+        open_private_clone_window(repo_url)
+
+
+# private repository clone
+def git_private_clone(repo_url, id, access_token):
+    try:
+        array = repo_url.split('/')
+        repo_name = array[-1][:-4]
+        repo_path = f"{last_path}/{repo_name}"
+        callbacks = pygit2.RemoteCallbacks(
+            credentials=pygit2.UserPass(id, access_token))
+        pygit2.clone_repository(repo_url, repo_path, callbacks=callbacks)
+        update_files(last_path)
+    except:
+        open_error_window('clone')
+
+
 # Frame_right_branch_butoon
 branch_buttons = []
 create_button = tk.Button(frame_right_branch_button, text='create', width=4, height=1, relief="flat", bg="black",
@@ -1089,7 +1116,8 @@ def open_error_window(error_type):
         'init': 'git init 할 수 없는 디렉토리입니다',
         'add': '추가할 파일이 없습니다',
         'commit': 'commit 할 수 있는 파일이 없습니다',
-        'checkout': 'conflict 가 발생합니다'
+        'checkout': 'conflict 가 발생합니다',
+        'clone': 'ID 또는 access token이 올바르지 않습니다'
     }
     label = tk.Label(
         error_window, text=error_text[error_type])
@@ -1192,16 +1220,37 @@ def open_git_clone_window():
     button.pack()
 
 
-def git_clone(repo_url):
-    array = repo_url.split('/')
-    repo_name = array[-1][:-4]
-    repo_path = f"{last_path}/{repo_name}"
-    # public repository의 URL과 로컬 저장소 경로를 지정하여 Repository 객체 생성
-    repo = pygit2.clone_repository(repo_url, repo_path)
-    update_files(last_path)
+def open_private_clone_window(repo_url):
+    input_window = tk.Toplevel(window)
+    input_window.title('private repository clone')
+    input_window.geometry("500x120")
+    input_window.geometry("+100+200")
 
+    label = tk.Label(
+        input_window, text="ID와 access token을 입력해주세요 !")
+    label.pack()
 
-# git buttons
+    input_1 = tk.Frame(input_window)
+    input_1.pack()
+    input_label = tk.Label(
+        input_1, text="ID: ")
+    input_label.pack(side='left')
+    input_entry = tk.Entry(input_1, width=22)
+    input_entry.pack(side='right')
+    input_entry.focus_set()
+
+    input_2 = tk.Frame(input_window)
+    input_2.pack()
+    input_label2 = tk.Label(
+        input_2, text="access token: ")
+    input_label2.pack(side='left')
+    input_entry2 = tk.Entry(input_2, width=30)
+    input_entry2.pack(side='right')
+    button = tk.Button(input_window, text="clone",
+                       command=lambda: (git_private_clone(repo_url, input_entry.get(), input_entry2.get()), input_window.destroy()))
+    button.pack()
+
+    # git buttons
 frame_down = tk.Frame(frame_left, border=1)
 frame_down.pack(fill="x", side="bottom")
 frame_c = tk.Frame(frame_down, relief="groove", bg="white")
