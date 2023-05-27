@@ -389,3 +389,6 @@ Tools used for the collaborative development
 - [github](https://github.com/CAU-OSS-project-practice/OSS-file-manager)
 
 ## 저작권 및 사용권 정보 (Copyleft / End User License)
+This program is licensed under the Python Software Foundation License (PSF License).
+third party softwares that may be contained in this program is referd in license.txt below.
+- https://github.com/CAU-OSS-project-practice/OSS-file-manager/blob/main/license

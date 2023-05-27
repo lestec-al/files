@@ -16,7 +16,8 @@ from tkinter import filedialog
 from pathlib import Path
 from ftplib import FTP
 from send2trash import send2trash
-import requests
+import history_graph
+
 
 # git status dictionary
 git_status_dict = {
@@ -63,6 +64,135 @@ icon_status_dict = {
 }
 
 
+def open_git_branch_list():
+    global input_window
+    input_window = tk.Toplevel(window)
+    input_window.title('branch list for merge')
+    input_window.geometry("500x150")
+    input_window.geometry("+500+300")
+    if check_git_repo(last_path):
+        repository = pygit2.Repository(last_path)  # 저장소 경로 설정
+        current_branch = repository.head.shorthand  # 현재 브랜치 확인
+        branches_list = list(repository.branches.local)
+        branches_list.remove(current_branch)
+        global branch_combobox1
+        branch_combobox1 = ttk.Combobox(input_window, values=branches_list)
+        branch_combobox1.pack(fill=tk.BOTH)
+        branch_combobox1.set("choose branch to merge")
+        to_label = ttk.Label(input_window, text="to")
+        to_label.pack(pady=5)
+        branch_label2 = ttk.Label(input_window, text=current_branch)
+        branch_label2.pack(fill=tk.BOTH)
+        # Create a confirmation button
+        selected_branch = branch_combobox1.get()
+        confirm_button = ttk.Button(
+            input_window, text="Merge", command=merge_selected_branch)
+        confirm_button.pack(pady=10)
+
+
+def destory_merge_window():
+    input_window.destroy()
+    succec_window.destroy()
+
+
+def destroy_all_merge_window():
+    input_window.destroy()
+    succec_window.destroy()
+    abort_succec_window.destroy()
+
+
+def git_abort():
+    repository = pygit2.Repository(last_path)
+    repository.reset(repository.head.target, pygit2.GIT_RESET_HARD)
+    global abort_succec_window
+    abort_succec_window = tk.Toplevel(window)
+    abort_succec_window.geometry("100x150")
+    abort_succec_window.geometry("+700+300")
+    confirm_button = tk.Button(
+        abort_succec_window, text="확인", command=destroy_all_merge_window)
+    try:
+        repository.reset(repository.head.target, pygit2.GIT_RESET_HARD)
+        tmp = "abort 성공"
+    except pygit2.GitError as e:
+        tmp = "Failed to abort merge:" + e
+    result_label = tk.Label(abort_succec_window, text=tmp, fg="green")
+    result_label.pack(side="top")
+    confirm_button.pack(side="bottom")
+
+
+def merge_selected_branch():
+    global succec_window
+    succec_window = tk.Toplevel(window)
+    succec_window.geometry("300x150")
+    succec_window.geometry("+600+300")
+    # 성공 여부를 표시할 Label 생성
+    result_label = tk.Label(succec_window, text="앙", fg="green")
+    result_label.pack()
+    button_frame = tk.Frame(succec_window)
+    button_frame.pack(side=tk.BOTTOM)
+    confirm_button = tk.Button(
+        button_frame, text="확인", command=destory_merge_window)
+    confirm_button.pack(side=tk.LEFT)
+    # 현재 디렉토리를 기반으로 레포지토리 열기
+    repo = pygit2.Repository(last_path)
+    # 브랜치 이름
+    source_branch_name = branch_combobox1.get()
+    target_branch_name = repo.head.shorthand
+    # 브랜치 가져오기
+    source_branch = repo.branches.get(source_branch_name)
+    target_branch = repo.branches.get(target_branch_name)
+    # 소스 브랜치의 커밋 가져오기
+    source_commit = repo[source_branch.target]
+    # 마스터 브랜치의 커밋 가져오기
+    target_commit = repo[target_branch.target]
+    # Merge 분석
+    result, _ = repo.merge_analysis(source_commit.id)
+
+    if result & pygit2.GIT_MERGE_ANALYSIS_UP_TO_DATE:
+        result_label.config(text="Already up to date")
+        print("Already up to date")
+
+    elif result & pygit2.GIT_MERGE_ANALYSIS_FASTFORWARD:
+        # Fast-forward merge
+        target_branch.set_target(source_commit.id)
+        repo.reset(source_commit.id, pygit2.GIT_RESET_HARD)
+        # result_label.config(text="Fast-forward merged" + "commit id : "source_commit.id)
+        print("Fast-forward merge")
+    else:
+        index = repo.merge_commits(target_commit.id, source_commit.id)
+        conflicts = index.conflicts
+        if conflicts:
+            abort_button = tk.Button(
+                button_frame, text="abort", command=git_abort)
+            abort_button.pack(side=tk.RIGHT)
+            repo.merge(source_commit.id)
+            result_label.config(text="Conflict 발생", fg="red")
+
+            for conflict in index.conflicts:
+                path = conflict[0]  # Conflict file path
+                conflict_label = tk.Label(
+                    succec_window, text="Conflict in file: {}".format(path.path), fg="red")
+                conflict_label.pack()  # 충돌 라벨을 윈도우에 추가
+                print("Conflict in file:", path)
+                print("File:", path)
+        else:
+            # 머지 성공 시, 머지 커밋 생성
+            committer = pygit2.Signature('Your Name', 'youremail@example.com')
+            merge_commit = repo.create_commit(
+                'HEAD',
+                committer,
+                committer,
+                'Merge branch {} into {}'.format(
+                    source_branch_name, target_branch_name),
+                index.write_tree(repo),
+                [target_branch.target, source_branch.target]
+            )
+            print('Merge commit created:', merge_commit)
+            repo.reset(merge_commit.hex, pygit2.GIT_RESET_HARD)
+
+
+# Git branch Actions
+
 # Interface
 def git_restore():
     if check_git_repo(last_path):
@@ -105,7 +235,7 @@ def git_rm_cached():
         try:
             repo = pygit2.Repository(last_path)
             repo.index.remove(get_relative_repo_path(
-                last_path, repo)+g_current_item)
+                last_path, repo) + g_current_item)
             repo.index.write()
         except KeyError as e:
             print("Failed to remove file: ", e)
@@ -634,7 +764,6 @@ def update_files(orig_dirname: str):
         files_list, dirs_list = [], []
         if ftp == None:
             files = os.scandir(dirname)
-            git_repo = pygit2.Repository()
             is_repo_exist, git_repo = update_git_repo(dirname)
 
             for f in files:
@@ -818,6 +947,7 @@ def update_files(orig_dirname: str):
                     break
 
         get_branch_list()
+        history_graph.draw_commit_history(graph_tree, graph_canvas, last_path)
 
     except Exception as e:
         tk.messagebox.showerror(title="Error", message=str(e))
@@ -864,9 +994,8 @@ window.minsize(width=800, height=500)
 frame_left = tk.Frame(window, border=1, bg="white")
 frame_left.pack(fill="both", side="left", expand=True)
 
-frame_right = tk.Frame(window,  bg="white")
+frame_right = tk.Frame(window, bg="white")
 frame_right.pack(fill="both", side="right")
-
 
 frame_up = tk.Frame(frame_left, border=1, bg="white")
 frame_up.pack(fill="x", side="top")
@@ -885,6 +1014,9 @@ frame_right_branch_button.pack(side="top")
 frame_right_history_graph = tk.Frame(
     frame_right_history, border=1, bg="green", width=300, height=500)
 frame_right_history_graph.grid(column=0, row=0)
+graph_tree, graph_canvas = history_graph.draw_commit_history_ui(
+    frame_right_history_graph)
+
 frame_right_history_detail = tk.Frame(
     frame_right_history, border=1, bg="blue", width=300, height=200)
 frame_right_history_detail.grid(column=0, row=1)
@@ -1092,7 +1224,7 @@ rename_button = tk.Button(frame_right_branch_button, text='rename', width=4, hei
 rename_button.grid(column=3, row=0)
 branch_buttons.append(rename_button)
 merge_button = tk.Button(frame_right_branch_button, text='merge', width=4, height=1, relief="flat", bg="black",
-                         fg="black", command=lambda: update_files(last_path))
+                         fg="black", command=open_git_branch_list)
 merge_button.grid(column=4, row=0)
 branch_buttons.append(merge_button)
 
@@ -1259,7 +1391,6 @@ def open_private_clone_window(repo_url):
     button = tk.Button(input_window, text="clone",
                        command=lambda: (git_private_clone(repo_url, input_entry.get(), input_entry2.get()), input_window.destroy()))
     button.pack()
-
 
     # git buttons
 frame_down = tk.Frame(frame_left, border=1)
