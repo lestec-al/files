@@ -1043,8 +1043,12 @@ def git_clone(repo_url):
         array = repo_url.split('/')
         repo_name = array[-1][:-4]
         repo_path = f"{last_path}/{repo_name}"
-        pygit2.clone_repository(repo_url, repo_path)
-        update_files(last_path)
+        if user_id and user_access_token:
+            git_private_clone(repo_url, user_id, user_access_token)
+        else:
+            pygit2.clone_repository(repo_url, repo_path)
+            update_files(last_path)
+
     except:
         open_private_clone_window(repo_url)
 
@@ -1052,16 +1056,22 @@ def git_clone(repo_url):
 # private repository clone
 def git_private_clone(repo_url, id, access_token):
     try:
+        global user_id
+        global user_access_token
         array = repo_url.split('/')
         repo_name = array[-1][:-4]
         repo_path = f"{last_path}/{repo_name}"
         callbacks = pygit2.RemoteCallbacks(
             credentials=pygit2.UserPass(id, access_token))
         pygit2.clone_repository(repo_url, repo_path, callbacks=callbacks)
+        user_id, user_access_token = id, access_token
         update_files(last_path)
     except:
         open_error_window('clone')
 
+
+# save user_id and access token after insert git private info
+user_id, user_access_token = '', ''
 
 # Frame_right_branch_butoon
 branch_buttons = []
@@ -1249,6 +1259,7 @@ def open_private_clone_window(repo_url):
     button = tk.Button(input_window, text="clone",
                        command=lambda: (git_private_clone(repo_url, input_entry.get(), input_entry2.get()), input_window.destroy()))
     button.pack()
+
 
     # git buttons
 frame_down = tk.Frame(frame_left, border=1)
