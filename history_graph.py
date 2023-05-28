@@ -16,22 +16,23 @@ def draw_commit_history_ui(top_frame):
     left.pack(side="left", fill="both", expand=True)
 
     right = tk.Frame(top_frame, border=1, relief="flat", bg="white", width='40')
-    right.pack(side="left", fill="y")
+    right.pack(side="right", fill="y")
 
     # 스크롤바
     scrollbar_left = ttk.Scrollbar(left, orient="vertical")
     scrollbar_left.pack(side="right", fill="y")
-
-    scrollbar_right = ttk.Scrollbar(right, orient="vertical")
-    scrollbar_right.pack(side="right", fill="y")
 
     # Treeview 생성
     tree = ttk.Treeview(right, columns=("#1"), selectmode="extended", show="tree headings")
     tree.heading("#0", text="configuration", anchor="w")
     tree.heading("#1", text="content", anchor="w")
     tree.column("#0", anchor="e", stretch=False, width=100)
-    tree.column("#1", anchor="e", stretch=True)
-    tree.pack(side="left", fill="y")
+    tree.column("#1", anchor="e", stretch=False, width=500)
+    tree.pack(side="top", fill="y")
+
+    # Branch Control View 생성
+    branch_control_frame = tk.Frame(right, border=1, bg="#3c3c3c", width=300, height=500)
+    branch_control_frame.pack(side="bottom", fill="both")
 
     # 캔버스
     canvas = tk.Canvas(left, bg="white", yscrollcommand=scrollbar_left.set)
@@ -39,9 +40,6 @@ def draw_commit_history_ui(top_frame):
 
     # left 영역의 스크롤바와 캔버스 연결
     scrollbar_left.config(command=canvas.yview)
-
-    # right 영역의 스크롤바와 캔버스 연결
-    scrollbar_right.config(command=canvas.yview)
 
     # 내용 프레임
     content_frame = tk.Frame(canvas, bg="white")
@@ -54,7 +52,7 @@ def draw_commit_history_ui(top_frame):
 
     canvas.bind("<Configure>", configure_canvas)
 
-    return tree, canvas
+    return tree, canvas, branch_control_frame
 
 
 def handle_text_click(commit, tree):
@@ -68,7 +66,10 @@ def handle_text_click(commit, tree):
     tree.insert("", tk.END, text="TIME", value=[formatted_time], open=False)
     tree.insert("", tk.END, text="AUTHOR", value=[str(commit.author)], open=False)
     tree.insert("", tk.END, text="MESSAGE", value=[str(commit.message)], open=False)
-    tree.insert("", tk.END, text="PARENT_ID", value=[str(commit.parent_ids)], open=False)
+    parent_ids = str()
+    for n in commit.parent_ids:
+        parent_ids += (str(n) + "\n")
+    tree.insert("", tk.END, text="PARENT_ID", value=[parent_ids], open=False)
     tree.insert("", tk.END, text="TREE_ID", value=[str(commit.tree_id)], open=False)
 
 
