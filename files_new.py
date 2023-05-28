@@ -18,7 +18,6 @@ from ftplib import FTP
 from send2trash import send2trash
 import history_graph
 
-
 # git status dictionary
 git_status_dict = {
     -1: "NOT_GIT_REPOSITORY",
@@ -559,8 +558,6 @@ def click():
 
 
 # Operations
-
-
 def new(goal: str):
     try:
         test = False
@@ -1000,33 +997,31 @@ frame_right.pack(fill="both", side="right")
 frame_up = tk.Frame(frame_left, border=1, bg="white")
 frame_up.pack(fill="x", side="top")
 
-frame_right_branch = tk.Frame(frame_right, border=1, bg="white")
-frame_right_branch.pack(fill="both", side="left")
 frame_right_history = tk.Frame(frame_right, border=1, bg="white")
 frame_right_history.pack(fill="both", side="right")
 
-frame_right_branch_list = tk.Frame(
-    frame_right_branch, border=1, bg="#3c3c3c", width=300, height=500)
-frame_right_branch_list.pack(side="top", fill="x")
-frame_right_branch_button = tk.Frame(
-    frame_right_branch, bg="white", width=300, height=100)
-frame_right_branch_button.pack(side="top")
-frame_right_history_graph = tk.Frame(
-    frame_right_history, border=1, bg="green", width=300, height=500)
-frame_right_history_graph.grid(column=0, row=0)
-graph_tree, graph_canvas = history_graph.draw_commit_history_ui(
-    frame_right_history_graph)
+graph_tree, graph_canvas, branch_control = history_graph.draw_commit_history_ui(
+    frame_right_history)
 
-frame_right_history_detail = tk.Frame(
-    frame_right_history, border=1, bg="blue", width=300, height=200)
-frame_right_history_detail.grid(column=0, row=1)
+frame_right_branch = tk.Frame(branch_control, border=1, bg="white")
+frame_right_branch.pack(fill="both")
+frame_right_branch.configure(bg="#3c3c3c", border=1)
+
+frame_right_branch_list = tk.Frame(
+    frame_right_branch, border=1, bg="#3c3c3c", width=400, height=500)
+frame_right_branch_list.pack(side="top", fill="x")
+
+
+frame_right_branch_button = tk.Frame(
+    frame_right_branch, bg="#3c3c3c", width=400, height=100)
+frame_right_branch_button.pack(pady=1)
 
 branch_label = tk.Label(
     frame_right_branch_list, text="브랜치 목록")
 branch_label.pack(fill="x")
 my_font = font.Font(size=18)
 branch_listbox = tk.Listbox(frame_right_branch_list, font=my_font)
-branch_listbox.pack()
+branch_listbox.pack(fill="x")
 branch_listbox.bind("<Double-Button-1>", lambda event: checkout_branch())
 
 
@@ -1389,10 +1384,12 @@ def open_private_clone_window(repo_url):
     input_entry2 = tk.Entry(input_2, width=30)
     input_entry2.pack(side='right')
     button = tk.Button(input_window, text="clone",
-                       command=lambda: (git_private_clone(repo_url, input_entry.get(), input_entry2.get()), input_window.destroy()))
+                       command=lambda: (
+                           git_private_clone(repo_url, input_entry.get(), input_entry2.get()), input_window.destroy()))
     button.pack()
 
-    # git buttons
+
+# git buttons
 frame_down = tk.Frame(frame_left, border=1)
 frame_down.pack(fill="x", side="bottom")
 frame_c = tk.Frame(frame_down, relief="groove", bg="white")
@@ -1517,7 +1514,7 @@ tree.bind("<Down>", lambda event: up_down_focus())
 tree.bind("<Delete>", lambda event: delete())
 tree.bind("<Control-c>", lambda event: copy())
 tree.bind("<Control-v>", lambda event: paste()
-          if right_menu.entrycget(index=5, option="state") == "normal" else None)
+if right_menu.entrycget(index=5, option="state") == "normal" else None)
 entry.bind("<Return>", lambda event: update_files(entry.get()))
 entry.bind("<KP_Enter>", lambda event: update_files(entry.get()))
 window.mainloop()
