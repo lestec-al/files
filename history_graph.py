@@ -111,7 +111,6 @@ def draw_commit_history(tree, canvas, repo_path):
             col = 0
             parent_list.append(str(commits[0].id)[0:7])
 
-        alive_parent = len(parent_list)
         print("--------------loop-------------------------")
         print("현재 커밋 아이디 : ", commits[i].id)
         print("현재 커밋의 패런트 아이디 : ", commits[i].parent_ids)
@@ -157,7 +156,9 @@ def draw_commit_history(tree, canvas, repo_path):
             except ValueError:
                 break
         print("다음 parent 데크 목록 (선긋기): ", parent_list)
+
         # 다음거 체크
+        alive_parent = len(parent_list)
         branch_pair = []
         next_col = str()
         check_next = 0
@@ -229,13 +230,21 @@ def draw_commit_history(tree, canvas, repo_path):
                 canvas.create_line(margin_left + node_x * x, node_y * row, margin_left + node_x * y, node_y * (row + 1),
                                    fill="black")
         else:
-            if len(commits[i].parents) >= 2:
+            cur_parent_num = len(commits[i].parents)
+            if cur_parent_num >= 2:
                 for j in range(col + 1):
                     canvas.create_line(margin_left + node_x * j, node_y * row, margin_left + node_x * j,
                                        node_y * (row + 1), fill="black")
-                for j in range(col, alive_parent):
-                    canvas.create_line(margin_left + node_x * j, node_y * row, margin_left + node_x * (j + 1),
+                    print("a")
+                for j in range(col, col + cur_parent_num - 1):
+                    canvas.create_line(margin_left + node_x * col, node_y * row, margin_left + node_x * (j + 1),
                                        node_y * (row + 1), fill="black")
+                    print("b")
+                for j in range(col + 1, alive_parent + 1 - cur_parent_num):
+                    canvas.create_line(margin_left + node_x * j, node_y * row, margin_left + node_x * (j + cur_parent_num - 1),
+                                       node_y * (row + 1), fill="black")
+                    print(col + 1, alive_parent, 1, cur_parent_num)
+                    print("c")
             elif len(commits[i].parents) == 1:
                 for j in range(alive_parent):
                     canvas.create_line(margin_left + node_x * j, node_y * row, margin_left + node_x * j,
