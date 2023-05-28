@@ -27,7 +27,7 @@ def draw_commit_history_ui(top_frame):
     tree.heading("#0", text="configuration", anchor="w")
     tree.heading("#1", text="content", anchor="w")
     tree.column("#0", anchor="e", stretch=False, width=100)
-    tree.column("#1", anchor="e", stretch=False, width=500)
+    tree.column("#1", anchor="e", stretch=False, width=300)
     tree.pack(side="top", fill="y")
 
     # Branch Control View 생성
@@ -35,7 +35,7 @@ def draw_commit_history_ui(top_frame):
     branch_control_frame.pack(side="bottom", fill="both")
 
     # 캔버스
-    canvas = tk.Canvas(left, bg="white", yscrollcommand=scrollbar_left.set)
+    canvas = tk.Canvas(left, bg="#353535", yscrollcommand=scrollbar_left.set)
     canvas.pack(fill="both", expand=True)
 
     # left 영역의 스크롤바와 캔버스 연결
@@ -126,8 +126,8 @@ def draw_commit_history(tree, canvas, repo_path):
         node_y = row_height + (row_height - node_height) // 2
         canvas.create_rectangle(margin_left + node_x * col, node_y * row, margin_left + node_x * col + node_width,
                                 node_y * row + node_height,
-                                fill="lightblue",
-                                outline="black")
+                                fill="#E4E4E4",
+                                outline="#BDBDBD")
 
         text_id = canvas.create_text(margin_left + node_x * col + node_width // 2, node_y * row + node_height // 2,
                                      text=str(commits[i].id)[0:7], font=("Helvetica", 10, "bold"), fill="black")
@@ -167,10 +167,6 @@ def draw_commit_history(tree, canvas, repo_path):
 
         #col보다 큰 위치에서 브랜치 분기로 인한 parent_list 감소시 증가
         col_cnt = 0
-
-        #parent_list_str = []
-        #for j in commits[i].parent_ids:
-        #    parent_list_str.append(str(j)[0:7])
 
         if i < len(commits) - 1:
             next_col = parent_list.index(str(commits[i + 1].id)[0:7])
@@ -229,28 +225,24 @@ def draw_commit_history(tree, canvas, repo_path):
                 # branch pair row, x -> row + 1 , y 로 선긋기
                 # 좌표 정보 node_x * col, node_y * row
                 canvas.create_line(margin_left + node_x * x, node_y * row, margin_left + node_x * y, node_y * (row + 1),
-                                   fill="black")
+                                   fill="#BDBDBD")
         else:
             cur_parent_num = len(commits[i].parents)
             if cur_parent_num >= 2:
                 for j in range(col + 1):
                     canvas.create_line(margin_left + node_x * j, node_y * row, margin_left + node_x * j,
-                                       node_y * (row + 1), fill="black")
+                                       node_y * (row + 1), fill="#BDBDBD")
                     print("a")
                 for j in range(col, col + cur_parent_num - 1):
                     canvas.create_line(margin_left + node_x * col, node_y * row, margin_left + node_x * (j + 1),
-                                       node_y * (row + 1), fill="black")
+                                       node_y * (row + 1), fill="#BDBDBD")
                     print("b")
                 for j in range(col + 1, alive_parent + 1 - cur_parent_num):
                     canvas.create_line(margin_left + node_x * j, node_y * row, margin_left + node_x * (j + cur_parent_num - 1),
-                                       node_y * (row + 1), fill="black")
+                                       node_y * (row + 1), fill="#BDBDBD")
                     print(col + 1, alive_parent, 1, cur_parent_num)
                     print("c")
             elif len(commits[i].parents) == 1:
                 for j in range(alive_parent):
                     canvas.create_line(margin_left + node_x * j, node_y * row, margin_left + node_x * j,
-                                       node_y * (row + 1), fill="black")
-
-        # 커밋 데이터를 행마다 그리기
-        # tree.insert("", tk.END, text=str(commits[i].id)[0:7], values=[
-        #    row], open=False)
+                                       node_y * (row + 1), fill="#BDBDBD")
