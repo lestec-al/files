@@ -993,6 +993,7 @@ frame_left.pack(fill="both", side="left", expand=True)
 
 frame_right = tk.Frame(window, bg="white")
 frame_right.pack(fill="both", side="right")
+is_forget = True
 
 frame_up = tk.Frame(frame_left, border=1, bg="white")
 frame_up.pack(fill="x", side="top")
@@ -1010,7 +1011,6 @@ frame_right_branch.configure(bg="#3c3c3c", border=1)
 frame_right_branch_list = tk.Frame(
     frame_right_branch, border=1, bg="#3c3c3c", width=400, height=500)
 frame_right_branch_list.pack(side="top", fill="x")
-
 
 frame_right_branch_button = tk.Frame(
     frame_right_branch, bg="#3c3c3c", width=400, height=100)
@@ -1389,6 +1389,18 @@ def open_private_clone_window(repo_url):
     button.pack()
 
 
+def show_and_hide_branch_menu():
+    global is_forget
+    global frame_right
+    print(is_forget, frame_right)
+    if is_forget:
+        frame_right.forget()
+        is_forget = False
+    else:
+        frame_right.pack(fill="both", side="right")
+        is_forget = True
+
+
 # git buttons
 frame_down = tk.Frame(frame_left, border=1)
 frame_down.pack(fill="x", side="bottom")
@@ -1443,7 +1455,11 @@ buttons.append(clone_button)
 
 entry = tk.Entry(frame_up, font=("Arial", 12), justify="left",
                  highlightcolor="white", highlightthickness=0, relief="groove", border=2)
-entry.pack(side="right", fill="both", expand=1)
+entry.pack(side="left", fill="both", expand=1)
+branch_toggle_frame = tk.Frame(frame_up, border=2, relief="groove", bg="white")
+branch_toggle_frame.pack(side="left")
+tk.Button(branch_toggle_frame, text="BRANCH MENU", width=10, height=2, relief="flat",
+          bg="white", fg="black", command=lambda: show_and_hide_branch_menu()).grid(column=3, row=1)
 label = tk.Label(frame_left, font=("Arial", 12), anchor="w",
                  bg="white", foreground="grey", border=2)
 label.pack(side="bottom", fill="both")
