@@ -18,6 +18,7 @@ from ftplib import FTP
 from send2trash import send2trash
 import history_graph
 
+
 # git status dictionary
 git_status_dict = {
     -1: "NOT_GIT_REPOSITORY",
@@ -93,10 +94,12 @@ def destory_merge_window():
     input_window.destroy()
     succec_window.destroy()
 
+
 def destroy_all_merge_window():
     input_window.destroy()
     succec_window.destroy()
     abort_succec_window.destroy()
+
 
 def git_abort():
     repository = pygit2.Repository(last_path)
@@ -105,7 +108,8 @@ def git_abort():
     abort_succec_window = tk.Toplevel(window)
     abort_succec_window.geometry("100x150")
     abort_succec_window.geometry("+700+300")
-    confirm_button = tk.Button(abort_succec_window,text = "확인",command=destroy_all_merge_window)
+    confirm_button = tk.Button(
+        abort_succec_window, text="확인", command=destroy_all_merge_window)
     try:
         repository.reset(repository.head.target, pygit2.GIT_RESET_HARD)
         tmp = "abort 성공"
@@ -115,7 +119,6 @@ def git_abort():
     result_label.pack(side="top")
     confirm_button.pack(side="bottom")
 
-    
 
 def merge_selected_branch():
     global succec_window
@@ -460,7 +463,7 @@ def select():
                     else:
                         x.config(state="disabled")
                 else:
-                    if x == init_button:
+                    if x == init_button or x == clone_button:
                         continue
                     else:
                         x.config(state="disabled")
@@ -1011,7 +1014,8 @@ frame_right_branch_button.pack(side="top")
 frame_right_history_graph = tk.Frame(
     frame_right_history, border=1, bg="green", width=300, height=500)
 frame_right_history_graph.grid(column=0, row=0)
-graph_tree, graph_canvas = history_graph.draw_commit_history_ui(frame_right_history_graph)
+graph_tree, graph_canvas = history_graph.draw_commit_history_ui(
+    frame_right_history_graph)
 
 frame_right_history_detail = tk.Frame(
     frame_right_history, border=1, bg="blue", width=300, height=200)
@@ -1165,6 +1169,42 @@ def rename_branch(new_name):
             update_files(last_path)
 
 
+# public repository clone
+def git_clone(repo_url):
+    try:
+        array = repo_url.split('/')
+        repo_name = array[-1][:-4]
+        repo_path = f"{last_path}/{repo_name}"
+        if user_id and user_access_token:
+            git_private_clone(repo_url, user_id, user_access_token)
+        else:
+            pygit2.clone_repository(repo_url, repo_path)
+            update_files(last_path)
+
+    except:
+        open_private_clone_window(repo_url)
+
+
+# private repository clone
+def git_private_clone(repo_url, id, access_token):
+    try:
+        global user_id
+        global user_access_token
+        array = repo_url.split('/')
+        repo_name = array[-1][:-4]
+        repo_path = f"{last_path}/{repo_name}"
+        callbacks = pygit2.RemoteCallbacks(
+            credentials=pygit2.UserPass(id, access_token))
+        pygit2.clone_repository(repo_url, repo_path, callbacks=callbacks)
+        user_id, user_access_token = id, access_token
+        update_files(last_path)
+    except:
+        open_error_window('clone')
+
+
+# save user_id and access token after insert git private info
+user_id, user_access_token = '', ''
+
 # Frame_right_branch_butoon
 branch_buttons = []
 create_button = tk.Button(frame_right_branch_button, text='create', width=4, height=1, relief="flat", bg="black",
@@ -1218,7 +1258,8 @@ def open_error_window(error_type):
         'init': 'git init 할 수 없는 디렉토리입니다',
         'add': '추가할 파일이 없습니다',
         'commit': 'commit 할 수 있는 파일이 없습니다',
-        'checkout': 'conflict 가 발생합니다'
+        'checkout': 'conflict 가 발생합니다',
+        'clone': 'ID 또는 access token이 올바르지 않습니다'
     }
     label = tk.Label(
         error_window, text=error_text[error_type])
@@ -1304,7 +1345,54 @@ def open_git_mv_window():
     button.pack()
 
 
-# git buttons
+def open_git_clone_window():
+    input_window = tk.Toplevel(window)
+    input_window.title('git clone')
+    input_window.geometry("500x100")
+    input_window.geometry("+100+200")
+
+    label = tk.Label(
+        input_window, text="clone 받을 repository URL을 입력해주세요 !")
+    label.pack()
+    input_entry = tk.Entry(input_window, width=30)
+    input_entry.pack()
+    input_entry.focus_set()
+    button = tk.Button(input_window, text="clone",
+                       command=lambda: (git_clone(input_entry.get()), input_window.destroy()))
+    button.pack()
+
+
+def open_private_clone_window(repo_url):
+    input_window = tk.Toplevel(window)
+    input_window.title('private repository clone')
+    input_window.geometry("500x120")
+    input_window.geometry("+100+200")
+
+    label = tk.Label(
+        input_window, text="ID와 access token을 입력해주세요 !")
+    label.pack()
+
+    input_1 = tk.Frame(input_window)
+    input_1.pack()
+    input_label = tk.Label(
+        input_1, text="ID: ")
+    input_label.pack(side='left')
+    input_entry = tk.Entry(input_1, width=22)
+    input_entry.pack(side='right')
+    input_entry.focus_set()
+
+    input_2 = tk.Frame(input_window)
+    input_2.pack()
+    input_label2 = tk.Label(
+        input_2, text="access token: ")
+    input_label2.pack(side='left')
+    input_entry2 = tk.Entry(input_2, width=30)
+    input_entry2.pack(side='right')
+    button = tk.Button(input_window, text="clone",
+                       command=lambda: (git_private_clone(repo_url, input_entry.get(), input_entry2.get()), input_window.destroy()))
+    button.pack()
+
+    # git buttons
 frame_down = tk.Frame(frame_left, border=1)
 frame_down.pack(fill="x", side="bottom")
 frame_c = tk.Frame(frame_down, relief="groove", bg="white")
@@ -1350,6 +1438,11 @@ mv_button = tk.Button(frame_c, text='mv', width=6, height=1, relief="flat", bg="
                       fg="black", command=lambda: open_git_mv_window())
 mv_button.grid(column=8, row=0)
 buttons.append(mv_button)
+# git_clone button
+clone_button = tk.Button(frame_c, text='clone', width=6, height=1, relief="flat", bg="black",
+                         fg="black", command=lambda: open_git_clone_window())
+clone_button.grid(column=8, row=0)
+buttons.append(clone_button)
 
 entry = tk.Entry(frame_up, font=("Arial", 12), justify="left",
                  highlightcolor="white", highlightthickness=0, relief="groove", border=2)
@@ -1424,7 +1517,7 @@ tree.bind("<Down>", lambda event: up_down_focus())
 tree.bind("<Delete>", lambda event: delete())
 tree.bind("<Control-c>", lambda event: copy())
 tree.bind("<Control-v>", lambda event: paste()
-if right_menu.entrycget(index=5, option="state") == "normal" else None)
+          if right_menu.entrycget(index=5, option="state") == "normal" else None)
 entry.bind("<Return>", lambda event: update_files(entry.get()))
 entry.bind("<KP_Enter>", lambda event: update_files(entry.get()))
 window.mainloop()
