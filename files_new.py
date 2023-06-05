@@ -10,7 +10,7 @@ import string
 import shutil
 import configparser
 import tkinter as tk
-from tkinter import ttk, simpledialog
+from tkinter import ttk, simpledialog,messagebox
 from tkinter.messagebox import askyesno
 from tkinter import filedialog
 from pathlib import Path
@@ -1138,8 +1138,16 @@ def delete_branch():
         repo = pygit2.Repository(last_path)
         delete_branch = get_selected_branch()
         if delete_branch:
-            repo.branches.delete(delete_branch)
-            update_files(last_path)
+            try:
+                repo.branches.delete(delete_branch)
+                update_files(last_path)
+            except Exception as e:
+                error_message = f"Error deleting branch: {e}"
+                messagebox.showerror("Error", error_message)
+        else:
+            messagebox.showinfo("Info", "No branch selected.")
+    else:
+        messagebox.showinfo("Info", "Not a valid git repository.")
 
 
 def checkout_branch():
@@ -1160,8 +1168,16 @@ def rename_branch(new_name):
         selected_branch = get_selected_branch()
         if selected_branch:
             rename_branch = repo.branches[selected_branch]
-            rename_branch.rename(new_name)
-            update_files(last_path)
+            try:
+                rename_branch.rename(new_name)
+                update_files(last_path)
+            except pygit2.GitError as e:
+                error_message = f"Error renaming branch: {e}"
+                messagebox.showerror("Error", error_message)
+        else:
+            messagebox.showinfo("Info", "No branch selected.")
+    else:
+        messagebox.showinfo("Info", "Not a valid git repository.")
 
 
 # public repository clone
