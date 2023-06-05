@@ -10,7 +10,8 @@
 
 - [프로젝트 소개](#프로젝트-소개)
 - [설치 안내](#설치-안내)
-- [기능 설계 및 설명](#기능-설계-및-설명)
+- [기능 설계 및 설명(v1.0)](#기능-설계-및-설명(v1.0))
+- [기능 설계 및 설명(v2.0)](#기능-설계-및-설명(v2.0))
 - [팀 정보 (Team Information)](#팀-정보-team-information)
 - [협업 과정](#협업과정)
 - [저작권 및 사용권 정보(Copyleft / End User License)](#저작권-및-사용권-정보-copyleft--end-user-license)
@@ -61,7 +62,7 @@ source .venv/bin/activate # 가상환경 실행
 deactivate
 ```
 
-## 기능 설계 및 설명
+## 기능 설계 및 설명(v1.0)
 
 > 모든 사진은 클릭 시 확대 된 이미지로 확인할 수 있습니다.😀
 
@@ -294,6 +295,336 @@ untracked - staged 된 파일 ex) git rm --cached 명령어 실행 시에는 unt
 			<td colspan=2>
 				<br>
 				<b>Git mv 기능</b><br>
+				<br>
+			</td>
+		</tr>
+		<tr>
+			<td width="50%">
+				<h4 align="center">
+  <img width="804" alt="git_mv_open_mv_window" src="https://github.com/rbgksqkr/react/assets/63959171/eb0b1047-049b-484a-9a06-e3807984fe8d">
+          <br><br>변경할 파일 이름 작성
+				</h4>
+			</td>
+			<td width="50%">
+	   			<h4 align="center">
+<img width="804" alt="git_mv_rename" src="https://github.com/rbgksqkr/react/assets/63959171/30fd2f03-2777-455e-80df-dfcda1f428c0">
+            <br><br>파일 이름 변경</h4></td>
+		</tr>
+</tbody>
+</table>
+
+
+## Function design and description(v2.0)
+
+> All photos can be viewed as enlarged images when clicked.😀  
+
+New Feature has updated.
+
+1. We updated Git branch associated action(Create, Delete, Rename, Checkout, Merge).
+2. And We can also check Git commit history
+3. Git clone from Github
+
+Feature 1 and 2 can be activated through the Branch Menu button.  
+Feature No. 3 was implemented by adding a button to the place where v1.0's git-related actions were gathered.  
+### <b>Feature 1. Branch Associated Action </b><br>
+<table><tbody>
+		<tr>
+			<td colspan=2>
+				<b>Branch Create Feature </b><br>
+                <br>it asks the user to enter a branch name and then creates a branch with the name
+				<br>
+			</td>
+		</tr>
+		<tr>
+			<td width="50%">
+				<h4 align="center">
+				<a href = "https://file.notion.so/f/s/0e22ab4d-c27a-4ed3-8cc5-2c094316df7d/Untitled.png?id=4812bd65-1755-48ba-9407-deee0846aa1c&table=block&spaceId=6b2384d5-89f7-4081-b7d5-c38398d8aee4&expirationTimestamp=1686058882740&signature=xnZqRSNU1BTR6-0axEvWEomkl1YZsgKsE7FbUAtA1Dg&downloadName=Untitled.png"><img src="https://file.notion.so/f/s/0e22ab4d-c27a-4ed3-8cc5-2c094316df7d/Untitled.png?id=4812bd65-1755-48ba-9407-deee0846aa1c&table=block&spaceId=6b2384d5-89f7-4081-b7d5-c38398d8aee4&expirationTimestamp=1686058882740&signature=xnZqRSNU1BTR6-0axEvWEomkl1YZsgKsE7FbUAtA1Dg&downloadName=Untitled.png" width="100%" height="100%">
+					</a><br><br> Ask the user to enter a branch name
+				</h4>
+			</td>
+			<td width="50%">
+	   			<h4 align="center">
+		   		<a href="https://file.notion.so/f/s/2a6f6adb-5619-4d5b-9d1b-3b08377c1a42/Untitled.png?id=ed2a5efa-ea20-4608-bc8f-3f7eaa2ba896&table=block&spaceId=6b2384d5-89f7-4081-b7d5-c38398d8aee4&expirationTimestamp=1686058735880&signature=4G7wEtXBo4dvY805iw8VOVUG2LhIiW7QFk8yAdXI9Ho&downloadName=Untitled.png"><img src="https://file.notion.so/f/s/2a6f6adb-5619-4d5b-9d1b-3b08377c1a42/Untitled.png?id=ed2a5efa-ea20-4608-bc8f-3f7eaa2ba896&table=block&spaceId=6b2384d5-89f7-4081-b7d5-c38398d8aee4&expirationTimestamp=1686058735880&signature=4G7wEtXBo4dvY805iw8VOVUG2LhIiW7QFk8yAdXI9Ho&downloadName=Untitled.png" width="100%" height="100%"></a><br><br>Branch has Created in Branch List </h4></td>
+		</tr>
+</tbody>
+</table>
+
+<table><tbody>
+		<tr>
+			<td colspan=3>
+				<br>
+				<b>Git Delete Feature </b><br>
+				<br> it shows the list of branches, asks the user to select one of them, and deletes the selected one
+			</td>
+		</tr>
+		<tr>
+			<td width="33%">
+				<h4 align="center">
+                <a href="https://file.notion.so/f/s/2a6f6adb-5619-4d5b-9d1b-3b08377c1a42/Untitled.png?id=ed2a5efa-ea20-4608-bc8f-3f7eaa2ba896&table=block&spaceId=6b2384d5-89f7-4081-b7d5-c38398d8aee4&expirationTimestamp=1686058735880&signature=4G7wEtXBo4dvY805iw8VOVUG2LhIiW7QFk8yAdXI9Ho&downloadName=Untitled.png"><img src="https://file.notion.so/f/s/2a6f6adb-5619-4d5b-9d1b-3b08377c1a42/Untitled.png?id=ed2a5efa-ea20-4608-bc8f-3f7eaa2ba896&table=block&spaceId=6b2384d5-89f7-4081-b7d5-c38398d8aee4&expirationTimestamp=1686058735880&signature=4G7wEtXBo4dvY805iw8VOVUG2LhIiW7QFk8yAdXI9Ho&downloadName=Untitled.png" width="100%" height="100%"></a>
+                <br><br>Shows the list of branches in Branch list GUI
+				</h4>
+			</td>
+			<td width="33%">
+	   			<h4 align="center">
+                      <a href="https://file.notion.so/f/s/e5600bbe-c797-4851-b0fe-9af669c4f690/Untitled.png?id=6d765431-88d3-4b5b-8f35-ac8ab9af4b6e&table=block&spaceId=6b2384d5-89f7-4081-b7d5-c38398d8aee4&expirationTimestamp=1686059069786&signature=EyZ8Q8OkTM3hkTsbGUJAbLwudzUpDrqt2HbaifjDYHg&downloadName=Untitled.png"><img src="https://file.notion.so/f/s/e5600bbe-c797-4851-b0fe-9af669c4f690/Untitled.png?id=6d765431-88d3-4b5b-8f35-ac8ab9af4b6e&table=block&spaceId=6b2384d5-89f7-4081-b7d5-c38398d8aee4&expirationTimestamp=1686059069786&signature=EyZ8Q8OkTM3hkTsbGUJAbLwudzUpDrqt2HbaifjDYHg&downloadName=Untitled.png" width="100%" height="100%"></a><br><br>Ask the user to select one of them</h4></td>
+            <td width="33%">
+	   			<h4 align="center">
+                      <a href="https://file.notion.so/f/s/386e46fc-12bc-4d87-ac31-c66af8adecbf/Untitled.png?id=2f8df168-bfc9-4a27-b393-ee92843509ea&table=block&spaceId=6b2384d5-89f7-4081-b7d5-c38398d8aee4&expirationTimestamp=1686059199235&signature=K5Z6SuRg9xCjBvzKEzwN-ouacHsuwGvjAGJNhQnQQdA&downloadName=Untitled.png"><img src="https://file.notion.so/f/s/386e46fc-12bc-4d87-ac31-c66af8adecbf/Untitled.png?id=2f8df168-bfc9-4a27-b393-ee92843509ea&table=block&spaceId=6b2384d5-89f7-4081-b7d5-c38398d8aee4&expirationTimestamp=1686059199235&signature=K5Z6SuRg9xCjBvzKEzwN-ouacHsuwGvjAGJNhQnQQdA&downloadName=Untitled.png" width="100%" height="100%"></a><br><br>branch has deleted</h4></td>
+		</tr>
+</tbody>
+</table>
+
+<table><tbody>
+		<tr>
+			<td colspan=3>
+				<br>
+				<b>Git Rename Feature </b><br>
+				<br> it shows the list of branches, asks the user to select one of them and to enter a new name, and renames the branch.
+			</td>
+		</tr>
+		<tr>
+			<td width="33%">
+				<h4 align="center">
+                <a href="https://file.notion.so/f/s/386e46fc-12bc-4d87-ac31-c66af8adecbf/Untitled.png?id=2f8df168-bfc9-4a27-b393-ee92843509ea&table=block&spaceId=6b2384d5-89f7-4081-b7d5-c38398d8aee4&expirationTimestamp=1686059199235&signature=K5Z6SuRg9xCjBvzKEzwN-ouacHsuwGvjAGJNhQnQQdA&downloadName=Untitled.png"><img src="https://file.notion.so/f/s/386e46fc-12bc-4d87-ac31-c66af8adecbf/Untitled.png?id=2f8df168-bfc9-4a27-b393-ee92843509ea&table=block&spaceId=6b2384d5-89f7-4081-b7d5-c38398d8aee4&expirationTimestamp=1686059199235&signature=K5Z6SuRg9xCjBvzKEzwN-ouacHsuwGvjAGJNhQnQQdA&downloadName=Untitled.png" width="100%" height="100%"></a>
+                <br><br>Shows the list of branches in Branch list GUI
+				</h4>
+			</td>
+			<td width="33%">
+	   			<h4 align="center">
+                      <a href="https://file.notion.so/f/s/0254bdab-2fba-4191-b9b8-911e73384dca/Untitled.png?id=0c6046c9-b509-47ee-b73a-f8bfcf0df534&table=block&spaceId=6b2384d5-89f7-4081-b7d5-c38398d8aee4&expirationTimestamp=1686059647933&signature=bYVj81ZeC8X61Z-izQXgrRU8p00TTZVaBk9_75aMLS0&downloadName=Untitled.png"><img src="https://file.notion.so/f/s/0254bdab-2fba-4191-b9b8-911e73384dca/Untitled.png?id=0c6046c9-b509-47ee-b73a-f8bfcf0df534&table=block&spaceId=6b2384d5-89f7-4081-b7d5-c38398d8aee4&expirationTimestamp=1686059647933&signature=bYVj81ZeC8X61Z-izQXgrRU8p00TTZVaBk9_75aMLS0&downloadName=Untitled.png" width="100%" height="100%"></a><br><br>Ask the user selected branch to enter a new name</h4></td>
+            <td width="33%">
+	   			<h4 align="center">
+                      <a href="https://file.notion.so/f/s/7f08e346-a7ba-4e99-82eb-c2eb5009282a/Untitled.png?id=dd14e4d3-fc0c-4e70-89a2-e03fc94d2084&table=block&spaceId=6b2384d5-89f7-4081-b7d5-c38398d8aee4&expirationTimestamp=1686059651254&signature=W5oXQQxoVldNtIcgDBq1-nMOFHnDpVVUT4qI4vXQl64&downloadName=Untitled.png"><img src="https://file.notion.so/f/s/7f08e346-a7ba-4e99-82eb-c2eb5009282a/Untitled.png?id=dd14e4d3-fc0c-4e70-89a2-e03fc94d2084&table=block&spaceId=6b2384d5-89f7-4081-b7d5-c38398d8aee4&expirationTimestamp=1686059651254&signature=W5oXQQxoVldNtIcgDBq1-nMOFHnDpVVUT4qI4vXQl64&downloadName=Untitled.png" width="100%" height="100%"></a><br><br>branch has renamed</h4></td>
+		</tr>
+</tbody>
+</table>
+
+<table><tbody>
+		<tr>
+			<td colspan=3>
+				<br>
+				<b>Git Checkout Feature</b><br>
+				<br>it shows the list of branches, asks the user to select one of them, and checkout the branch.
+			</td>
+		</tr>
+		<tr>
+			<td width="33%">
+				<h4 align="center">
+                 <a href="https://file.notion.so/f/s/8715cc91-3102-4d61-b91d-0730b3843985/Untitled.png?id=3a61a30f-b022-4ab2-9039-2fb6a78360c9&table=block&spaceId=6b2384d5-89f7-4081-b7d5-c38398d8aee4&expirationTimestamp=1686060445261&signature=-sNhV47ByATEY4oiAd4-jAjaX-7RxCWKNwaxjPTIIwE&downloadName=Untitled.png"><img src="https://file.notion.so/f/s/8715cc91-3102-4d61-b91d-0730b3843985/Untitled.png?id=3a61a30f-b022-4ab2-9039-2fb6a78360c9&table=block&spaceId=6b2384d5-89f7-4081-b7d5-c38398d8aee4&expirationTimestamp=1686060445261&signature=-sNhV47ByATEY4oiAd4-jAjaX-7RxCWKNwaxjPTIIwE&downloadName=Untitled.png" width="100%" height="100%"></a>
+                <br><br>Shows the list of branches in Branch list GUI
+				</h4>
+			</td>
+			<td width="33%">
+				<h4 align="center">
+				 <a href="https://file.notion.so/f/s/c1865d75-1d6a-45fd-a006-f14b7da9279d/Untitled.png?id=2968b54a-9592-4493-9c59-30d791be1a2a&table=block&spaceId=6b2384d5-89f7-4081-b7d5-c38398d8aee4&expirationTimestamp=1686060363693&signature=h3BMlQHKKTIfLRvHEHAUHURzVRmoVs08dUFZ1C1RtS0&downloadName=Untitled.png"><img src="https://file.notion.so/f/s/c1865d75-1d6a-45fd-a006-f14b7da9279d/Untitled.png?id=2968b54a-9592-4493-9c59-30d791be1a2a&table=block&spaceId=6b2384d5-89f7-4081-b7d5-c38398d8aee4&expirationTimestamp=1686060363693&signature=h3BMlQHKKTIfLRvHEHAUHURzVRmoVs08dUFZ1C1RtS0&downloadName=Untitled.png" width="100%" height="100%"></a>
+					<br><br> asks the user to select one of them
+				</h4>
+			</td>
+			<td width="33%">
+	   			<h4 align="center">
+                <a href="https://file.notion.so/f/s/d0b3e20d-c54f-4780-97bb-2dbf9979d3c3/Untitled.png?id=2c2603b2-a1af-4db0-a960-9b31ce02a727&table=block&spaceId=6b2384d5-89f7-4081-b7d5-c38398d8aee4&expirationTimestamp=1686060511054&signature=mjXRhDkz1sch01GabuWwU2nyKy9Bp_KFQY4SEM3vAjU&downloadName=Untitled.png"><img src="https://file.notion.so/f/s/d0b3e20d-c54f-4780-97bb-2dbf9979d3c3/Untitled.png?id=2c2603b2-a1af-4db0-a960-9b31ce02a727&table=block&spaceId=6b2384d5-89f7-4081-b7d5-c38398d8aee4&expirationTimestamp=1686060511054&signature=mjXRhDkz1sch01GabuWwU2nyKy9Bp_KFQY4SEM3vAjU&downloadName=Untitled.png" width="100%" height="100%"></a>
+            <br><br>checkout the branch.(You can also just double click the branch list's specific branch to checkout)</h4></td>
+		</tr>
+</tbody>
+</table>
+
+
+
+<table><tbody>
+		<tr>
+			<td colspan=3>
+				<br>
+				<b>Error message windows</b><br>
+				<br> If it is not possible to perform the requested action, then report an error message to the user.
+                <br>We have two cases
+                <br>1. When attempting to delete a current checked out branch
+                <br>2. When attempting to rename a selected branch to already exists branch name<br>
+                <br>3. When attempting to create a branch that same name with already exists branch
+                <br><b>First Case(Try to delete current checked out branch)</b><br> 
+			</td>
+		</tr>
+		<tr>
+			<td width="33%">
+				<h4 align="center">
+                <a href="https://file.notion.so/f/s/8715cc91-3102-4d61-b91d-0730b3843985/Untitled.png?id=3a61a30f-b022-4ab2-9039-2fb6a78360c9&table=block&spaceId=6b2384d5-89f7-4081-b7d5-c38398d8aee4&expirationTimestamp=1686062900239&signature=10QNVg71__XK1imcCrIIv4UHxaQNpBQF2qBCs0DYxII&downloadName=Untitled.png"><img src="https://file.notion.so/f/s/8715cc91-3102-4d61-b91d-0730b3843985/Untitled.png?id=3a61a30f-b022-4ab2-9039-2fb6a78360c9&table=block&spaceId=6b2384d5-89f7-4081-b7d5-c38398d8aee4&expirationTimestamp=1686062900239&signature=10QNVg71__XK1imcCrIIv4UHxaQNpBQF2qBCs0DYxII&downloadName=Untitled.png" width="100%" height="100%"></a>
+          <br><br>Current branch list(example)
+				</h4>
+			</td>
+			<td width="33%">
+				<h4 align="center">
+                <a href="https://file.notion.so/f/s/2aaf3aa4-876c-4c63-868e-aaa831544556/Untitled.png?id=d8296999-42fe-4028-ac3e-e1f75700752d&table=block&spaceId=6b2384d5-89f7-4081-b7d5-c38398d8aee4&expirationTimestamp=1686062987091&signature=zV3OuFZZws6uarz4tLXAOseDZgd_fnR9YymA_rNogIE&downloadName=Untitled.png"><img src="https://file.notion.so/f/s/2aaf3aa4-876c-4c63-868e-aaa831544556/Untitled.png?id=d8296999-42fe-4028-ac3e-e1f75700752d&table=block&spaceId=6b2384d5-89f7-4081-b7d5-c38398d8aee4&expirationTimestamp=1686062987091&signature=zV3OuFZZws6uarz4tLXAOseDZgd_fnR9YymA_rNogIE&downloadName=Untitled.png" width="100%" height="100%"></a>
+          <br><br>When attempting to delete a currently checked out branch
+				</h4>
+			</td>
+            <td width="33%">
+				<h4 align="center">
+                <a href="https://file.notion.so/f/s/331d99eb-3359-4ac5-8b34-d6324bba40b8/Untitled.png?id=20f2eac0-30dc-4bee-b49f-8aee2e01bbb8&table=block&spaceId=6b2384d5-89f7-4081-b7d5-c38398d8aee4&expirationTimestamp=1686063054286&signature=mjtG_d0Z6C_fDaGUvmCeqV8AaOwo2ohNTa2pULVmP0A&downloadName=Untitled.png"><img src="https://file.notion.so/f/s/331d99eb-3359-4ac5-8b34-d6324bba40b8/Untitled.png?id=20f2eac0-30dc-4bee-b49f-8aee2e01bbb8&table=block&spaceId=6b2384d5-89f7-4081-b7d5-c38398d8aee4&expirationTimestamp=1686063054286&signature=mjtG_d0Z6C_fDaGUvmCeqV8AaOwo2ohNTa2pULVmP0A&downloadName=Untitled.png" width="100%" height="100%"></a>
+          <br><br>Error message about First case
+				</h4>
+			</td>
+		</tr>
+</tbody>
+</table>
+
+
+<table><tbody>
+		<tr>
+			<td colspan=3>
+				<br>
+                <br><b>Second Case(Try to rename selected branch to already exist branch)</b><br> 
+			</td>
+		</tr>
+		<tr>
+			<td width="33%">
+				<h4 align="center">
+                <a href="https://file.notion.so/f/s/8715cc91-3102-4d61-b91d-0730b3843985/Untitled.png?id=3a61a30f-b022-4ab2-9039-2fb6a78360c9&table=block&spaceId=6b2384d5-89f7-4081-b7d5-c38398d8aee4&expirationTimestamp=1686062900239&signature=10QNVg71__XK1imcCrIIv4UHxaQNpBQF2qBCs0DYxII&downloadName=Untitled.png"><img src="https://file.notion.so/f/s/8715cc91-3102-4d61-b91d-0730b3843985/Untitled.png?id=3a61a30f-b022-4ab2-9039-2fb6a78360c9&table=block&spaceId=6b2384d5-89f7-4081-b7d5-c38398d8aee4&expirationTimestamp=1686062900239&signature=10QNVg71__XK1imcCrIIv4UHxaQNpBQF2qBCs0DYxII&downloadName=Untitled.png" width="100%" height="100%"></a>
+          <br><br>Current branch list(example)
+				</h4>
+			</td>
+			<td width="33%">
+				<h4 align="center">
+                <a href="https://file.notion.so/f/s/62904e55-6455-4aac-83e6-503e91992a49/Untitled.png?id=526e8410-6352-427e-ad9d-f714bafc0ea1&table=block&spaceId=6b2384d5-89f7-4081-b7d5-c38398d8aee4&expirationTimestamp=1686063460793&signature=mZfacldHkStd3XFi53Ap6j6sUrOJ6dw4VznDYbrLPHM&downloadName=Untitled.png"><img src="https://file.notion.so/f/s/62904e55-6455-4aac-83e6-503e91992a49/Untitled.png?id=526e8410-6352-427e-ad9d-f714bafc0ea1&table=block&spaceId=6b2384d5-89f7-4081-b7d5-c38398d8aee4&expirationTimestamp=1686063460793&signature=mZfacldHkStd3XFi53Ap6j6sUrOJ6dw4VznDYbrLPHM&downloadName=Untitled.png" width="100%" height="100%"></a>
+          <br><br>When attempting to selected branch to already exist branch
+				</h4>
+			</td>
+            <td width="33%">
+				<h4 align="center">
+                <a href="https://file.notion.so/f/s/331d99eb-3359-4ac5-8b34-d6324bba40b8/Untitled.png?id=20f2eac0-30dc-4bee-b49f-8aee2e01bbb8&table=block&spaceId=6b2384d5-89f7-4081-b7d5-c38398d8aee4&expirationTimestamp=1686063054286&signature=mjtG_d0Z6C_fDaGUvmCeqV8AaOwo2ohNTa2pULVmP0A&downloadName=Untitled.png"><img src="https://file.notion.so/f/s/331d99eb-3359-4ac5-8b34-d6324bba40b8/Untitled.png?id=20f2eac0-30dc-4bee-b49f-8aee2e01bbb8&table=block&spaceId=6b2384d5-89f7-4081-b7d5-c38398d8aee4&expirationTimestamp=1686063054286&signature=mjtG_d0Z6C_fDaGUvmCeqV8AaOwo2ohNTa2pULVmP0A&downloadName=Untitled.png" width="100%" height="100%"></a>
+          <br><br>Error message about Second case
+				</h4>
+			</td>
+		</tr>
+</tbody>
+</table>
+
+<table><tbody>
+		<tr>
+			<td colspan=3>
+				<br>
+                <br><b>Third Case(Try to create branch that has name same with already existing branch)</b><br> 
+			</td>
+		</tr>
+		<tr>
+			<td width="33%">
+				<h4 align="center">
+                <a href="https://file.notion.so/f/s/8715cc91-3102-4d61-b91d-0730b3843985/Untitled.png?id=3a61a30f-b022-4ab2-9039-2fb6a78360c9&table=block&spaceId=6b2384d5-89f7-4081-b7d5-c38398d8aee4&expirationTimestamp=1686062900239&signature=10QNVg71__XK1imcCrIIv4UHxaQNpBQF2qBCs0DYxII&downloadName=Untitled.png"><img src="https://file.notion.so/f/s/8715cc91-3102-4d61-b91d-0730b3843985/Untitled.png?id=3a61a30f-b022-4ab2-9039-2fb6a78360c9&table=block&spaceId=6b2384d5-89f7-4081-b7d5-c38398d8aee4&expirationTimestamp=1686062900239&signature=10QNVg71__XK1imcCrIIv4UHxaQNpBQF2qBCs0DYxII&downloadName=Untitled.png" width="100%" height="100%"></a>
+          <br><br>Current branch list(example)
+				</h4>
+			</td>
+			<td width="33%">
+				<h4 align="center">
+                <a href="https://file.notion.so/f/s/15aaa1fb-5b13-4710-bf12-ddd19f7d6564/Untitled.png?id=0cac3e0b-713b-4d04-b3ac-7dbd5619f945&table=block&spaceId=6b2384d5-89f7-4081-b7d5-c38398d8aee4&expirationTimestamp=1686064120341&signature=muJNyAZx0xRioMAhQHkG6Xv3uIfAIC97nsoDpz-GFvs&downloadName=Untitled.png"><img src="https://file.notion.so/f/s/15aaa1fb-5b13-4710-bf12-ddd19f7d6564/Untitled.png?id=0cac3e0b-713b-4d04-b3ac-7dbd5619f945&table=block&spaceId=6b2384d5-89f7-4081-b7d5-c38398d8aee4&expirationTimestamp=1686064120341&signature=muJNyAZx0xRioMAhQHkG6Xv3uIfAIC97nsoDpz-GFvs&downloadName=Untitled.png" width="100%" height="100%"></a>
+          <br><br>When attempting to create branch that has same with already existing branch
+				</h4>
+			</td>
+            <td width="33%">
+				<h4 align="center">
+                <a href="https://file.notion.so/f/s/c2db5bcf-61ca-4209-919e-a82a20b234ca/Untitled.png?id=f29d4c08-31e6-4151-a2f2-675d945e7f77&table=block&spaceId=6b2384d5-89f7-4081-b7d5-c38398d8aee4&expirationTimestamp=1686064137034&signature=ogOS8Jwhwiw1R1iptfkEcUHn21aHLrNmMYV7qhGsZPs&downloadName=Untitled.png"><img src="https://file.notion.so/f/s/c2db5bcf-61ca-4209-919e-a82a20b234ca/Untitled.png?id=f29d4c08-31e6-4151-a2f2-675d945e7f77&table=block&spaceId=6b2384d5-89f7-4081-b7d5-c38398d8aee4&expirationTimestamp=1686064137034&signature=ogOS8Jwhwiw1R1iptfkEcUHn21aHLrNmMYV7qhGsZPs&downloadName=Untitled.png" width="100%" height="100%"></a>
+          <br><br>Error message about Third case
+				</h4>
+			</td>
+		</tr>
+</tbody>
+</table>
+
+<table><tbody>
+		<tr>
+			<td colspan=2>
+				<br>
+				<b>Git Merge error messages</b><br>
+				<br>
+			</td>
+		</tr>
+		<tr>
+			<td width="50%">
+				<h4 align="center">
+				<a href = "https://raw.githubusercontent.com/CAU-OSS-project-practice/OSS-file-manager/develop/data/execution_image/git_restore_staged_before.png"><img src="/data/execution_image/git_restore_staged_before.png" width="100%" height="100%">
+					</a><br><br>Git restore --staged작동 전(파일을 staging)
+				</h4>
+			</td>
+			<td width="50%">
+	   			<h4 align="center">
+		   		<a href="https://raw.githubusercontent.com/CAU-OSS-project-practice/OSS-file-manager/develop/data/execution_image/git_restore_staged_after.png"><img src="/data/execution_image/git_restore_staged_after.png" width="100%" height="100%"></a><br><br>git restore --staged staged된 파일을 modified 상태로 되돌림</h4></td>
+		</tr>
+</tbody>
+</table>
+
+### <b>Feature 2. Git Commit history with Graph </b>
+
+<table><tbody>
+		<tr>
+			<td colspan=2>
+				<br>
+				<b>Git commit history with Graph</b><br>
+				<br>
+			</td>
+		</tr>
+		<tr>
+			<td width="50%">
+				<h4 align="center">
+				<a href = "https://raw.githubusercontent.com/CAU-OSS-project-practice/OSS-file-manager/develop/data/execution_image/rm_before.png"><img src="/data/execution_image/rm_after.png" width="100%" height="100%">
+					</a><br><br>git rm before
+				</h4>
+			</td>
+			<td width="50%">
+	   			<h4 align="center">
+		   		<a href="https://raw.githubusercontent.com/CAU-OSS-project-practice/OSS-file-manager/develop/data/execution_image/rm_after.png"><img src="/data/execution_image/rm_after.png" width="100%" height="100%"></a><br><br>git rm after(디렉토리에서 삭제 및 삭제된 사실이 staging됨) </h4></td>
+		</tr>
+</tbody>
+</table>
+
+### <b>Feature 3. Git clone from Github</b>
+
+<table><tbody>
+		<tr>
+			<td colspan=2>
+				<br>
+				<b>Git clone from public repository</b><br>
+				<br>
+			</td>
+		</tr>
+		<tr>
+			<td width="50%">
+				<h4 align="center">
+				<a href = "https://raw.githubusercontent.com/CAU-OSS-project-practice/OSS-file-manager/develop/data/execution_image/rm%20_cached_before.png"><img src="/data/execution_image/rm _cached_before.png" width="100%" height="100%">
+					</a><br><br>git rm --cached before
+				</h4>
+			</td>
+			<td width="50%">
+	   			<h4 align="center">
+		   		<a href="https://raw.githubusercontent.com/CAU-OSS-project-practice/OSS-file-manager/develop/data/execution_image/rm_cached_after.png"><img src="/data/execution_image/rm_cached_after.png" width="100%" height="100%"></a><br><br>git rm --cached after -> 실제 디렉토리에서 삭제되진 않았지만 git repository에서 삭제됨(untracked)됨</h4></td>
+		</tr>
+</tbody>
+</table>
+
+<table><tbody>
+		<tr>
+			<td colspan=2>
+				<br>
+				<b>Git Clone from private repository</b><br>
+				<br>
+			</td>
+		</tr>
+		<tr>
+			<td width="50%">
+				<h4 align="center">
+  <img width="804" alt="git_mv_open_mv_window" src="https://github.com/rbgksqkr/react/assets/63959171/eb0b1047-049b-484a-9a06-e3807984fe8d">
+          <br><br>변경할 파일 이름 작성
+				</h4>
+			</td>
+			<td width="50%">
+	   			<h4 align="center">
+<img width="804" alt="git_mv_rename" src="https://github.com/rbgksqkr/react/assets/63959171/30fd2f03-2777-455e-80df-dfcda1f428c0">
+            <br><br>파일 이름 변경</h4></td>
+		</tr>
+</tbody>
+</table>
+
+<table><tbody>
+		<tr>
+			<td colspan=2>
+				<br>
+				<b>Saving The ID and token information should be stored somewhere for the future use.</b><br>
 				<br>
 			</td>
 		</tr>

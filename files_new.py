@@ -10,7 +10,7 @@ import string
 import shutil
 import configparser
 import tkinter as tk
-from tkinter import ttk, simpledialog
+from tkinter import ttk, simpledialog,messagebox
 from tkinter.messagebox import askyesno
 from tkinter import filedialog
 from pathlib import Path
@@ -1129,7 +1129,11 @@ def create_branch(new_branch_name):
     if check_git_repo(last_path):
         repo = pygit2.Repository(last_path)
         current_commit_id = repo.head.target
-        repo.create_branch(new_branch_name, repo.get(current_commit_id))
+        try:
+            repo.create_branch(new_branch_name, repo.get(current_commit_id))
+        except pygit2.AlreadyExistsError as e:
+                error_message = f"Error creating branch: {e}"
+                messagebox.showerror("Error", error_message)
         update_files(last_path)
 
 
@@ -1138,8 +1142,16 @@ def delete_branch():
         repo = pygit2.Repository(last_path)
         delete_branch = get_selected_branch()
         if delete_branch:
-            repo.branches.delete(delete_branch)
-            update_files(last_path)
+            try:
+                repo.branches.delete(delete_branch)
+            except Exception as e:
+                error_message = f"Error deleting branch: {e}"
+                messagebox.showerror("Error", error_message)
+        else:
+            messagebox.showinfo("Info", "No branch selected.")
+    else:
+        messagebox.showinfo("Info", "Not a valid git repository.")
+    update_files(last_path)
 
 
 def checkout_branch():
@@ -1160,9 +1172,16 @@ def rename_branch(new_name):
         selected_branch = get_selected_branch()
         if selected_branch:
             rename_branch = repo.branches[selected_branch]
-            rename_branch.rename(new_name)
-            update_files(last_path)
-
+            try:
+                rename_branch.rename(new_name)
+            except pygit2.AlreadyExistsError as e:
+                error_message = f"Error renaming branch: {e}"
+                messagebox.showerror("Error", error_message)
+        else:
+            messagebox.showinfo("Info", "No branch selected.")
+    else:
+        messagebox.showinfo("Info", "Not a valid git repository.")
+    update_files(last_path)
 
 # public repository clone
 def git_clone(repo_url):
