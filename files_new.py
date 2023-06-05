@@ -1129,7 +1129,11 @@ def create_branch(new_branch_name):
     if check_git_repo(last_path):
         repo = pygit2.Repository(last_path)
         current_commit_id = repo.head.target
-        repo.create_branch(new_branch_name, repo.get(current_commit_id))
+        try:
+            repo.create_branch(new_branch_name, repo.get(current_commit_id))
+        except pygit2.AlreadyExistsError as e:
+                error_message = f"Error creating branch: {e}"
+                messagebox.showerror("Error", error_message)
         update_files(last_path)
 
 
@@ -1140,10 +1144,10 @@ def delete_branch():
         if delete_branch:
             try:
                 repo.branches.delete(delete_branch)
-                update_files(last_path)
             except Exception as e:
                 error_message = f"Error deleting branch: {e}"
                 messagebox.showerror("Error", error_message)
+                update_files(last_path)
         else:
             messagebox.showinfo("Info", "No branch selected.")
     else:
@@ -1170,10 +1174,10 @@ def rename_branch(new_name):
             rename_branch = repo.branches[selected_branch]
             try:
                 rename_branch.rename(new_name)
-                update_files(last_path)
             except pygit2.AlreadyExistsError as e:
                 error_message = f"Error renaming branch: {e}"
                 messagebox.showerror("Error", error_message)
+                update_files(last_path)
         else:
             messagebox.showinfo("Info", "No branch selected.")
     else:
