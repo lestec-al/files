@@ -1171,7 +1171,7 @@ def rename_branch(new_name):
             try:
                 rename_branch.rename(new_name)
                 update_files(last_path)
-            except pygit2.GitError as e:
+            except pygit2.AlreadyExistsError as e:
                 error_message = f"Error renaming branch: {e}"
                 messagebox.showerror("Error", error_message)
         else:
