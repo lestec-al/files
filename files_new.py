@@ -1147,11 +1147,11 @@ def delete_branch():
             except Exception as e:
                 error_message = f"Error deleting branch: {e}"
                 messagebox.showerror("Error", error_message)
-                update_files(last_path)
         else:
             messagebox.showinfo("Info", "No branch selected.")
     else:
         messagebox.showinfo("Info", "Not a valid git repository.")
+    update_files(last_path)
 
 
 def checkout_branch():
@@ -1177,12 +1177,11 @@ def rename_branch(new_name):
             except pygit2.AlreadyExistsError as e:
                 error_message = f"Error renaming branch: {e}"
                 messagebox.showerror("Error", error_message)
-                update_files(last_path)
         else:
             messagebox.showinfo("Info", "No branch selected.")
     else:
         messagebox.showinfo("Info", "Not a valid git repository.")
-
+    update_files(last_path)
 
 # public repository clone
 def git_clone(repo_url):
