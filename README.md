@@ -10,7 +10,8 @@
 
 - [프로젝트 소개](#프로젝트-소개)
 - [설치 안내](#설치-안내)
-- [기능 설계 및 설명](#기능-설계-및-설명)
+- [기능 설계 및 설명(v1.0)](#기능-설계-및-설명(v1.0))
+- [기능 설계 및 설명(v2.0)](#기능-설계-및-설명(v2.0))
 - [팀 정보 (Team Information)](#팀-정보-team-information)
 - [협업 과정](#협업과정)
 - [저작권 및 사용권 정보(Copyleft / End User License)](#저작권-및-사용권-정보-copyleft--end-user-license)
@@ -61,7 +62,7 @@ source .venv/bin/activate # 가상환경 실행
 deactivate
 ```
 
-## 기능 설계 및 설명
+## 기능 설계 및 설명(v1.0)
 
 > 모든 사진은 클릭 시 확대 된 이미지로 확인할 수 있습니다.😀
 
@@ -294,6 +295,286 @@ untracked - staged 된 파일 ex) git rm --cached 명령어 실행 시에는 unt
 			<td colspan=2>
 				<br>
 				<b>Git mv 기능</b><br>
+				<br>
+			</td>
+		</tr>
+		<tr>
+			<td width="50%">
+				<h4 align="center">
+  <img width="804" alt="git_mv_open_mv_window" src="https://github.com/rbgksqkr/react/assets/63959171/eb0b1047-049b-484a-9a06-e3807984fe8d">
+          <br><br>변경할 파일 이름 작성
+				</h4>
+			</td>
+			<td width="50%">
+	   			<h4 align="center">
+<img width="804" alt="git_mv_rename" src="https://github.com/rbgksqkr/react/assets/63959171/30fd2f03-2777-455e-80df-dfcda1f428c0">
+            <br><br>파일 이름 변경</h4></td>
+		</tr>
+</tbody>
+</table>
+
+
+## Function design and description(v2.0)
+
+> All photos can be viewed as enlarged images when clicked.😀  
+
+New Feature has updated.
+
+1. We updated Git branch associated action(Create, Delete, Rename, Checkout, Merge).
+2. And We can also check Git commit history
+3. Git clone from Github
+
+Feature 1 and 2 can be activated through the Branch Menu button.
+
+Feature No. 3 was implemented by adding a button to the place where v1.0's git-related actions were gathered.
+
+### <b>Feature 1. Branch Associated Action </b>
+<table><tbody>
+		<tr>
+			<td colspan=3>
+				<br>
+				<b>Branch Create Feature </b><br>
+                <b>it asks the user to enter a branch name and then creates a branch with the name
+				<br>
+			</td>
+		</tr>
+		<tr>
+			<td width="33%">
+				<h4 align="center">
+				<a href = "https://raw.githubusercontent.com/CAU-OSS-project-practice/OSS-file-manager/develop/data/execution_image/rootdir.png"><img src="/data/execution_image/rootdir.png" width="100%" height="100%">
+					</a><br><br> 파일 탐색은 루트 디렉토리에서 시작
+				</h4>
+			</td>
+			<td width="33%">
+	   			<h4 align="center">
+		   		<a href="https://raw.githubusercontent.com/CAU-OSS-project-practice/OSS-file-manager/develop/data/execution_image/in%20folder.png"><img src="/data/execution_image/in folder.png" width="100%" height="100%"></a><br><br>현재 디렉토리에 포함된 모든 파일과 디렉토리는 아이콘, 이름, 확장자로 표현 </h4></td>
+            <td width="33%">
+	   			<h4 align="center">
+		   		<a href="https://raw.githubusercontent.com/CAU-OSS-project-practice/OSS-file-manager/develop/data/execution_image/double-click.gif"><img src="/data/execution_image/double-click.gif" width="100%" height="100%"></a><br><br>더블 클릭을 통해 브라우징 가능 </h4></td>
+		</tr>
+</tbody>
+</table>
+
+<table><tbody>
+		<tr>
+			<td colspan=2>
+				<br>
+				<b>Git Delete Feature </b><br>
+				<br> it shows the list of branches, asks the user to select one of them, and deletes the selected one
+			</td>
+		</tr>
+		<tr>
+			<td width="50%">
+				<h4 align="center">
+<img width="804" alt="git_init_not_git_repo" src="https://github.com/rbgksqkr/react/assets/63959171/ce081f1c-5bf2-4e15-9b47-510bc62a891c">
+					</a><br><br>Git repository가 아닌 디렉토리인 경우 -> init 버튼 활성화
+				</h4>
+			</td>
+			<td width="50%">
+	   			<h4 align="center">
+                      <img width="804" alt="git_init_git_repo" src="https://github.com/rbgksqkr/react/assets/63959171/709a75ea-e70f-43dd-8165-0cbb3f49b41d">
+            </a><br><br>이미 Git repository인 디렉토리의 경우 -> init 버튼 비활성화</h4></td>
+		</tr>
+</tbody>
+</table>
+
+<table><tbody>
+		<tr>
+			<td colspan=2>
+				<br>
+				<b>Git Rename Feature </b><br>
+				<br> it shows the list of branches, asks the user to select one of them and to enter a new name, and renames the branch.
+			</td>
+		</tr>
+		<tr>
+			<td width="50%">
+				<h4 align="center">
+<img width="804" alt="git_init_not_git_repo" src="https://github.com/rbgksqkr/react/assets/63959171/ce081f1c-5bf2-4e15-9b47-510bc62a891c">
+					</a><br><br>Git repository가 아닌 디렉토리인 경우 -> init 버튼 활성화
+				</h4>
+			</td>
+			<td width="50%">
+	   			<h4 align="center">
+                      <img width="804" alt="git_init_git_repo" src="https://github.com/rbgksqkr/react/assets/63959171/709a75ea-e70f-43dd-8165-0cbb3f49b41d">
+            </a><br><br>이미 Git repository인 디렉토리의 경우 -> init 버튼 비활성화</h4></td>
+		</tr>
+</tbody>
+</table>
+
+<table><tbody>
+		<tr>
+			<td colspan=3>
+				<br>
+				<b>Git Checkout Feature</b><br>
+				<br>
+			</td>
+		</tr>
+		<tr>
+			<td width="33%">
+				<h4 align="center">
+          <img width="804" alt="git_add_before" src="https://github.com/rbgksqkr/react/assets/63959171/514aaa4d-1245-4c3c-9b55-1f34f023e8d5">
+					<br><br> 파일 선택 전 
+				</h4>
+			</td>
+			<td width="33%">
+				<h4 align="center">
+				<img width="804" alt="git_add_one" src="https://github.com/rbgksqkr/react/assets/63959171/6938733f-a031-4093-8bd8-feaff368b5f9">
+					<br><br> 한 파일 선택시 그 파일만 add 가능
+				</h4>
+			</td>
+			<td width="33%">
+	   			<h4 align="center">
+		   		<img width="804" alt="git_add_all" src="https://github.com/rbgksqkr/react/assets/63959171/b8b24523-a693-466e-8962-4a3d4f41daae">
+            <br><br>선택된 파일이 없을 시에는 git add . 동작</h4></td>
+		</tr>
+</tbody>
+</table>
+
+
+
+<table><tbody>
+		<tr>
+			<td colspan=2>
+				<br>
+				<b>Error message windows</b><br>
+				<br> If it is not possible to perform the requested action, then report an error message to the user.
+			</td>
+		</tr>
+		<tr>
+			<td width="50%">
+				<h4 align="center">
+<img width="804" alt="git_commit_show_staged_list" src="https://github.com/rbgksqkr/react/assets/63959171/487c96fb-7094-4427-af14-aa05d3cd05da">
+          <br><br>shows the list of staged changes
+				</h4>
+			</td>
+			<td width="50%">
+	   			<h4 align="center">
+<img width="804" alt="git_commit_message" src="https://github.com/rbgksqkr/react/assets/63959171/860d5f44-ff43-40c9-b30a-37d7765bef86">
+            <br><br>commit message 작성</h4></td>
+		</tr>
+</tbody>
+</table>
+
+<table><tbody>
+		<tr>
+			<td colspan=2>
+				<br>
+				<b>Git Merge Feature</b><br>
+				<br>
+			</td>
+		</tr>
+		<tr>
+			<td width="50%">
+	   			<h4 align="center">
+		   		<a href="https://raw.githubusercontent.com/CAU-OSS-project-practice/OSS-file-manager/develop/data/execution_image/git_restore_after.png"><img src="/data/execution_image/git_restore_after.png" width="100%" height="100%"></a><br><br>Git restore 작동 전(modified된 파일 표시)</h4></td>
+			<td width="50%">
+				<h4 align="center">
+				<a href = "https://raw.githubusercontent.com/CAU-OSS-project-practice/OSS-file-manager/develop/data/execution_image/git_restore_before.png"><img src="/data/execution_image/git_restore_before.png" width="100%" height="100%">
+					</a><br><br>git restore 작동 후(commit전 상태로 되돌아옴)
+				</h4>
+			</td>
+		</tr>
+</tbody>
+</table>
+
+<table><tbody>
+		<tr>
+			<td colspan=2>
+				<br>
+				<b>Git Merge error messages</b><br>
+				<br>
+			</td>
+		</tr>
+		<tr>
+			<td width="50%">
+				<h4 align="center">
+				<a href = "https://raw.githubusercontent.com/CAU-OSS-project-practice/OSS-file-manager/develop/data/execution_image/git_restore_staged_before.png"><img src="/data/execution_image/git_restore_staged_before.png" width="100%" height="100%">
+					</a><br><br>Git restore --staged작동 전(파일을 staging)
+				</h4>
+			</td>
+			<td width="50%">
+	   			<h4 align="center">
+		   		<a href="https://raw.githubusercontent.com/CAU-OSS-project-practice/OSS-file-manager/develop/data/execution_image/git_restore_staged_after.png"><img src="/data/execution_image/git_restore_staged_after.png" width="100%" height="100%"></a><br><br>git restore --staged staged된 파일을 modified 상태로 되돌림</h4></td>
+		</tr>
+</tbody>
+</table>
+
+### Feature 2. Git Commit history with Graph
+
+<table><tbody>
+		<tr>
+			<td colspan=2>
+				<br>
+				<b>Git commit history with Graph</b><br>
+				<br>
+			</td>
+		</tr>
+		<tr>
+			<td width="50%">
+				<h4 align="center">
+				<a href = "https://raw.githubusercontent.com/CAU-OSS-project-practice/OSS-file-manager/develop/data/execution_image/rm_before.png"><img src="/data/execution_image/rm_after.png" width="100%" height="100%">
+					</a><br><br>git rm before
+				</h4>
+			</td>
+			<td width="50%">
+	   			<h4 align="center">
+		   		<a href="https://raw.githubusercontent.com/CAU-OSS-project-practice/OSS-file-manager/develop/data/execution_image/rm_after.png"><img src="/data/execution_image/rm_after.png" width="100%" height="100%"></a><br><br>git rm after(디렉토리에서 삭제 및 삭제된 사실이 staging됨) </h4></td>
+		</tr>
+</tbody>
+</table>
+
+### Feature 3. Git clone from Github
+
+<table><tbody>
+		<tr>
+			<td colspan=2>
+				<br>
+				<b>Git clone from public repository</b><br>
+				<br>
+			</td>
+		</tr>
+		<tr>
+			<td width="50%">
+				<h4 align="center">
+				<a href = "https://raw.githubusercontent.com/CAU-OSS-project-practice/OSS-file-manager/develop/data/execution_image/rm%20_cached_before.png"><img src="/data/execution_image/rm _cached_before.png" width="100%" height="100%">
+					</a><br><br>git rm --cached before
+				</h4>
+			</td>
+			<td width="50%">
+	   			<h4 align="center">
+		   		<a href="https://raw.githubusercontent.com/CAU-OSS-project-practice/OSS-file-manager/develop/data/execution_image/rm_cached_after.png"><img src="/data/execution_image/rm_cached_after.png" width="100%" height="100%"></a><br><br>git rm --cached after -> 실제 디렉토리에서 삭제되진 않았지만 git repository에서 삭제됨(untracked)됨</h4></td>
+		</tr>
+</tbody>
+</table>
+
+<table><tbody>
+		<tr>
+			<td colspan=2>
+				<br>
+				<b>Git Clone from private repository</b><br>
+				<br>
+			</td>
+		</tr>
+		<tr>
+			<td width="50%">
+				<h4 align="center">
+  <img width="804" alt="git_mv_open_mv_window" src="https://github.com/rbgksqkr/react/assets/63959171/eb0b1047-049b-484a-9a06-e3807984fe8d">
+          <br><br>변경할 파일 이름 작성
+				</h4>
+			</td>
+			<td width="50%">
+	   			<h4 align="center">
+<img width="804" alt="git_mv_rename" src="https://github.com/rbgksqkr/react/assets/63959171/30fd2f03-2777-455e-80df-dfcda1f428c0">
+            <br><br>파일 이름 변경</h4></td>
+		</tr>
+</tbody>
+</table>
+
+<table><tbody>
+		<tr>
+			<td colspan=2>
+				<br>
+				<b>Saving The ID and token information should be stored somewhere for the future use.</b><br>
 				<br>
 			</td>
 		</tr>
