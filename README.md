@@ -10,8 +10,8 @@
 
 - [Project Description](#Project-Description)
 - [Installation Guide](#Installation-Guide)
-- [Function design and description(v1.0)](#Function-design-and-description(v1.0))
-- [Function design and description(v2.0)](#Function-design-and-description(v2.0))
+- [Function design and description(v1.0)](#function-design-and-descriptionv10)
+- [Function design and description(v2.0)](#function-design-and-descriptionv20)
 - [Team Information](#Team-information)
 - [About Collaboration](#About-Collaboration)
 - [Copyleft / End User License](#copyleft--end-user-license)
