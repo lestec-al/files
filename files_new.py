@@ -155,7 +155,7 @@ def merge_selected_branch():
         # Fast-forward merge
         target_branch.set_target(source_commit.id)
         repo.reset(source_commit.id, pygit2.GIT_RESET_HARD)
-        # result_label.config(text="Fast-forward merged" + "commit id : "source_commit.id)
+        result_label.config(text= "Fast-forward merged\n" + "commit id : " + str(source_commit.id)[:7])
         print("Fast-forward merge")
     else:
         index = repo.merge_commits(target_commit.id, source_commit.id)
@@ -186,7 +186,8 @@ def merge_selected_branch():
                 index.write_tree(repo),
                 [target_branch.target, source_branch.target]
             )
-            print('Merge commit created:', merge_commit)
+            result_label.config(text= "3-way Merge success\n" + "commit id : " + str(merge_commit)[:7])
+            #print('Merge commit created:', merge_commit)
             repo.reset(merge_commit.hex, pygit2.GIT_RESET_HARD)
 
 
