@@ -2,7 +2,7 @@ import os, stat, re, sys, subprocess, string, shutil, math
 from pathlib import Path
 from ftplib import FTP
 
-# Interface functions
+# INTERFACE
 
 def print_interface(page=0):
     if sys.platform == "win32":
@@ -10,28 +10,26 @@ def print_interface(page=0):
     else:
         os.system("clear")
     print()
-    if len(disks) > 0:
+    if len(DISKS) > 0:
         print("Files | disks: ", end="")
+        for d in DISKS:
+            if sys.platform == "win32":
+                print(d.upper(), end=" ")
+            elif sys.platform == "linux":
+                print(d[0], end=" ")
     else:
-        print("Files")
-    for d in disks:
-        if sys.platform == "win32":
-            print(d.upper(), end=" ")
-        elif sys.platform == "linux":
-            print(d[0], end=" ")
+        print("Files", end="")
     print()
-    size = os.get_terminal_size().columns.real-5
-    line = "-"*size
+    line = "-"*(os.get_terminal_size().columns.real-5)
     print(line)
-    print(url_ftp if ftp != None else "", last_path)
+    print(URL_FTP if FTP_VAR != None else "", LAST_PATH)
     print(line)
-    pages = math.ceil(len(last_dir) / 2000 if len(last_dir) / 2000 >= 1 else 1)
     page = int(page) - 1
     if page < 0:
         page = 0
-    for io,f in enumerate(last_dir[page*2000:page*2000+2000]):
-        io = io + 1 + page*2000
-        i = io
+    for idx,f in enumerate(LAST_DIR[page*2000:page*2000+2000]):
+        idx = idx + 1 + page*2000
+        i = idx
         if len(str(i)) == 1:
             i = f"   {i}"
         elif len(str(i)) == 2:
@@ -45,39 +43,18 @@ def print_interface(page=0):
             else:
                 break
         print(main_line)
+    pages = math.ceil(len(LAST_DIR) / 2000 if len(LAST_DIR) / 2000 >= 1 else 1)
     if pages > 1:
         print(line)
-        print(f"{len(last_dir)} objects. {pages} pages")
+        print(f"{len(LAST_DIR)} objects. Page {page+1}/{pages}")
     print(line)
 
 
 def move_up():
-    up_path = last_path.rsplit("/" if ftp != None else slash, 1)
-    update_files(f"{url_ftp}{up_path[0]}" if ftp != None else up_path[0])
+    up_path = LAST_PATH.rsplit("/" if FTP_VAR != None else SLASH, 1)
+    update_files(f"{URL_FTP}{up_path[0]}" if FTP_VAR != None else up_path[0])
 
-
-def add_disks():
-    disks = []
-    if sys.platform == "win32":
-        letters = string.ascii_uppercase
-        letter_c = 0
-        column = 2
-        for _ in range(26):
-            disk = letters[letter_c]
-            if os.path.exists(f"{disk}:{slash}"):
-                disks.append(disk.lower())
-                column += 1
-            letter_c += 1
-    if sys.platform == "linux":
-        column = 2
-        os_user = home_path.rsplit(slash, 1)[1]
-        if os.path.exists(f"/media/{os_user}/"):
-            for l_disk in os.listdir(f"/media/{os_user}/"):
-                disks.append((l_disk, os_user))
-                column += 1
-    return disks
-
-# Operations
+# OPERATIONS
 
 def calc_show_size(item):
     def check_dir_size(path) -> int:
@@ -96,7 +73,7 @@ def calc_show_size(item):
         if type_size == "dir":
             size.append(f"- {name.strip()}: {convert_size(check_dir_size(path))[0]}")
         else:
-            size.append(f"- {name.strip()}: {convert_size(type_size)[0]}")
+            size.append(f"- {name.strip()}: {type_size}")
         return size
 
     size = []
@@ -112,7 +89,7 @@ def calc_show_size(item):
             items_name = item.split(",")
         else:
             item_name = item
-    for i,f in enumerate(last_dir):
+    for i,f in enumerate(LAST_DIR):
         i += 1
         if item_index != None and i == item_index or item_name != None and f[0].strip().lower() == item_name.lower():
             size = size_operations(f, size)
@@ -129,36 +106,39 @@ def calc_show_size(item):
 
 
 def paste():
-    if sys.platform == "win32":
-        win_clipboard = subprocess.getoutput("powershell.exe -Command Get-Clipboard -Format FileDropList -Raw")
-        clipboard = win_clipboard.replace("/", slash).split("\n")
-    else:
-        clipboard = non_win_clipboard.replace("'", "").split(",")
-
-    for source in clipboard:
-        edit = source.rsplit(slash, 1)
-        # Search copies, create destination path
-        file_copies = 1
-        for f in os.listdir(last_path):
-            if f.lower() == edit[1].lower():
-                file_copies += 1
-        if file_copies > 1:
-            while True:
-                for f in os.listdir(last_path):
-                    if f.lower() == f"({file_copies}){edit[1]}".lower():
-                        file_copies += 1
-                        continue
-                break
-            destination = last_path + slash + f"({file_copies})" + edit[1]
+    try:
+        if sys.platform == "win32":
+            win_clipboard = subprocess.getoutput("powershell.exe -Command Get-Clipboard -Format FileDropList -Raw")
+            clipboard = win_clipboard.replace("/", SLASH).split("\n")
         else:
-            destination = last_path + slash + edit[1]
-        # Paste
-        if os.path.isdir(source):
-            shutil.copytree(source, destination)
-        else:
-            shutil.copy2(source, destination)
+            clipboard = NON_WIN_CLIPBOARD.replace("'", "").split(",")
 
-    update_files(f"{url_ftp}{last_path}" if ftp != None else last_path)
+        for source in clipboard:
+            edit = source.rsplit(SLASH, 1)
+            # Search copies, create destination path
+            file_copies = 1
+            for f in os.listdir(LAST_PATH):
+                if f.lower() == edit[1].lower():
+                    file_copies += 1
+            if file_copies > 1:
+                while True:
+                    for f in os.listdir(LAST_PATH):
+                        if f.lower() == f"({file_copies}){edit[1]}".lower():
+                            file_copies += 1
+                            continue
+                    break
+                destination = LAST_PATH + SLASH + f"({file_copies})" + edit[1]
+            else:
+                destination = LAST_PATH + SLASH + edit[1]
+            # Paste
+            if os.path.isdir(source):
+                shutil.copytree(source, destination)
+            else:
+                shutil.copy2(source, destination)
+    except Exception as e:
+        pass
+
+    update_files(f"{URL_FTP}{LAST_PATH}" if FTP_VAR != None else LAST_PATH)
 
 
 def operations(item, operation):
@@ -175,7 +155,7 @@ def operations(item, operation):
     def do_operation(item, operation):
         name, type_size, path = item[0].strip(), item[1], item[2]
         if operation == "rename":
-            e_path = path.rsplit(slash, 1)
+            e_path = path.rsplit(SLASH, 1)
             test = False
             while test == False:
                 test = True
@@ -184,7 +164,7 @@ def operations(item, operation):
                     break
                 else:
                     try:
-                        new_path = e_path[0] + slash + new_name
+                        new_path = e_path[0] + SLASH + new_name
                         os.rename(path, new_path)
                     except Exception as e:
                         print(str(e))
@@ -193,17 +173,15 @@ def operations(item, operation):
             if "\\" in path:
                 path = path.replace("\\", "/")
             pathes.append(f"'{path}'")
-        elif operation == "remove":
-            pathes.append(path)
         elif operation == "delete":
             if type_size == "dir":
                 delete_dir(path)
             else:
                 os.remove(path)
         elif operation == "download":
-            path_home = home_path.replace("\\", "/")
+            path_home = HOME_PATH.replace("\\", "/")
             with open(f"{path_home}/Downloads/{name}", "wb") as file:
-                ftp.retrbinary(f"RETR {name}", file.write)
+                FTP_VAR.retrbinary(f"RETR {name}", file.write)
                 file.close()
 
     item_name = None
@@ -221,7 +199,7 @@ def operations(item, operation):
         else:
             item_name = item
     pathes = []
-    for i,f in enumerate(last_dir):
+    for i,f in enumerate(LAST_DIR):
         i += 1
         if item_index != None and i == item_index or item_name != None and f[0].strip().lower() == item_name.lower():
             do_operation(f, operation)
@@ -241,18 +219,10 @@ def operations(item, operation):
         if sys.platform == "win32":
             os.system(f"powershell.exe Set-Clipboard -path {items}")
         else:
-            global non_win_clipboard
-            non_win_clipboard = items
-    elif operation == "remove":
-        try:
-            from send2trash import send2trash
-            for p in pathes:
-                send2trash(p)
-            update_files(f"{url_ftp}{last_path}" if ftp != None else last_path)
-        except:
-            print("To remove in the trash, install Send2Trash") 
+            global NON_WIN_CLIPBOARD
+            NON_WIN_CLIPBOARD = items
     else:
-        update_files(f"{url_ftp}{last_path}" if ftp != None else last_path)
+        update_files(f"{URL_FTP}{LAST_PATH}" if FTP_VAR != None else LAST_PATH)
 
 
 def click(item):
@@ -262,10 +232,10 @@ def click(item):
         item_index = int(item)
     except:
         item_name = item
-    for i,f in enumerate(last_dir):
+    for i,f in enumerate(LAST_DIR):
         i += 1
         if item_index != None and i == item_index or item_name != None and f[0].strip().lower() == item_name.lower():
-            if f[1] == "dir":
+            if f[4] == "dir":
                 update_files(f[2])
             else:
                 if sys.platform == "win32":
@@ -275,7 +245,7 @@ def click(item):
                     subprocess.call([opener, f[2]])
 
 
-def convert_size(var) -> tuple:
+def convert_size(var):
     if type(var) == type(1):
         byte_size = var
     else:
@@ -289,16 +259,17 @@ def convert_size(var) -> tuple:
         size = str(round(byte_size/1000000, 2)) + " MB"
     elif byte_size >= 1000:
         size = str(round(byte_size/1000, 2)) + " KB"
-    elif byte_size < 1000:
+    else:
         size = str(byte_size) + " B"
     return size, byte_size
 
+# MAIN
 
-def update_files(orig_dirname: str):
+def update_files(orig_dirname: str, show_all_size=False):
     try:
-        global last_path
-        global ftp
-        global url_ftp
+        global LAST_PATH
+        global FTP_VAR
+        global URL_FTP
         dirname = orig_dirname
         # FTP
         if "ftp://" in dirname:
@@ -308,46 +279,46 @@ def update_files(orig_dirname: str):
             else:
                 dirname = "/"
             #
-            if ftp == None:
-                ftp = FTP("")
+            if FTP_VAR == None:
+                FTP_VAR = FTP("")
                 try:
                     if ":" in x[1]:
                         ftp_split = x[1].split(":", 1)
-                        ftp.connect(ftp_split[0],int(ftp_split[1]))
-                        url_ftp = f"ftp://{ftp_split[0]}:{ftp_split[1]}"
+                        FTP_VAR.connect(ftp_split[0],int(ftp_split[1]))
+                        URL_FTP = f"ftp://{ftp_split[0]}:{ftp_split[1]}"
                     else:
-                        ftp.connect(x[1])
-                        url_ftp = f"ftp://{x[1]}"
-                    ftp.login()
+                        FTP_VAR.connect(x[1])
+                        URL_FTP = f"ftp://{x[1]}"
+                    FTP_VAR.login()
                 except:
-                    ftp = None
-                    url_ftp = None
+                    FTP_VAR = None
+                    URL_FTP = None
         else:
-            if ftp != None:
-                ftp.quit()
-                ftp = None
-                url_ftp = None
+            if FTP_VAR != None:
+                FTP_VAR.quit()
+                FTP_VAR = None
+                URL_FTP = None
         # Check path
-        if ftp == None and op_slash in dirname:
-            dirname = dirname.replace(op_slash, slash)
-        elif ftp != None and "\\" in dirname:
+        if FTP_VAR == None and OP_SLASH in dirname:
+            dirname = dirname.replace(OP_SLASH, SLASH)
+        elif FTP_VAR != None and "\\" in dirname:
             dirname = dirname.replace("\\", "/")
         if re.match(r".+\\$", dirname) or re.match(r".+/$", dirname):
             dirname = dirname[0:-1]
         if re.match(r"\w:$", dirname) or dirname == "":
-            if ftp == None:
-                dirname = dirname + slash
+            if FTP_VAR == None:
+                dirname = dirname + SLASH
             else:
                 dirname = "/"
         # Scan
         files_list, dirs_list = [], []
-        if ftp == None:
+        if FTP_VAR == None:
             files = os.scandir(dirname)
             for f in files:
                 f_stat = f.stat()
                 size = convert_size(f_stat.st_size)
                 if f.is_dir():
-                    if hidden == False:
+                    if HIDDEN == False:
                         if sys.platform == "win32":
                             if not f.is_symlink() and not bool(f_stat.st_file_attributes & stat.FILE_ATTRIBUTE_HIDDEN):
                                 dirs_list.append([f.name, "dir", f.path, "▓ "])
@@ -369,7 +340,7 @@ def update_files(orig_dirname: str):
                             else:
                                 dirs_list.append([f.name, "dir", f.path, "▓ "])
                 if f.is_file():
-                    if hidden == False:
+                    if HIDDEN == False:
                         if sys.platform == "win32":
                             if not bool(f_stat.st_file_attributes & stat.FILE_ATTRIBUTE_HIDDEN):
                                 files_list.append([f.name, size[0], f.path, "▓ ", size[1]])
@@ -389,178 +360,202 @@ def update_files(orig_dirname: str):
                                 files_list.append([f.name, size[0], f.path, "▓ ", size[1]])
         # FTP
         else:
-            ftp.cwd(dirname)
+            FTP_VAR.cwd(dirname)
             try:
-                for f in ftp.mlsd():
+                for f in FTP_VAR.mlsd():
                     if f[1]["type"] == "dir":
                         dirs_list.append([f[0], "dir", f"{orig_dirname}/{f[0]}", "▓ "])
                     elif f[1]["type"] == "file":
                         size = convert_size(int(f[1]["size"]))
                         files_list.append([f[0], size[0], f"{orig_dirname}/{f[0]}", "▓ ", size[1]])
             except:
-                ftp.voidcmd('TYPE I')
-                for f in ftp.nlst():
+                FTP_VAR.voidcmd('TYPE I')
+                for f in FTP_VAR.nlst():
                     try:
                         if "." in f and not f.startswith("."):
-                            size = convert_size(ftp.size(f))
+                            size = convert_size(FTP_VAR.size(f))
                             files_list.append([f, size[0], f"{orig_dirname}/{f}", "▓ ", size[1]])    
                         else:
                             dirs_list.append([f, "dir", f"{orig_dirname}/{f}", "▓ "])
                     except:
                         dirs_list.append([f, "dir", f"{orig_dirname}/{f}", "▓ "])
         # Sorting
-        if sort == "size":
-            if reverse == False:
-                dirs_list.sort(key=lambda s: s[0])
-                files_list.sort(key=lambda s: s[4])
-            if reverse == True:
-                dirs_list.sort(key=lambda s: s[0], reverse=True)
-                files_list.sort(key=lambda s: s[4], reverse=True)
-        elif sort == "name":
-            if reverse == False:
-                dirs_list.sort(key=lambda f: f[0])
-                files_list.sort(key=lambda f: f[0])
-            elif reverse == True:
-                dirs_list.sort(key=lambda f: f[0], reverse=True)
-                files_list.sort(key=lambda f: f[0], reverse=True)
-        # Clean old data
-        last_dir.clear()
+        dirs_list.sort(key=lambda f: f[0], reverse=REVERSE)
+        files_list.sort(key=lambda f: f[4] if SORT == "size" else f[0], reverse=REVERSE)
         # Add new data
+        def check_dir_size(path) -> int:
+            size = 0
+            try:
+                for f in os.scandir(path):
+                    if f.is_dir():
+                        size += check_dir_size(f.path)
+                    else:
+                        size += convert_size(f.path)[1]
+            except:pass
+            return size
+        LAST_DIR.clear()
         count = 0
         for i in dirs_list:
-            last_dir.append([i[0], f"{i[1]}", i[2], i[3]])
+            if show_all_size:
+                size = convert_size(check_dir_size(i[2]))
+                LAST_DIR.append([i[0], f"{size[0]}", i[2], i[3], "dir"])
+            else:
+                LAST_DIR.append([i[0], "dir", i[2], i[3], "dir"]) # name, size, path, icon, type
             count += 1
         for i in files_list:
-            last_dir.append([i[0], f"{i[1]}", i[2], i[3]])
+            LAST_DIR.append([i[0], f"{i[1]}", i[2], i[3], "file"])
             count += 1
         #
-        if ftp == None:
-            last_path = dirname
-        else:
-            last_path = ftp.pwd()
+        LAST_PATH = dirname if FTP_VAR == None else FTP_VAR.pwd()
         print_interface()
-
     except Exception as e:
         print(str(e))
 
 
-# Variables
-home_path = str(Path.home())
-hidden = False
-sort = "name"
-reverse = False
-last_path, non_win_clipboard = None, None
-slash = "\\" if sys.platform == "win32" else "/"
-op_slash = "/" if sys.platform == "win32" else "\\"
-last_dir = []
-ftp = None
-url_ftp = None
+def run_app():
+    global SORT
+    global REVERSE
+    global HIDDEN
+    # Add disks
+    global DISKS
+    DISKS.clear()
+    if sys.platform == "win32":
+        letters = string.ascii_uppercase
+        letter_c = 0
+        column = 2
+        for _ in range(26):
+            disk = letters[letter_c]
+            if os.path.exists(f"{disk}:{SLASH}"):
+                DISKS.append(disk.lower())
+                column += 1
+            letter_c += 1
+    if sys.platform == "linux":
+        column = 2
+        os_user = HOME_PATH.rsplit(SLASH, 1)[1]
+        if os.path.exists(f"/media/{os_user}/"):
+            for l_disk in os.listdir(f"/media/{os_user}/"):
+                DISKS.append((l_disk, os_user))
+                column += 1
+    #
+    update_files(HOME_PATH)
 
+    # Main loop
+    while True:
+        input1 = input("«help» for FAQ > ").split(" ", 1)
 
-# Start app
-disks = add_disks()
-update_files(home_path)
-
-
-# Main loop
-while True:
-    input1 = input("«help» for FAQ > ").split(" ", 1)
-
-    if len(input1) == 1:
-        if slash in input1[0] or op_slash in input1[0]:
-            update_files(input1[0])
-        elif input1[0] == "exit":
-            if sys.platform == "win32":
-                os.system("cls")
-            else:
-                os.system("clear")
-            break
-        elif input1[0] == "..":
-            move_up()
-        elif input1[0] == "paste" and ftp == None:
-            paste()
-        elif input1[0] == ".":
-            update_files(home_path)
-        elif input1[0] == "hidden":
-            if hidden == False:
-                hidden = True
-            elif hidden == True:
-                hidden = False
-            update_files(f"{url_ftp}{last_path}" if ftp != None else last_path)
-        elif input1[0] == "sort":
-            if reverse == True:
-                reverse = False
-            elif reverse == False:
-                reverse = True
-            update_files(f"{url_ftp}{last_path}" if ftp != None else last_path)
-        elif input1[0] == "help":
-            print()
-            print("- up: «..»")
-            print("- open: «12» «documents» «c:\\users» «/home» «ftp://ftp.us.debian.org»")
-            print("- home path: «.»")
-            print("- copy,rename,remove(to trash),delete(permanently): «copy 11» «delete 2,10»")
-            print("- ftp download: «download 11» «download 12,14»")
-            print("- show size: «size 9»")
-            print("- select page: «page 3»")
-            print("- disks: «disk C» «disk disk 2»")
-            print("- create: «dir Pictures» «file readme.txt»")
-            print("- sorting: «sort»(for ↑↓) «sort name» «sort size»")
-            print("- exercute cl command: «code dir» «code ls»")
-            print("- «exit» «paste» «hidden»")
-            print()
-        else:
-            click(input1[0])
-
-    elif len(input1) == 2:
-        if input1[0] == "disk":
-            if sys.platform == "win32":
-                update_files(f"{input1[1].upper()}:{slash}")
-            elif sys.platform == "linux":
-                for d in disks:
-                    if input1[1].lower() in d[0].lower():
-                        update_files(f"/media/{d[1]}/{d[0]}")
-        elif input1[0] == "sort":
-            sort = "size" if input1[1] == "size" else "name"
-            update_files(f"{url_ftp}{last_path}" if ftp != None else last_path)
-        elif input1[0] == "page":
-            print_interface(input1[1])
-
-        elif ftp == None:
-            if input1[0] == "copy":
-                operations(input1[1], "copy")
-            elif input1[0] == "delete":
-                operations(input1[1], "delete")
-            elif input1[0] == "remove":
-                operations(input1[1], "remove")
-            elif input1[0] == "rename":
-                operations(input1[1], "rename")
-            elif input1[0] == "dir" or input1[0] == "file":
-                test = True
-                for f in last_dir:
-                    if f[0].strip().lower() == input1[1].lower():
-                        test = False
-                if test == True:
-                    path = os.path.join(last_path, input1[1])
-                    if input1[0] == "dir":
-                        os.mkdir(path)
-                    elif input1[0] == "file":
-                        Path(path).touch()
-                    update_files(f"{url_ftp}{last_path}" if ftp != None else last_path)
+        if len(input1) == 1:
+            if SLASH in input1[0] or OP_SLASH in input1[0]:
+                update_files(input1[0])
+            elif input1[0] == "exit":
+                if sys.platform == "win32":
+                    os.system("cls")
                 else:
-                    print("Name is taken")
+                    os.system("clear")
+                break
+            elif input1[0] == "..":
+                move_up()
+            elif input1[0] == "paste" and FTP_VAR == None:
+                paste()
+            elif input1[0] == ".":
+                update_files(HOME_PATH)
+            elif input1[0] == "hidden":
+                HIDDEN = True if HIDDEN == False else False
+                update_files(f"{URL_FTP}{LAST_PATH}" if FTP_VAR != None else LAST_PATH)
+            elif input1[0] == "sort":
+                REVERSE = False if REVERSE == True else True
+                update_files(f"{URL_FTP}{LAST_PATH}" if FTP_VAR != None else LAST_PATH)
+            elif input1[0] == "help":
+                print()
+                print("- up: «..»")
+                print("- open: «12», «documents», «c:\\users», «/home», «ftp://ftp.us.debian.org»")
+                print("- home path: «.»")
+                print("- copy,rename,delete: «copy 11», «delete 2,10»")
+                print("- ftp download: «download 11», «download 12,14»")
+                print("- show size: «size 9», «size»")
+                print("- select page: «page 3»")
+                print("- disks: «disk C», «disk disk 2»")
+                print("- create: «dir Pictures», «file readme.txt»")
+                print("- sorting: «sort»(for ↑↓), «sort name», «sort size»")
+                print("- exercute cli command: «code dir», «code ls»")
+                print("- «exit», «paste», «hidden»")
+                print()
             elif input1[0] == "size":
-                calc_show_size(input1[1])
-            # Test CL commands support
-            elif input1[0] == "code":
-                os.chdir(last_path)
-                try:
-                    msg = subprocess.getoutput(input1[1])
-                    print()
-                    print(msg)
-                    print()
-                except:
-                    subprocess.call(input1[1], creationflags=subprocess.CREATE_NEW_CONSOLE)
+                if FTP_VAR == None:
+                    print(f"This action calculates the sizes for all folders.")
+                    new_input = input(f"This may take a long time. Proceed (y/n)? > ")
+                    if new_input == "y":
+                        update_files(LAST_PATH, True)
+            else:
+                click(input1[0])
 
-        elif ftp != None:
-            if input1[0] == "download":
-                operations(input1[1], "download")
+        elif len(input1) == 2:
+            if input1[0] == "disk":
+                if sys.platform == "win32":
+                    update_files(f"{input1[1].upper()}:{SLASH}")
+                elif sys.platform == "linux":
+                    for d in DISKS:
+                        if input1[1].lower() in d[0].lower():
+                            update_files(f"/media/{d[1]}/{d[0]}")
+            elif input1[0] == "sort":
+                SORT = "size" if input1[1] == "size" else "name"
+                update_files(f"{URL_FTP}{LAST_PATH}" if FTP_VAR != None else LAST_PATH)
+            elif input1[0] == "page":
+                print_interface(input1[1])
+
+            elif FTP_VAR == None:
+                if input1[0] == "copy":
+                    operations(input1[1], "copy")
+                elif input1[0] == "delete":
+                    operations(input1[1], "delete")
+                elif input1[0] == "rename":
+                    operations(input1[1], "rename")
+                elif input1[0] == "dir" or input1[0] == "file":
+                    test = True
+                    for f in LAST_DIR:
+                        if f[0].strip().lower() == input1[1].lower():
+                            test = False
+                    if test == True:
+                        path = os.path.join(LAST_PATH, input1[1])
+                        if input1[0] == "dir":
+                            os.mkdir(path)
+                        elif input1[0] == "file":
+                            Path(path).touch()
+                        update_files(f"{URL_FTP}{LAST_PATH}" if FTP_VAR != None else LAST_PATH)
+                    else:
+                        print("Name is taken")
+                elif input1[0] == "size":
+                    calc_show_size(input1[1])
+                # Test CL commands support
+                elif input1[0] == "code":
+                    os.chdir(LAST_PATH)
+                    try:
+                        msg = subprocess.getoutput(input1[1])
+                        print()
+                        print(msg)
+                        print()
+                    except:
+                        subprocess.call(input1[1], creationflags=subprocess.CREATE_NEW_CONSOLE)
+
+            elif FTP_VAR != None:
+                if input1[0] == "download":
+                    operations(input1[1], "download")
+
+
+# VARIABLES
+HOME_PATH = str(Path.home())
+HIDDEN = False
+SORT = "name"
+REVERSE = False
+LAST_PATH = None
+NON_WIN_CLIPBOARD = None
+SLASH = "\\" if sys.platform == "win32" else "/"
+OP_SLASH = "/" if sys.platform == "win32" else "\\"
+LAST_DIR = []
+FTP_VAR = None
+URL_FTP = None
+DISKS = []
+
+
+# START
+if __name__=="__main__":
+    run_app()
