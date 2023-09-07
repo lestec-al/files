@@ -12,7 +12,7 @@ Command line (CLI) version (files_cl.py) works on Windows, Linux (should work on
 Available on PYPI: https://pypi.org/project/filescli/
 
 <img title="Screenshot from Windows 10" src="https://github.com/lestec-al/files/raw/main/data/pic_cl_win.png" width="541" height="366"/>
-<img title="Screenshot from Linux Ubuntu" src="https://github.com/lestec-al/files/raw/main/data/pic_cl_linux.png" width="541" height="366"/>
+<img title="Screenshot from Linux (WSL)" src="https://github.com/lestec-al/files/raw/main/data/pic_cl_linux.png" width="541" height="366"/>
 
 ## Other versions
 
