@@ -5,10 +5,7 @@ from ftplib import FTP
 # INTERFACE
 
 def print_interface(page=0):
-    if sys.platform == "win32":
-        os.system("cls")
-    else:
-        os.system("clear")
+    os.system("cls" if sys.platform == "win32" else "clear")
     print()
     if len(DISKS) > 0:
         print("Files | disks: ", end="")
@@ -28,6 +25,7 @@ def print_interface(page=0):
     if page < 0:
         page = 0
     for idx,f in enumerate(LAST_DIR[page*2000:page*2000+2000]):
+        # f[name, byte_size, path, icon, type]
         idx = idx + 1 + page*2000
         i = idx
         if len(str(i)) == 1:
@@ -37,16 +35,18 @@ def print_interface(page=0):
         elif len(str(i)) == 3:
             i = f" {i}"
         while True:
-            main_line = f"{i} {f[3]}{f[0]}{f[1]}"
+            main_line = f"{i} {f[3]}{f[0]}{convert_size(f[1])[0] if isinstance(f[1], int) else f[1]}"
             if len(main_line) < len(line)-2:
                 f[0] += " "
+            elif len(main_line) > len(line)-2:
+                f[0] = f[0][0:-6]+"..   "
             else:
                 break
         print(main_line)
     pages = math.ceil(len(LAST_DIR) / 2000 if len(LAST_DIR) / 2000 >= 1 else 1)
     if pages > 1:
         print(line)
-        print(f"{len(LAST_DIR)} objects. Page {page+1}/{pages}")
+        print(f" {len(LAST_DIR)} objects. Page {page+1} of {pages}")
     print(line)
 
 
@@ -56,19 +56,20 @@ def move_up():
 
 # OPERATIONS
 
-def calc_show_size(item):
-    def check_dir_size(path) -> int:
-        size = 0
-        try:
-            for f in os.scandir(path):
-                if f.is_dir():
-                    size += check_dir_size(f.path)
-                else:
-                    size += convert_size(f.path)[1]
-        except:pass
-        return size
+def check_dir_size(path) -> int:
+    size = 0
+    try:
+        for f in os.scandir(path):
+            if f.is_dir():
+                size += check_dir_size(f.path)
+            else:
+                size += convert_size(f.path)[1]
+    except:pass
+    return size
 
-    def size_operations(item, size) -> list:
+
+def calc_show_size(item):
+    def size_operations(item:list, size:list) -> list:
         name, type_size, path = item[0], item[1], item[2]
         if type_size == "dir":
             size.append(f"- {name.strip()}: {convert_size(check_dir_size(path))[0]}")
@@ -238,15 +239,18 @@ def click(item):
             if f[4] == "dir":
                 update_files(f[2])
             else:
-                if sys.platform == "win32":
-                    os.startfile(f[2])
-                else:
-                    opener = "open" if sys.platform == "darwin" else "xdg-open"
-                    subprocess.call([opener, f[2]])
+                try:
+                    if sys.platform == "win32":
+                        os.startfile(f[2])
+                    else:
+                        opener = "open" if sys.platform == "darwin" else "xdg-open"
+                        subprocess.call([opener, f[2]])
+                except Exception as e:
+                    print("Error")
 
 
 def convert_size(var):
-    if type(var) == type(1):
+    if isinstance(var, int):
         byte_size = var
     else:
         byte_size = os.stat(var).st_size
@@ -274,10 +278,7 @@ def update_files(orig_dirname: str, show_all_size=False):
         # FTP
         if "ftp://" in dirname:
             x = dirname.split("//", 1)
-            if "/" in x[1]:
-                dirname = "/" + x[1].split("/", 1)[1]
-            else:
-                dirname = "/"
+            dirname = "/" + x[1].split("/", 1)[1] if "/" in x[1] else "/"
             #
             if FTP_VAR == None:
                 FTP_VAR = FTP("")
@@ -306,118 +307,88 @@ def update_files(orig_dirname: str, show_all_size=False):
         if re.match(r".+\\$", dirname) or re.match(r".+/$", dirname):
             dirname = dirname[0:-1]
         if re.match(r"\w:$", dirname) or dirname == "":
-            if FTP_VAR == None:
-                dirname = dirname + SLASH
-            else:
-                dirname = "/"
+            dirname = dirname + SLASH if FTP_VAR == None else "/"
         # Scan
-        files_list, dirs_list = [], []
+        # Obj in lists: name, byte_size, path, icon, type
+        files, dirs = [], []
         if FTP_VAR == None:
-            files = os.scandir(dirname)
-            for f in files:
+            for f in os.scandir(dirname):
                 f_stat = f.stat()
-                size = convert_size(f_stat.st_size)
                 if f.is_dir():
+                    size = check_dir_size(f.path) if show_all_size else "dir"
                     if HIDDEN == False:
                         if sys.platform == "win32":
                             if not f.is_symlink() and not bool(f_stat.st_file_attributes & stat.FILE_ATTRIBUTE_HIDDEN):
-                                dirs_list.append([f.name, "dir", f.path, "▓ "])
+                                dirs.append([f.name, size, f.path, "▓ ", "dir"])
                         else:
                             if not f.name.startswith("."):
-                                dirs_list.append([f.name, "dir", f.path, "▓ "])
+                                dirs.append([f.name, size, f.path, "▓ ", "dir"])
                     else:
                         if sys.platform == "win32":
                             if bool(f_stat.st_file_attributes & stat.FILE_ATTRIBUTE_HIDDEN):
-                                dirs_list.append([f.name, "dir", f.path, "░ "])
+                                dirs.append([f.name, size, f.path, "░ ", "dir"])
                             else:
                                 if f.is_symlink():
-                                    dirs_list.append([f.name, "dir", f.path, "░ "])
+                                    dirs.append([f.name, size, f.path, "░ ", "dir"])
                                 else:
-                                    dirs_list.append([f.name, "dir", f.path, "▓ "])
+                                    dirs.append([f.name, size, f.path, "▓ ", "dir"])
                         else:
                             if f.name.startswith("."):
-                                dirs_list.append([f.name, "dir", f.path, "░ "])
+                                dirs.append([f.name, size, f.path, "░ ", "dir"])
                             else:
-                                dirs_list.append([f.name, "dir", f.path, "▓ "])
+                                dirs.append([f.name, size, f.path, "▓ ", "dir"])
+                #
                 if f.is_file():
                     if HIDDEN == False:
                         if sys.platform == "win32":
                             if not bool(f_stat.st_file_attributes & stat.FILE_ATTRIBUTE_HIDDEN):
-                                files_list.append([f.name, size[0], f.path, "▓ ", size[1]])
+                                files.append([f.name, f_stat.st_size, f.path, "▓ ", "file"])
                         else:
                             if not f.name.startswith("."):
-                                files_list.append([f.name, size[0], f.path, "▓ ", size[1]])
+                                files.append([f.name, f_stat.st_size, f.path, "▓ ", "file"])
                     else:
                         if sys.platform == "win32":
                             if bool(f_stat.st_file_attributes & stat.FILE_ATTRIBUTE_HIDDEN):
-                                files_list.append([f.name, size[0], f.path, "░ ", size[1]])
+                                files.append([f.name, f_stat.st_size, f.path, "░ ", "file"])
                             else:
-                                files_list.append([f.name, size[0], f.path, "▓ ", size[1]])
+                                files.append([f.name, f_stat.st_size, f.path, "▓ ", "file"])
                         else:
                             if f.name.startswith("."):
-                                files_list.append([f.name, size[0], f.path, "░ ", size[1]])
+                                files.append([f.name, f_stat.st_size, f.path, "░ ", "file"])
                             else:
-                                files_list.append([f.name, size[0], f.path, "▓ ", size[1]])
+                                files.append([f.name, f_stat.st_size, f.path, "▓ ", "file"])
         # FTP
         else:
             FTP_VAR.cwd(dirname)
             try:
                 for f in FTP_VAR.mlsd():
                     if f[1]["type"] == "dir":
-                        dirs_list.append([f[0], "dir", f"{orig_dirname}/{f[0]}", "▓ "])
+                        dirs.append([f[0], "dir", f"{orig_dirname}/{f[0]}", "▓ ", "dir"])
                     elif f[1]["type"] == "file":
-                        size = convert_size(int(f[1]["size"]))
-                        files_list.append([f[0], size[0], f"{orig_dirname}/{f[0]}", "▓ ", size[1]])
+                        files.append([f[0], int(f[1]["size"]), f"{orig_dirname}/{f[0]}", "▓ ", "file"])
             except:
                 FTP_VAR.voidcmd('TYPE I')
                 for f in FTP_VAR.nlst():
                     try:
                         if "." in f and not f.startswith("."):
-                            size = convert_size(FTP_VAR.size(f))
-                            files_list.append([f, size[0], f"{orig_dirname}/{f}", "▓ ", size[1]])    
+                            files.append([f, FTP_VAR.size(f), f"{orig_dirname}/{f}", "▓ ", "file"])    
                         else:
-                            dirs_list.append([f, "dir", f"{orig_dirname}/{f}", "▓ "])
+                            dirs.append([f, "dir", f"{orig_dirname}/{f}", "▓ ", "dir"])
                     except:
-                        dirs_list.append([f, "dir", f"{orig_dirname}/{f}", "▓ "])
-        # Sorting
-        dirs_list.sort(key=lambda f: f[0], reverse=REVERSE)
-        files_list.sort(key=lambda f: f[4] if SORT == "size" else f[0], reverse=REVERSE)
-        # Add new data
-        def check_dir_size(path) -> int:
-            size = 0
-            try:
-                for f in os.scandir(path):
-                    if f.is_dir():
-                        size += check_dir_size(f.path)
-                    else:
-                        size += convert_size(f.path)[1]
-            except:pass
-            return size
-        LAST_DIR.clear()
-        count = 0
-        for i in dirs_list:
-            if show_all_size:
-                size = convert_size(check_dir_size(i[2]))
-                LAST_DIR.append([i[0], f"{size[0]}", i[2], i[3], "dir"])
-            else:
-                LAST_DIR.append([i[0], "dir", i[2], i[3], "dir"]) # name, size, path, icon, type
-            count += 1
-        for i in files_list:
-            LAST_DIR.append([i[0], f"{i[1]}", i[2], i[3], "file"])
-            count += 1
+                        dirs.append([f, "dir", f"{orig_dirname}/{f}", "▓ ", "dir"])
         #
+        idx = 1 if SORT == "size" else 0
+        dirs.sort(key=lambda f: f[idx] if show_all_size else 0, reverse=REVERSE)
+        files.sort(key=lambda f: f[idx], reverse=REVERSE)
+        LAST_DIR.clear()
+        LAST_DIR.extend(dirs+files)
         LAST_PATH = dirname if FTP_VAR == None else FTP_VAR.pwd()
         print_interface()
     except Exception as e:
         print(str(e))
 
 
-def run_app():
-    global SORT
-    global REVERSE
-    global HIDDEN
-    # Add disks
-    global DISKS
+def update_disks():
     DISKS.clear()
     if sys.platform == "win32":
         letters = string.ascii_uppercase
@@ -429,14 +400,20 @@ def run_app():
                 DISKS.append(disk.lower())
                 column += 1
             letter_c += 1
-    if sys.platform == "linux":
+    elif sys.platform == "linux":
         column = 2
         os_user = HOME_PATH.rsplit(SLASH, 1)[1]
         if os.path.exists(f"/media/{os_user}/"):
             for l_disk in os.listdir(f"/media/{os_user}/"):
                 DISKS.append((l_disk, os_user))
                 column += 1
-    #
+
+
+def run_app():
+    global SORT
+    global REVERSE
+    global HIDDEN
+    update_disks()
     update_files(HOME_PATH)
 
     # Main loop
@@ -473,7 +450,7 @@ def run_app():
                 print("- ftp download: «download 11», «download 12,14»")
                 print("- show size: «size 9», «size»")
                 print("- select page: «page 3»")
-                print("- disks: «disk C», «disk disk 2»")
+                print("- disks: «disk», «disk C», «disk disk 2»")
                 print("- create: «dir Pictures», «file readme.txt»")
                 print("- sorting: «sort»(for ↑↓), «sort name», «sort size»")
                 print("- exercute cli command: «code dir», «code ls»")
@@ -485,6 +462,9 @@ def run_app():
                     new_input = input(f"This may take a long time. Proceed (y/n)? > ")
                     if new_input == "y":
                         update_files(LAST_PATH, True)
+            elif input1[0] == "disk":
+                update_disks()
+                update_files(LAST_PATH)
             else:
                 click(input1[0])
 
