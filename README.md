@@ -1,26 +1,29 @@
 # Python file explorer
 
-## Main versions
+## Versions
 
-Tkinter version (files_new.py) works on Windows, Linux (should work on MacOS).
-For Windows 10, available in "Releases" (download "files.zip", unpack and run files.exe)
-
-<img title="Screenshot from Windows 10" src="https://github.com/lestec-al/files/raw/main/data/pic_new_win.png" width="541" height="366"/>
-<img title="Screenshot from Linux Ubuntu" src="https://github.com/lestec-al/files/raw/main/data/pic_new_linux.png" width="541" height="366"/>
-
+### CLI
 Command line (CLI) version (files_cl.py) works on Windows, Linux (should work on MacOS).
 Available on PYPI: https://pypi.org/project/filescli/
 
 <img title="Screenshot from Windows 10" src="https://github.com/lestec-al/files/raw/main/data/pic_cl_win.png" width="514" height="398"/>
 <img title="Screenshot from Linux (WSL)" src="https://github.com/lestec-al/files/raw/main/data/pic_cl_linux.png" width="514" height="398"/>
 
-## Other versions
+### Classic
+Tkinter version (files_new.py) works on Windows, Linux (should work on MacOS).
+For Windows 10, available in "Releases" (download "files.zip", unpack and run files.exe)
 
+<img title="Screenshot from Windows 10" src="https://github.com/lestec-al/files/raw/main/data/pic_new_win.png" width="541" height="366"/>
+<img title="Screenshot from Linux Ubuntu" src="https://github.com/lestec-al/files/raw/main/data/pic_new_linux.png" width="541" height="366"/>
+
+
+### Test Android
 Test Kivy version (files_kivy.py) works on Windows, Linux (should work on MacOS), Android (after compilation via buildozer).
 For Android, available in "Releases" (download "files.apk" and install on device)
 
 <img title="Screenshot from Windows 10" src="https://github.com/lestec-al/files/raw/main/data/pic_kivy_win.png" width="541" height="366"/>
 
+### Old
 Obsolete PySimpleGUI version (files_old.py) works on Linux (should work on MacOS)
 
 <img title="Screenshot from Linux Ubuntu" src="https://github.com/lestec-al/files/raw/main/data/pic_old_linux.png" width="541" height="366"/>
@@ -30,7 +33,7 @@ Obsolete PySimpleGUI version (files_old.py) works on Linux (should work on MacOS
 - install: Python (v3.9 or higher)
 - depending on the version install: Tkinter or Kivy (+KivyMD) or PySimpleGUI
 - install Send2Trash (needed for Tkinter, PySimpleGUI versions)
-- download or clone this repo and in the project folder run via command line "python files_new.py" (files_cl.py, files_kivy.py, files_old.py)
+- download or clone this repo and in the project folder run via command line `python files_new.py` (files_cl.py, files_kivy.py, files_old.py)
 
 
 ## Features
